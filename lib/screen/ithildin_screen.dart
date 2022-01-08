@@ -298,23 +298,18 @@ class _IthildinScreenState extends State<IthildinScreen> {
                   children: [
                     ToggleSwitch(
 
-                      minHeight: 50.0,
+                      minHeight: 44.0,
                       minWidth: 70.0,
 
                       cornerRadius: 15.0,
                       borderWidth: 1,
                       borderColor: const [
-                        // Color(0xff3b5998),
-                        // Color(0xff8b9dc3),
-                        // Color(0xff00aeff),
-                        Color(0xff0077f2),
-                        Color(0xff962fbf),
-                        Color(0xff4f5bd5)
+                        Colors.white
                       ],
                       dividerColor: Colors.blueGrey,
-                      activeBgColors: [
-                        [Colors.green[800]!],
-                        [Colors.red[800]!]
+                      activeBgColors: const [
+                        [Color(0xff4C7F66)],
+                        [Color(0xff7F7B5E)]
                       ],
                       activeFgColor: Colors.white,
                       inactiveBgColor: Colors.grey,
@@ -381,12 +376,15 @@ class _IthildinScreenState extends State<IthildinScreen> {
                               style:
                                   TextStyle(color: Colors.white, fontSize: 14),
                             )
-                          : ListView.builder(
+                            : ListView.builder(
+
                               itemCount: simplexicons.length,
                               padding: const EdgeInsets.all(4.0),
+                              shrinkWrap: true,
                               itemExtent: 40.0,
                               itemBuilder: (context, index) {
                                 return SLexListItem(
+                                  entryId: simplexicons[index].entryId,
                                   formLangAbbr: simplexicons[index].formLangAbbr,
                                   mark: simplexicons[index].mark,
                                   form: simplexicons[index].form,
