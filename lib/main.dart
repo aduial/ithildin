@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:ithildin/screen/ithildin_screen.dart';
-import 'package:ithildin/screen/languages_screen.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -10,12 +9,14 @@ Future main() async {
     DeviceOrientation.portraitDown,
   ]);
 
-  runApp(MyApp());
+  runApp(const IthildinApp());
 }
 
-class MyApp extends StatelessWidget {
+class IthildinApp extends StatelessWidget {
 
-  static final String title = 'Ithildin languages';
+  static const String title = 'Ithildin languages';
+
+  const IthildinApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) => MaterialApp(
@@ -24,13 +25,13 @@ class MyApp extends StatelessWidget {
     themeMode: ThemeMode.dark,
     theme: ThemeData(
       primaryColor: Colors.blueGrey.shade700,
-      scaffoldBackgroundColor: Colors.blue.shade100,
+      scaffoldBackgroundColor: Colors.lightBlue.shade100,
       appBarTheme: const AppBarTheme(
         backgroundColor: Colors.deepPurple,
         elevation: 1,
       ),
     ),
-    home: IthildinScreen(),
+    home: const IthildinScreen(),
     // home: LanguagesScreen(),
   );
 }

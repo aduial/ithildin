@@ -3,6 +3,8 @@ import 'package:ithildin/db/eldamo_db.dart';
 import 'package:ithildin/model/language.dart';
 
 class LanguagesScreen extends StatefulWidget {
+  const LanguagesScreen({Key? key}) : super(key: key);
+
   @override
   _LanguagesScreenState createState() => _LanguagesScreenState();
 }
@@ -26,7 +28,7 @@ class _LanguagesScreenState extends State<LanguagesScreen> {
 
   Future loadLanguages() async {
     setState(() => isLoading = true);
-    languages = await EldamoDb.instance.loadLanguages();
+    languages = await EldamoDb.instance.loadEldarinLanguages();
     allLanguages.addAll(languages);
     setState(() => isLoading = false);
   }
@@ -60,49 +62,50 @@ class _LanguagesScreenState extends State<LanguagesScreen> {
             style: TextStyle(fontSize: 24),
           ),
         ),
-        body: Container(
-          child: Column(
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextField(
-                  onChanged: (value) {
-                    filterSearchResults(value);
-                  },
-                  decoration: const InputDecoration(
-                      filled: true,
-                      fillColor: Color(0xFFACE5EE),
-                      labelText: "Search",
-                      hintText: "Search",
-                      prefixIcon: Icon(Icons.search),
-                      border: OutlineInputBorder(
-                          borderRadius:
-                              BorderRadius.all(Radius.circular(25.0)))),
-                ),
+        body: Column(
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextField(
+                onChanged: (value) {
+                  filterSearchResults(value);
+                },
+                decoration: const InputDecoration(
+                    filled: true,
+                    fillColor: Color(0xFFACE5EE),
+                    labelText: "Search",
+                    hintText: "Search",
+                    prefixIcon: Icon(Icons.search),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(25.0)))),
               ),
-              Expanded(
-                child: isLoading
-                    ? CircularProgressIndicator()
-                    : languages.isEmpty
-                        ? const Text(
-                            'No languages found',
-                            style: TextStyle(color: Colors.white, fontSize: 24),
-                          )
-                        : ListView.builder(
-                            shrinkWrap: true,
-                            itemCount: languages.length,
-                            // itemBuilder: _langItemBuilder,
-
-                            itemBuilder: (context, index) {
-                              return ListTile(
-                                title: Text(languages[index].name),
-                              );
-                            },
-                          ),
-              ),
-            ],
-          ),
+            ),
+            Expanded(
+              child: isLoading
+                  ? const CircularProgressIndicator()
+                  : languages.isEmpty
+                      ? const Text(
+                          'No languages found',
+                          style: TextStyle(color: Colors.white, fontSize: 24),
+                        )
+                      : ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: languages.length,
+                          itemBuilder: (context, index) {
+                            return ListTile(
+                              dense: true,
+                              leading: Icon(Icons.list),
+                              trailing: Text(
+                                "GFG",
+                                style: TextStyle(
+                                    color: Colors.green, fontSize: 15),
+                              ),
+                              title: Text(languages[index].name),
+                            );
+                          },
+                        ),
+            ),
+          ],
         ),
       );
-
 }

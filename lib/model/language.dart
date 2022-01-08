@@ -1,4 +1,4 @@
-final String tableLanguages = 'LANGUAGE';
+const String languageTable = 'LANGUAGE';
 
 class LanguageFields {
   static final List<String> values = [
@@ -52,5 +52,24 @@ class Language {
     LanguageFields.mnemonic: mnemonic,
     LanguageFields.parentId: parentId,
   };
+
+
+  /// avoids having to supply custom itemAsString and compareFn in calling widget
+  String languageAsString() {
+    return '#$id $name';
+  }
+
+  /// avoids having to supply custom itemAsString and compareFn in calling widget
+  bool? languageFilterByName(String filter) {
+    return name.toString().contains(filter);
+  }
+
+  /// avoids having to supply custom itemAsString and compareFn in calling widget
+  bool isEqual(Language? lang) {
+    return id == lang?.id;
+  }
+
+  @override
+  String toString() => name;
 }
 

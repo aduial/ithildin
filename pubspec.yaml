@@ -32,6 +32,10 @@ dependencies:
   sqflite:
   path:
   path_provider:
+  dropdown_search: ^2.0.1
+  font_awesome_flutter: ^9.2.0
+  google_fonts: ^2.2.0
+  toggle_switch: ^1.3.0
 
   # format DateTime
   intl: ^0.17.0

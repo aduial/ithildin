@@ -1,4 +1,4 @@
-final String tableLanguages = 'simplexicon';
+const String simplexiconTable = 'simplexicon';
 
 class SimplexiconFields {
   static final List<String> values = [
@@ -6,9 +6,10 @@ class SimplexiconFields {
     entryId,
     mark,
     form,
-    languageId,
-    languageName,
+    formLangId,
+    formLangAbbr,
     gloss,
+    glossLangId,
     cat,
     stem,
     entrytypeId
@@ -17,9 +18,10 @@ class SimplexiconFields {
   static const String entryId = 'entry_id';
   static const String mark = 'mark';
   static const String form = 'form';
-  static const String languageId = 'language_id';
-  static const String languageName = 'languagename';
+  static const String formLangId = 'form_lang_id';
+  static const String formLangAbbr = 'form_lang_abbr';
   static const String gloss = 'gloss';
+  static const String glossLangId = 'gloss_lang_id';
   static const String cat = 'cat';
   static const String stem = 'stem';
   static const String entrytypeId = 'entrytype_id';
@@ -29,22 +31,24 @@ class Simplexicon {
   final int entryId;
   final String mark;
   final String form;
-  final int languageId;
-  final String languageName;
+  final int formLangId;
+  final String formLangAbbr;
   final String gloss;
-  final String? cat;
-  final String? stem;
+  final int glossLangId;
+  final String cat;
+  final String stem;
   final int entrytypeId;
 
   const Simplexicon({
     required this.entryId,
     required this.mark,
     required this.form,
-    required this.languageId,
-    required this.languageName,
+    required this.formLangId,
+    required this.formLangAbbr,
     required this.gloss,
-    this.cat,
-    this.stem,
+    required this.glossLangId,
+    required this.cat,
+    required this.stem,
     required this.entrytypeId,
   });
 
@@ -52,9 +56,10 @@ class Simplexicon {
     int? entryId,
     String? mark,
     String? form,
-    int? languageId,
-    String? languageName,
+    int? formLangId,
+    String? formLangAbbr,
     String? gloss,
+    int? glossLangId,
     String? cat,
     String? stem,
     int? entrytypeId,
@@ -63,9 +68,10 @@ class Simplexicon {
         entryId: entryId ?? this.entryId,
         mark: mark ?? this.mark,
         form: form ?? this.form,
-        languageId: languageId ?? this.languageId,
-        languageName: languageName ?? this.languageName,
+        formLangId: formLangId ?? this.formLangId,
+        formLangAbbr: formLangAbbr ?? this.formLangAbbr,
         gloss: gloss ?? this.gloss,
+        glossLangId: glossLangId ?? this.glossLangId,
         cat: cat ?? this.cat,
         stem: stem ?? this.stem,
         entrytypeId: entrytypeId ?? this.entrytypeId,
@@ -75,11 +81,12 @@ class Simplexicon {
         entryId: json[SimplexiconFields.entryId] as int,
         mark: json[SimplexiconFields.mark] as String,
         form: json[SimplexiconFields.form] as String,
-        languageId: json[SimplexiconFields.languageId] as int,
-        languageName: json[SimplexiconFields.languageName] as String,
+        formLangId: json[SimplexiconFields.formLangId] as int,
+        formLangAbbr: json[SimplexiconFields.formLangAbbr] as String,
         gloss: json[SimplexiconFields.gloss] as String,
-        cat: json[SimplexiconFields.cat] as String?,
-        stem: json[SimplexiconFields.stem] as String?,
+        glossLangId: json[SimplexiconFields.glossLangId] as int,
+        cat: json[SimplexiconFields.cat] as String,
+        stem: json[SimplexiconFields.stem] as String,
         entrytypeId: json[SimplexiconFields.entrytypeId] as int,
       );
 
@@ -87,11 +94,33 @@ class Simplexicon {
         SimplexiconFields.entryId: entryId,
         SimplexiconFields.mark: mark,
         SimplexiconFields.form: form,
-        SimplexiconFields.languageId: languageId,
-        SimplexiconFields.languageName: languageName,
+        SimplexiconFields.formLangId: formLangId,
+        SimplexiconFields.formLangAbbr: formLangAbbr,
         SimplexiconFields.gloss: gloss,
+        SimplexiconFields.glossLangId: glossLangId,
         SimplexiconFields.cat: cat,
         SimplexiconFields.stem: stem,
         SimplexiconFields.entrytypeId: entrytypeId,
       };
+
+
+
+
+  /// avoids having to supply custom itemAsString and compareFn in calling widget
+  String simplexiconAsString() {
+    return '#$entryId $form';
+  }
+
+  /// avoids having to supply custom itemAsString and compareFn in calling widget
+  bool? simplexiconFilterByName(String filter) {
+    return form.toString().contains(filter);
+  }
+
+  /// avoids having to supply custom itemAsString and compareFn in calling widget
+  bool isEqual(Simplexicon? simplex) {
+    return entryId == simplex?.entryId;
+  }
+
+  @override
+  String toString() => form;
 }
