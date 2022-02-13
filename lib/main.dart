@@ -1,38 +1,38 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:ithildin/screen/ithildin_screen.dart';
+import 'package:json_theme/json_theme.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  final themeStr = await rootBundle.loadString('assets/appainter_theme.json');
+  final themeJson = jsonDecode(themeStr);
+  final theme = ThemeDecoder.decodeThemeData(themeJson)!;
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
-
-  runApp(const IthildinApp());
+  runApp(IthildinApp(theme: theme));
 }
 
 class IthildinApp extends StatelessWidget {
+  final ThemeData theme;
+  const IthildinApp({Key? key, required this.theme}) : super(key: key);
 
   static const String title = 'Ithildin languages';
 
-  const IthildinApp({Key? key}) : super(key: key);
-
   @override
-  Widget build(BuildContext context) => MaterialApp(
-    debugShowCheckedModeBanner: false,
-    title: title,
-    themeMode: ThemeMode.dark,
-    theme: ThemeData(
-      primaryColor: Colors.blueGrey.shade700,
-      scaffoldBackgroundColor: Colors.lightBlue.shade100,
-      appBarTheme: const AppBarTheme(
-        backgroundColor: Colors.deepPurple,
-        elevation: 1,
-      ),
-    ),
-    home: const IthildinScreen(),
-    // home: LanguagesScreen(),
-  );
+  Widget build(BuildContext context) {
 
-}
+    return MaterialApp(
+
+      debugShowCheckedModeBanner: false,
+      title: title,
+      // themeMode: ThemeMode.dark,
+      theme: theme,
+      home: const IthildinScreen(),
+      );
+    }
+  }

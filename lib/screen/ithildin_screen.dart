@@ -1,11 +1,15 @@
+import 'package:flutter/cupertino.dart';
 import 'package:ithildin/db/eldamo_db.dart';
 import 'package:ithildin/model/language.dart';
 import 'package:ithildin/model/simplexicon.dart';
-import 'package:ithildin/screen/slex_list_widget.dart';
+import 'package:ithildin/screen/slex_list.dart';
 
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:toggle_switch/toggle_switch.dart';
+
+import '../config/config.dart';
+import '../config/theme.dart';
 
 class IthildinScreen extends StatefulWidget {
   const IthildinScreen({Key? key}) : super(key: key);
@@ -21,21 +25,26 @@ class _IthildinScreenState extends State<IthildinScreen> {
 
   late List<Simplexicon> simplexicons;
   final searchController = TextEditingController();
-  int? _formLangId = 112; // Sindarin
-  int? _glossLangId = 1010; // English
+
+  int? _formLangId = 0;
+  int? _glossLangId = 0;
   bool isLanguageLoading = false;
-  bool isSimplexiconLoading = false;
+  bool isSimplexiconLoading = true;
 
   int _formOrGloss = 0;
 
   @override
   void initState() {
     super.initState();
-    loadLanguages();
-    simplexiconFormFilter('');
-    // loadSimplexicons();
+    getInitData();
     // Start listening to changes.
     searchController.addListener(_doSearch);
+  }
+
+  Future getInitData() async {
+    await loadLanguages();
+    // get initial words
+    await simplexiconFormFilter('');
   }
 
   @override
@@ -48,19 +57,28 @@ class _IthildinScreenState extends State<IthildinScreen> {
   void _doSearch() {
     print('Searched for: ${searchController.text}');
     // if (searchController.text.length > 1) {
-      /// query simplexicon
-      if (_formOrGloss == 0) {
-        simplexiconFormFilter(searchController.text);
-      } else {
-        simplexiconGlossFilter(searchController.text);
-      }
+    /// query simplexicon
+    if (_formOrGloss == 0) {
+      simplexiconFormFilter(searchController.text);
+    } else {
+      simplexiconGlossFilter(searchController.text);
+    }
     // }
   }
 
+  Future reloadEldarinLanguages() async {
+    setState(() => isLanguageLoading = true);
+    eldarinLanguages = await EldamoDb.instance.loadEldarinLanguages();
+    setState(() => isLanguageLoading = false);
+  }
+
+  // also set initial indexes, after lists have loaded
   Future loadLanguages() async {
     setState(() => isLanguageLoading = true);
     eldarinLanguages = await EldamoDb.instance.loadEldarinLanguages();
+    _formLangId = eldarinLanguages[eldarinStartIndex].id;
     modernLanguages = await EldamoDb.instance.loadModernLanguages();
+    _glossLangId = modernLanguages[modernStartIndex].id;
     setState(() => isLanguageLoading = false);
   }
 
@@ -84,19 +102,51 @@ class _IthildinScreenState extends State<IthildinScreen> {
     setState(() => isSimplexiconLoading = false);
   }
 
+  void onSelectLangSet(item) {
+    EldamoDb.instance.setLangCatWhere(catMap[item].toString());
+    reloadEldarinLanguages();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       key: scaffoldKey,
       appBar: AppBar(
-        title: const Text("Ithildin word search"),
         backgroundColor: Colors.blueGrey.shade700,
         automaticallyImplyLeading: true,
-        // actions: [],
+        leading: Builder(
+          builder: (BuildContext context) {
+
+            return PopupMenuButton<String>(
+                elevation: 4,
+                icon: Icon(
+                  CupertinoIcons.square_stack_3d_down_right,
+                  color: BrightGreen,
+                  size: 24.0,
+                  semanticLabel: 'choose language set',
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(20.0),
+                  ),
+                ),
+                onSelected: onSelectLangSet,
+                itemBuilder: (BuildContext context) {
+                  return langCategories.map((String choice) {
+                    return PopupMenuItem<String>(
+                      child: Text(choice),
+                      value: choice,
+                    );
+                  }).toList();
+                }
+             );
+          },
+        ),
+        title: const Text("Ithildin word search"),
         centerTitle: true,
         elevation: 4,
       ),
-      backgroundColor: const Color(0xFF607D8B),
+      backgroundColor: BlueGrey,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsetsDirectional.fromSTEB(10, 10, 10, 10),
@@ -126,6 +176,7 @@ class _IthildinScreenState extends State<IthildinScreen> {
                           padding:
                               const EdgeInsetsDirectional.fromSTEB(0, 0, 4, 0),
                           child: DropdownSearch<Language>(
+
                             mode: Mode.BOTTOM_SHEET,
                             items: isLanguageLoading
                                 ? [const Language(id: 0, name: "Loading...")]
@@ -136,17 +187,16 @@ class _IthildinScreenState extends State<IthildinScreen> {
                                       ]
                                     : eldarinLanguages,
 
-                            /// pre-select Sindarin #11
-                            /// TODO make this more solid
-
+                            /// pre-select Sindarin at startup
                             selectedItem: isLanguageLoading
                                 ? null
-                                : eldarinLanguages[11],
+                                : eldarinLanguages[eldarinStartIndex],
+
                             dropdownSearchDecoration: const InputDecoration(
                               filled: true,
-                              fillColor: Color(0xFF96FDCB),
+                              fillColor: BrightGreen,
                               hintText: "tap to change",
-                              prefixIconColor: Color(0xFF243D34),
+                              prefixIconColor: DarkGreen,
                               contentPadding: EdgeInsets.fromLTRB(12, 8, 0, 0),
                               border: OutlineInputBorder(
                                   borderRadius:
@@ -159,7 +209,7 @@ class _IthildinScreenState extends State<IthildinScreen> {
                               decoration: const InputDecoration(
                                 labelText: "filter on",
                                 filled: true,
-                                fillColor: Color(0xFFC0FEE8),
+                                fillColor: Laurelin,
                                 contentPadding:
                                     EdgeInsets.fromLTRB(12, 12, 8, 0),
                                 border: OutlineInputBorder(
@@ -171,7 +221,7 @@ class _IthildinScreenState extends State<IthildinScreen> {
                             popupTitle: Container(
                               height: 50,
                               decoration: const BoxDecoration(
-                                color: Color(0xFF365250),
+                                color: DarkerGreen,
                                 borderRadius: BorderRadius.only(
                                   topLeft: Radius.circular(20),
                                   topRight: Radius.circular(20),
@@ -220,18 +270,16 @@ class _IthildinScreenState extends State<IthildinScreen> {
                                         id: 0, name: "no languages found")
                                   ]
                                 : modernLanguages,
-
-                        /// pre-select English #1
-                        /// TODO make this more solid
+                        // preselect English at startup
                         selectedItem: isLanguageLoading
-                          ? null
-                          : modernLanguages[1],
+                            ? null
+                            : modernLanguages[modernStartIndex],
 
                         dropdownSearchDecoration: const InputDecoration(
                           filled: true,
-                          fillColor: Color(0xFFFFF7BC),
+                          fillColor: Telperion,
                           hintText: "tap to change",
-                          prefixIconColor: Color(0xFF303122),
+                          prefixIconColor: DarkBrown,
                           contentPadding: EdgeInsets.fromLTRB(12, 8, 0, 0),
                           border: OutlineInputBorder(
                               borderRadius:
@@ -243,7 +291,7 @@ class _IthildinScreenState extends State<IthildinScreen> {
                         searchFieldProps: TextFieldProps(
                           decoration: const InputDecoration(
                             filled: true,
-                            fillColor: Color(0xFFFFF7BC),
+                            fillColor: Telperion,
                             labelText: "filter on",
                             contentPadding: EdgeInsets.fromLTRB(12, 12, 8, 0),
                             border: OutlineInputBorder(
@@ -255,7 +303,7 @@ class _IthildinScreenState extends State<IthildinScreen> {
                         popupTitle: Container(
                           height: 50,
                           decoration: const BoxDecoration(
-                            color: Color(0xFF505234),
+                            color: MiddleBrown,
                             //Theme.of(context).primaryColorDark,
                             borderRadius: BorderRadius.only(
                               topLeft: Radius.circular(20),
@@ -303,13 +351,11 @@ class _IthildinScreenState extends State<IthildinScreen> {
 
                       cornerRadius: 15.0,
                       borderWidth: 1,
-                      borderColor: const [
-                        Colors.white
-                      ],
+                      borderColor: const [Colors.white],
                       dividerColor: Colors.blueGrey,
                       activeBgColors: const [
-                        [Color(0xff4C7F66)],
-                        [Color(0xff7F7B5E)]
+                        [MiddleGreen],
+                        [EarthGrey]
                       ],
                       activeFgColor: Colors.white,
                       inactiveBgColor: Colors.grey,
@@ -317,17 +363,20 @@ class _IthildinScreenState extends State<IthildinScreen> {
                       totalSwitches: 2,
                       initialLabelIndex: _formOrGloss,
                       labels: const ['form', 'gloss'],
-                      animate:
-                          true, // with just animate set to true, default curve = Curves.easeIn
-                      curve: Curves.ease, // animat
+                      animate: true,
+                      // with just animate set to true, default curve = Curves.easeIn
+                      curve: Curves.ease,
+                      // animat
                       onToggle: (index) {
                         setState(() {
-                          _formOrGloss = index;
+                          _formOrGloss = index!;
                         });
                         _doSearch();
                         print('switched to: $index');
                       },
                     ),
+
+                    // search box
                     Expanded(
                       child: Container(
                         width: MediaQuery.of(context).size.width * 0.7,
@@ -344,7 +393,7 @@ class _IthildinScreenState extends State<IthildinScreen> {
                             controller: searchController,
                             decoration: const InputDecoration(
                                 filled: true,
-                                fillColor: Color(0xFFACE5EE),
+                                fillColor: BrightBlue,
                                 hintText: "Search",
                                 prefixIcon: Icon(Icons.search),
                                 border: OutlineInputBorder(
@@ -376,24 +425,21 @@ class _IthildinScreenState extends State<IthildinScreen> {
                               style:
                                   TextStyle(color: Colors.white, fontSize: 14),
                             )
-                            : ListView.builder(
-
+                          : ListView.builder(
                               itemCount: simplexicons.length,
                               padding: const EdgeInsets.all(4.0),
                               shrinkWrap: true,
                               itemExtent: 40.0,
                               itemBuilder: (context, index) {
                                 return SLexListItem(
-                                  entryId: simplexicons[index].entryId,
-                                  formLangAbbr: simplexicons[index].formLangAbbr,
-                                  mark: simplexicons[index].mark,
+                                  id: simplexicons[index].id,
+                                  formLangAbbr:
+                                      simplexicons[index].formLangAbbr,
+                                  mark: simplexicons[index].mark!,
                                   form: simplexicons[index].form,
                                   gloss: simplexicons[index].gloss,
                                 );
-                              }
-                            )
-
-                  ),
+                              })),
             ],
           ),
         ),

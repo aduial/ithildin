@@ -1,14 +1,24 @@
 import 'package:flutter/services.dart';
+import 'package:ithildin/model/lexicon_header.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:ithildin/model/language.dart';
 import 'package:ithildin/model/simplexicon.dart';
+import 'package:ithildin/config/config.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io' as io;
 
 class EldamoDb {
   static final EldamoDb instance = EldamoDb._init();
   static Database? _database;
+
+  String langCatWhere = "< 2";
+
+  void setLangCatWhere(String whereClause){
+    langCatWhere = whereClause;
+    print(langCatWhere);
+    loadEldarinLanguages();
+  }
 
   EldamoDb._init();
 
@@ -42,66 +52,105 @@ class EldamoDb {
     // return await openDatabase(path, version: 1);
   }
 
+
+
+  // ID = 1 = All Eldarin languages
   Future<List<Language>> loadEldarinLanguages() async {
     final db = await instance.database;
-    const orderBy = '${LanguageFields.id} ASC';
-    final result = await db.rawQuery('SELECT * FROM $languageTable '
-        'WHERE PARENT_ID IS NOT NULL '
-        'AND MNEMONIC IS NOT NULL '
-        'AND ID < 1000 '
-        'ORDER BY $orderBy');
+    // const orderBy = "${LanguageFields.id} ASC";
+    const orderBy = "${LanguageFields.listOrder} ASC";
+    final result = await db.rawQuery(
+        "SELECT * FROM $languageTable WHERE CATEGORY $langCatWhere ORDER BY $orderBy");
+
+    print("reloaded");
     return result.map((json) => Language.fromJson(json)).toList();
   }
 
+  // Active modern language have parent_id = 10 (inactive have 11)
   Future<List<Language>> loadModernLanguages() async {
     final db = await instance.database;
-    const orderBy = '${LanguageFields.id} ASC';
-    final result = await db.rawQuery('select * from $languageTable '
-        'WHERE PARENT_ID IS NOT NULL '
-        'AND MNEMONIC IS NOT NULL '
-        'AND ID > 1000 '
-        'ORDER BY $orderBy');
+    const orderBy = "${LanguageFields.id} ASC";
+    final result = await db.rawQuery("select * from $languageTable "
+        "WHERE PARENT_ID = 10 "
+        "ORDER BY $orderBy");
     return result.map((json) => Language.fromJson(json)).toList();
   }
 
   Future<List<Simplexicon>> loadSimplexicons() async {
     final db = await instance.database;
-    const orderBy = '${SimplexiconFields.entryId} ASC';
-    final result = await db.rawQuery('SELECT * FROM $simplexiconTable '
-        'ORDER BY $orderBy '
-        'LIMIT 30');
+    const orderBy = "${SimplexiconFields.id} ASC";
+    final result = await db.rawQuery("SELECT * FROM $simplexiconTable "
+        "ORDER BY $orderBy "
+        "LIMIT 30");
     return result.map((json) => Simplexicon.fromJson(json)).toList();
   }
 
-  Future<List<Simplexicon>> simplexiconFormFilter(String formFilter, int formLangId, int glossLangId) async {
+  Future<List<Simplexicon>> loadSimplexicon(int entryId) async {
     final db = await instance.database;
-    const orderBy = '${SimplexiconFields.entryId} ASC';
-    String formLang  = (formLangId == 1) ? "LIKE '%'" : "= ${formLangId.toString()}";
-    String glossLang = (glossLangId == 1001) ? "LIKE '%'" : "= ${glossLangId.toString()}";
-    String whereFormLangId = '${SimplexiconFields.formLangId} $formLang';
-    String whereGlossLangId = '${SimplexiconFields.glossLangId} $glossLang';
+    final result = await db.rawQuery("SELECT * FROM $simplexiconTable "
+        "WHERE ID = $entryId");
+    return result.map((json) => Simplexicon.fromJson(json)).toList();
+  }
+
+  Future<List<LexiconHeader>> loadLexiconHeader(int entryId) async {
+    final db = await instance.database;
+    final result = await db.rawQuery("SELECT * FROM $lexiconHeaderView "
+        "WHERE entry_id = $entryId");
+    return result.map((json) => LexiconHeader.fromJson(json)).toList();
+  }
+
+  String formLangWhereClause(int formLangId) {
+    if (formLangId == allLanguages) {
+      return SimplexiconFields.formLangId + " LIKE '%'";
+    } else if (formLangId == quenyaInclNeo) {
+      return "(" + SimplexiconFields.formLangId + " = " +
+          neoQuenya.toString() + " OR " +
+          SimplexiconFields.formLangId + " = " +
+          quenya.toString() + ")";
+    } else if (formLangId == sindarinIncNeo) {
+      return "(" + SimplexiconFields.formLangId + " = " +
+          neoSindarin.toString() + " OR " +
+          SimplexiconFields.formLangId + " = " +
+          sindarin.toString() + ")";
+    } else if (formLangId == pElvishInclNeo) {
+      return "(" + SimplexiconFields.formLangId + " = " +
+          neoPElvish.toString() + " OR " +
+          SimplexiconFields.formLangId + " = " +
+          pElvish.toString() + ")";
+    } else {
+      return SimplexiconFields.formLangId + " = " + formLangId.toString();
+    }
+  }
+
+  Future<List<Simplexicon>> simplexiconFormFilter(
+      String formFilter, int formLangId, int glossLangId) async {
+    final db = await instance.database;
+    const orderBy = "${SimplexiconFields.id} ASC";
+    String glossLang = "= ${glossLangId.toString()}";
+    String whereFormLangId = formLangWhereClause(formLangId);
+    String whereGlossLangId = "${SimplexiconFields.glossLangId} $glossLang";
     String whereFormLike = "${SimplexiconFields.form} LIKE '%$formFilter%'";
-    final result = await db.rawQuery('SELECT * from $simplexiconTable '
-        'WHERE $whereFormLangId '
-        'AND $whereGlossLangId '
-        'AND $whereFormLike '
-        'ORDER BY $orderBy');
+    final result = await db.rawQuery("SELECT * from $simplexiconTable "
+        "WHERE $whereFormLangId "
+        "AND $whereGlossLangId "
+        "AND $whereFormLike "
+        "ORDER BY $orderBy");
     return result.map((json) => Simplexicon.fromJson(json)).toList();
   }
 
-  Future<List<Simplexicon>> simplexiconGlossFilter(String glossFilter, int formLangId, int glossLangId) async {
+  Future<List<Simplexicon>> simplexiconGlossFilter(
+      String glossFilter, int formLangId, int glossLangId) async {
     final db = await instance.database;
-    const orderBy = '${SimplexiconFields.entryId} ASC';
-    String formLang  = (formLangId == 1) ? "LIKE '%'" : "= ${formLangId.toString()}";
-    String glossLang = (glossLangId == 1001) ? "LIKE '%'" : "= ${glossLangId.toString()}";
-    String whereFormLangId = '${SimplexiconFields.formLangId} $formLang';
-    String whereGlossLangId = '${SimplexiconFields.glossLangId} $glossLang';
+    const orderBy = "${SimplexiconFields.id} ASC";
+    String glossLang = "= ${glossLangId.toString()}";
+    String whereFormLangId = formLangWhereClause(formLangId);
+    String whereGlossLangId = "${SimplexiconFields.glossLangId} $glossLang";
     String whereGlossLike = "${SimplexiconFields.gloss} LIKE '%$glossFilter%'";
-    final result = await db.rawQuery('SELECT * from $simplexiconTable '
-        'WHERE $whereFormLangId '
-        'AND $whereGlossLangId '
-        'AND $whereGlossLike '
-        'ORDER BY $orderBy');
+    final result = await db.rawQuery("SELECT * from $simplexiconTable "
+        "WHERE $whereFormLangId "
+        "AND $whereGlossLangId "
+        "AND $whereGlossLike "
+        "ORDER BY $orderBy");
     return result.map((json) => Simplexicon.fromJson(json)).toList();
   }
 
