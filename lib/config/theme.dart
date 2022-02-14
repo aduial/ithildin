@@ -7,6 +7,7 @@ const DarkBrown = const Color(0xFF303122);
 const MiddleGreen = const Color(0xff4C7F66);
 const MiddleBrown = const Color(0xFF505234);
 const BlueGrey = const Color(0xFF607D8B);
+const BluerGrey = const Color(0xFF608DAB);
 const EarthGrey = const Color(0xff7F7B5E);
 const BrightGreen = const Color(0xFF96FDCB);
 const BrightBlue = const Color(0xFFACE5EE);

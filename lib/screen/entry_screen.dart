@@ -14,7 +14,6 @@ class EntryScreen extends StatefulWidget {
   _EntryScreenState createState() => _EntryScreenState();
 }
 
-
 class _EntryScreenState extends State<EntryScreen> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
   SharedPreferences? preferences;
@@ -24,20 +23,42 @@ class _EntryScreenState extends State<EntryScreen> {
   late Simplexicon entry;
   late LexiconHeader header;
 
-
   void initState() {
     super.initState();
-    initializePreference().whenComplete((){
+    initializePreference().whenComplete(() {
       // now preferences is accessible
       print(preferences?.getKeys());
     });
     getToggleState();
-    loadEntry();
+    getInitData();
 
     setState(() {});
   }
 
-  Future<void> initializePreference() async{
+  Future getInitData() async {
+    await loadEntry();
+    await loadHeader();
+  }
+
+  Future loadEntry() async {
+    setState(() => isDataLoading = true);
+    List<Simplexicon> entryList =
+        await EldamoDb.instance.loadSimplexicon(widget.entryId);
+    entry = entryList[0];
+    setState(() => isDataLoading = false);
+  }
+
+  Future loadHeader() async {
+    setState(() => isDataLoading = true);
+    List<LexiconHeader> headerList =
+        await EldamoDb.instance.loadLexiconHeader(widget.entryId);
+    if (headerList.isNotEmpty) {
+      header = headerList[0];
+    }
+    setState(() => isDataLoading = false);
+  }
+
+  Future<void> initializePreference() async {
     preferences = await SharedPreferences.getInstance();
   }
 
@@ -47,9 +68,9 @@ class _EntryScreenState extends State<EntryScreen> {
     preferences = await SharedPreferences.getInstance();
     // setState(() {
     preferences?.setStringList(
-        "toggleState",
-        _toggleState.map((e) => e ? 'true' : 'false').toList(),
-      );
+      "toggleState",
+      _toggleState.map((e) => e ? 'true' : 'false').toList(),
+    );
     preferences?.setBool('repeat', true);
     // });
   }
@@ -58,27 +79,18 @@ class _EntryScreenState extends State<EntryScreen> {
     preferences = await SharedPreferences.getInstance();
     setState(() {
       _toggleState = (preferences
-          ?.getStringList('toggleState')
-          ?.map((e) => e == 'true' ? true : false)
-          .toList() ??
+              ?.getStringList('toggleState')
+              ?.map((e) => e == 'true' ? true : false)
+              .toList() ??
           [false, false, false, false]);
     });
-  }
-
-  Future loadEntry() async {
-    setState(() => isDataLoading = true);
-    List<Simplexicon> entryList = await EldamoDb.instance.loadSimplexicon(widget.entryId);
-    entry = entryList[0];
-    List<LexiconHeader> headerList = await EldamoDb.instance.loadLexiconHeader(widget.entryId);
-    header = headerList[0];
-    setState(() => isDataLoading = false);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        key: scaffoldKey,
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      key: scaffoldKey,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Column(
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.start,
@@ -126,69 +138,172 @@ class _EntryScreenState extends State<EntryScreen> {
               ),
             ],
           ),
-          Padding(
-            padding: EdgeInsetsDirectional.fromSTEB(12, 4, 12, 4),
-            child: Row(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: EdgeInsetsDirectional.fromSTEB(0, 4, 0, 4),
-                  child: Text(
-                    isDataLoading
-                        ? "Loading..."
-                        : entry.form,
 
-                    style: Theme.of(context).textTheme.headline3,
-                  ),
-                ),
-              ],
-            ),
-          ),
           Padding(
             padding: EdgeInsetsDirectional.fromSTEB(12, 4, 12, 4),
             child: Row(
               mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                Padding(
-                  padding: EdgeInsetsDirectional.fromSTEB(0, 4, 4, 4),
-                  child: Text(
-                    'lang',
-                    style: Theme.of(context).textTheme.bodyText1,
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsetsDirectional.fromSTEB(0, 4, 4, 4),
-                  child: Text(
-                    'form',
-                    style: Theme.of(context).textTheme.bodyText1,
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsetsDirectional.fromSTEB(0, 4, 4, 4),
-                  child: Text(
-                    'type',
-                    style: Theme.of(context).textTheme.bodyText1,
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsetsDirectional.fromSTEB(0, 4, 4, 4),
-                  child: Text(
-                    'gloss',
-                    style: Theme.of(context).textTheme.bodyText1,
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsetsDirectional.fromSTEB(0, 4, 0, 4),
-                  child: Text(
-                    'gloss',
-                    style: Theme.of(context).textTheme.bodyText1,
+                Flexible(
+                  flex: 1,
+                  fit: FlexFit.loose,
+                  child: Padding(
+                    padding: EdgeInsetsDirectional.fromSTEB(0, 4, 0, 4),
+                    child: Text(
+                      isDataLoading ? "Loading..." : entry.form,
+                      style: Theme.of(context).textTheme.headline4!
+                            .copyWith(fontWeight: FontWeight.w300, color: MiddleGreen),
+                    ),
                   ),
                 ),
               ],
             ),
           ),
+
+          Padding(
+            padding: EdgeInsetsDirectional.fromSTEB(12, 4, 12, 4),
+            child: Row(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Flexible(
+                    flex: 1,
+                    fit: FlexFit.loose,
+                    child: Padding(
+                      padding: EdgeInsetsDirectional.fromSTEB(0, 4, 4, 2),
+                      child: Text(
+                        isDataLoading
+                            ? "Loading..."
+                            : (header.language == null)
+                                ? ''
+                                : header.language!.toUpperCase() + '.',
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyText2!
+                            .copyWith(fontWeight: FontWeight.w700),
+                      ),
+                    )),
+                Flexible(
+                  flex: 3,
+                  fit: FlexFit.tight,
+                  child: Padding(
+                    padding: EdgeInsetsDirectional.fromSTEB(2, 4, 4, 2),
+                    child: Text(
+                      isDataLoading
+                          ? "Loading..."
+                          : (header.type == null)
+                              ? ''
+                              : header.type!,
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyText2!
+                          .copyWith(fontStyle: FontStyle.italic),
+                    ),
+                  ),
+                ),
+                Flexible(
+                  flex: 7,
+                  fit: FlexFit.tight,
+                  child: Padding(
+                    padding: EdgeInsetsDirectional.fromSTEB(2, 4, 4, 2),
+                    child: Text(
+                      isDataLoading
+                          ? "Loading..."
+                          : (header.gloss == null)
+                              ? ''
+                              : ('"' + header.gloss! + '"'),
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyText2!
+                          .copyWith(fontStyle: FontStyle.italic, color: BluerGrey),
+                      //Theme.of(context).textTheme.bodyText2.copyWith.FontStyle.italic,
+                    ),
+                  ),
+                ),
+                Flexible(
+                  flex: 2,
+                  fit: FlexFit.loose,
+                  child: Padding(
+                    padding: EdgeInsetsDirectional.fromSTEB(2, 4, 4, 0),
+                    child: Text(
+                      isDataLoading
+                          ? "Loading..."
+                          : (header.cat == null)
+                              ? ''
+                              : header.cat!,
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyText1!
+                          .copyWith(fontWeight: FontWeight.w700),
+                    ),
+                  ),
+                )
+              ],
+            ),
+          ),
+
+          // Padding(
+          //   padding: EdgeInsetsDirectional.fromSTEB(12, 4, 12, 4),
+          //
+          //
+          //   child: Row(
+          //     mainAxisSize: MainAxisSize.max,
+          //     mainAxisAlignment: MainAxisAlignment.start,
+          //     children: [
+          //       Padding(
+          //         padding: EdgeInsetsDirectional.fromSTEB(0, 4, 4, 4),
+          //         child: Text(
+          //           isDataLoading
+          //               ? "Loading..."
+          //               : (header.language == null) ? '' : header.language!,
+          //           style: Theme.of(context).textTheme.bodyText1,
+          //         ),
+          //       ),
+          //       Padding(
+          //         padding: EdgeInsetsDirectional.fromSTEB(0, 4, 4, 4),
+          //         child: Text(
+          //           isDataLoading
+          //               ? "Loading..."
+          //               : (header.form == null) ? '' : header.form!,
+          //           style: Theme.of(context).textTheme.bodyText1,
+          //         ),
+          //       ),
+          //       Padding(
+          //         padding: EdgeInsetsDirectional.fromSTEB(0, 4, 4, 4),
+          //         child: Text(
+          //           isDataLoading
+          //               ? "Loading..."
+          //               : (header.type == null) ? '' : header.type!,
+          //           style: Theme.of(context).textTheme.bodyText1,
+          //         ),
+          //       ),
+          //       Padding(
+          //         padding: EdgeInsetsDirectional.fromSTEB(0, 4, 4, 4),
+          //         child: Text(
+          //           isDataLoading
+          //               ? "Loading..."
+          //           // : (header.gloss == null) ? '' : header.gloss!,
+          //               : (header.gloss == null) ? '' : ('"' + header.gloss! + '"'),
+          //           style: Theme.of(context).textTheme.bodyLarge,
+          //
+          //         ),
+          //       ),
+          //       Padding(
+          //         padding: EdgeInsetsDirectional.fromSTEB(0, 4, 0, 4),
+          //         child: Text(
+          //           isDataLoading
+          //               ? "Loading..."
+          //               : (header.cat == null) ? '' : header.cat!,
+          //           style: Theme.of(context).textTheme.bodyText1,
+          //         ),
+          //       ),
+          //     ],
+          //   ),
+          //
+          // ),
+
           Container(
             width: MediaQuery.of(context).size.width * 0.93,
             height: 1,
@@ -341,24 +456,23 @@ class _EntryScreenState extends State<EntryScreen> {
             ),
           ),
           Padding(
-            padding: EdgeInsetsDirectional.fromSTEB(10, 0, 10, 0),
-            child: Center(
-              child:  ToggleButtons(
-                children: <Widget>[
-                  Icon(Icons.home_filled),
-                  Icon(Icons.home_repair_service),
-                  Icon(Icons.add_location),
-                  Icon(Icons.payment),
-                ],
-                isSelected: _toggleState,
-                onPressed: (int index) {
-                  setState(() {
-                    saveToggleState(index);
-                  });
-                },
-              ),
-            )
-          ),
+              padding: EdgeInsetsDirectional.fromSTEB(10, 0, 10, 0),
+              child: Center(
+                child: ToggleButtons(
+                  children: <Widget>[
+                    Icon(Icons.home_filled),
+                    Icon(Icons.home_repair_service),
+                    Icon(Icons.add_location),
+                    Icon(Icons.payment),
+                  ],
+                  isSelected: _toggleState,
+                  onPressed: (int index) {
+                    setState(() {
+                      saveToggleState(index);
+                    });
+                  },
+                ),
+              )),
         ],
       ),
       // appBar: AppBar(),
