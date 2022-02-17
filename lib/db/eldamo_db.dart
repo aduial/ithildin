@@ -1,5 +1,9 @@
 import 'package:flutter/services.dart';
+import 'package:ithildin/model/entry_doc.dart';
+import 'package:ithildin/model/lexicon_cognate.dart';
+import 'package:ithildin/model/lexicon_gloss.dart';
 import 'package:ithildin/model/lexicon_header.dart';
+import 'package:ithildin/model/lexicon_related.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:ithildin/model/language.dart';
@@ -97,6 +101,38 @@ class EldamoDb {
     final result = await db.rawQuery("SELECT * FROM $lexiconHeaderView "
         "WHERE entry_id = $entryId");
     return result.map((json) => LexiconHeader.fromJson(json)).toList();
+  }
+
+  Future<List<LexiconGloss>> loadLexiconGlosses(int entryId) async {
+    final db = await instance.database;
+    final result = await db.rawQuery("SELECT * FROM $lexiconGlossView "
+        "WHERE ${LexiconGlossFields.entryId} = $entryId "
+        "LIMIT 30");
+    return result.map((json) => LexiconGloss.fromJson(json)).toList();
+  }
+
+  Future<List<LexiconCognate>> loadLexiconCognates(int entryId) async {
+    final db = await instance.database;
+    final result = await db.rawQuery("SELECT * FROM $lexiconCognateView "
+        "WHERE ${LexiconCognateFields.entryId} = $entryId "
+        "LIMIT 30");
+    return result.map((json) => LexiconCognate.fromJson(json)).toList();
+  }
+
+  Future<List<LexiconRelated>> loadLexiconRelated(int entryId) async {
+    final db = await instance.database;
+    final result = await db.rawQuery("SELECT * FROM $lexiconRelatedView "
+        "WHERE ${LexiconRelatedFields.entryId} = $entryId "
+        "LIMIT 30");
+    return result.map((json) => LexiconRelated.fromJson(json)).toList();
+  }
+
+  Future<List<EntryDoc>> loadEntryDocs(int entryId) async {
+    final db = await instance.database;
+    final result = await db.rawQuery("SELECT * FROM $entryDocView "
+        "WHERE ${EntryDocFields.entryId} = $entryId "
+        "LIMIT 30");
+    return result.map((json) => EntryDoc.fromJson(json)).toList();
   }
 
   String formLangWhereClause(int formLangId) {

@@ -119,13 +119,13 @@ class _IthildinScreenState extends State<IthildinScreen> {
 
             return PopupMenuButton<String>(
                 elevation: 4,
-                icon: Icon(
+                icon: const Icon(
                   CupertinoIcons.square_stack_3d_down_right,
                   color: BrightGreen,
                   size: 24.0,
                   semanticLabel: 'choose language set',
                 ),
-                shape: RoundedRectangleBorder(
+                shape: const RoundedRectangleBorder(
                   borderRadius: BorderRadius.all(
                     Radius.circular(20.0),
                   ),
@@ -407,15 +407,6 @@ class _IthildinScreenState extends State<IthildinScreen> {
                 ),
               ),
 
-              // Row(
-              //   mainAxisSize: MainAxisSize.max,
-              //   mainAxisAlignment: MainAxisAlignment.center,
-              //   children: const [
-              //     Text(
-              //       'search glosses',
-              //     ),
-              //   ],
-              // ),
               Expanded(
                   child: isSimplexiconLoading
                       ? const CircularProgressIndicator()

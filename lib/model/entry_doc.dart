@@ -16,14 +16,14 @@ class EntryDoc {
 
   final int entryId;
   final int docId;
-  final String doc;
-  final String docType;
+  final String? doc;
+  final String? docType;
 
   const EntryDoc({
     required this.entryId,
     required this.docId,
-    required this.doc,
-    required this.docType,
+    this.doc,
+    this.docType,
   });
 
   EntryDoc copy({
@@ -43,8 +43,8 @@ class EntryDoc {
   static EntryDoc fromJson(Map<String, Object?> json) => EntryDoc(
     entryId: json[EntryDocFields.entryId] as int,
     docId: json[EntryDocFields.docId] as int,
-    doc: json[EntryDocFields.doc] as String,
-    docType: json[EntryDocFields.docType] as String,
+    doc: json[EntryDocFields.doc] as String?,
+    docType: json[EntryDocFields.docType] as String?,
   );
 
   Map<String, Object?> toJson() => {

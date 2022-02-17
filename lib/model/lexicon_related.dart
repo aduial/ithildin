@@ -3,11 +3,10 @@ const String lexiconRelatedView = 'lexicon_related';
 class LexiconRelatedFields {
   static final List<String> values = [
     /// Add all fields
-    entryId, txt, formFrom, glossFrom, relation, formTo, glossTo
+    entryId, formFrom, glossFrom, relation, formTo, glossTo
   ];
 
   static const String entryId = 'entry_id';
-  static const String txt = 'txt';
   static const String formFrom = 'form_from';
   static const String glossFrom = 'gloss_from';
   static const String relation = 'relatiom';
@@ -18,7 +17,6 @@ class LexiconRelatedFields {
 class LexiconRelated {
 
   final int entryId;
-  final String? txt;
   final String? formFrom;
   final String? glossFrom;
   final String? relation;
@@ -28,7 +26,6 @@ class LexiconRelated {
 
   const LexiconRelated({
     required this.entryId,
-    this.txt,
     this.formFrom,
     this.glossFrom,
     this.relation,
@@ -38,7 +35,6 @@ class LexiconRelated {
 
   LexiconRelated copy({
     int? entryId,
-    String? txt,
     String? formFrom,
     String? glossFrom,
     String? relation,
@@ -47,7 +43,6 @@ class LexiconRelated {
   }) {
     return LexiconRelated(
       entryId: entryId ?? this.entryId,
-      txt: txt ?? this.txt,
       formFrom: formFrom ?? this.formFrom,
       glossFrom: glossFrom ?? this.glossFrom,
       relation: relation ?? this.relation,
@@ -59,7 +54,6 @@ class LexiconRelated {
 
   static LexiconRelated fromJson(Map<String, Object?> json) => LexiconRelated(
     entryId: json[LexiconRelatedFields.entryId] as int,
-    txt: json[LexiconRelatedFields.txt] as String?,
     formFrom: json[LexiconRelatedFields.formFrom] as String?,
     glossFrom: json[LexiconRelatedFields.glossFrom] as String?,
     relation: json[LexiconRelatedFields.relation] as String?,
@@ -69,7 +63,6 @@ class LexiconRelated {
 
   Map<String, Object?> toJson() => {
     LexiconRelatedFields.entryId: entryId,
-    LexiconRelatedFields.txt: txt,
     LexiconRelatedFields.formFrom: formFrom,
     LexiconRelatedFields.glossFrom: glossFrom,
     LexiconRelatedFields.relation: relation,
@@ -83,7 +76,6 @@ class LexiconRelated {
       (other is LexiconRelated &&
           runtimeType == other.runtimeType &&
           entryId == other.entryId &&
-          txt == other.txt &&
           formFrom == other.formFrom &&
           glossFrom == other.glossFrom &&
           relation == other.relation &&
@@ -93,7 +85,6 @@ class LexiconRelated {
   @override
   int get hashCode =>
       entryId.hashCode ^
-      txt.hashCode ^
       formFrom.hashCode ^
       glossFrom.hashCode ^
       relation.hashCode ^
@@ -104,7 +95,6 @@ class LexiconRelated {
   String toString() {
     return 'LexiconRelated{' +
         ' entryId: $entryId,' +
-        ' txt: $txt,' +
         ' formFrom: $formFrom,' +
         ' glossFrom: $glossFrom,' +
         ' relation: $relation,' +
@@ -116,7 +106,6 @@ class LexiconRelated {
   Map<String, dynamic> toMap() {
     return {
       'entryId': this.entryId,
-      'txt': this.txt,
       'formFrom': this.formFrom,
       'glossFrom': this.glossFrom,
       'relation': this.relation,
@@ -128,7 +117,6 @@ class LexiconRelated {
   factory LexiconRelated.fromMap(Map<String, dynamic> map) {
     return LexiconRelated(
       entryId: map['entryId'] as int,
-      txt: map['txt'] as String,
       formFrom: map['formFrom'] as String,
       glossFrom: map['glossFrom'] as String,
       relation: map['relation'] as String,
