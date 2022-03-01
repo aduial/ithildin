@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-
-import '../config/theme.dart';
+import 'package:flutter_html/flutter_html.dart';
+import '../config/colours.dart';
 
 class RelatedListItem extends StatefulWidget {
   const RelatedListItem({
@@ -25,81 +25,87 @@ class RelatedListItem extends StatefulWidget {
 }
 
 class _RelatedListItemState extends State<RelatedListItem> {
+
+  String htmlData = "";
+
+  void initState() {
+    if (widget.formFrom != null){
+      htmlData += "<b>" + CSSTextTheme + (widget.formFrom?? "") + EndSpan + "</b>&nbsp";
+    }
+    if (widget.glossFrom != null){
+      htmlData += CSSGreen + (widget.glossFrom?? "") + EndSpan + "&nbsp";
+    }
+    if (widget.relation != null){
+      htmlData += CSSBlueGrey + (widget.relation?? "") + EndSpan + "&nbsp";
+    }
+    if (widget.formTo != null){
+      htmlData += "<i><b>" + CSSBlueGrey + (widget.formTo?? "") + EndSpan + "</b></i>&nbsp";
+    }
+    if (widget.glossTo != null){
+      htmlData += "<b>" + CSSGreen + (widget.glossTo?? "") + EndSpan + "</b>&nbsp";
+    }
+
+    super.initState();
+  }
+
+
   @override
   Widget build(BuildContext context) {
-
     return Container(
-      padding: const EdgeInsets.fromLTRB(5.0, 3.0, 5.0, 3.0),
-      decoration: const BoxDecoration(
-        border: Border(
-          bottom: BorderSide(width: 1.0, color: DividerColour),
-        ),
-        // color: MiddleGreen,
-      ),
+      padding: const EdgeInsets.fromLTRB(5.0, 0.0, 5.0, 0.0),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Flexible(
-            fit: FlexFit.tight,
-            flex: 1,
-            child: Text(
-              widget.formFrom??' ',
-              style: Theme.of(context)
-                  .textTheme.bodyText2!
-                  .copyWith(fontStyle: FontStyle.italic,
-                            fontSize: 12,
-                            color: BluerGrey),
-            ),
-          ),
-          Flexible(
-            fit: FlexFit.tight,
-            flex: 1,
-            child: Text(
-              widget.glossFrom??' ',
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyText2!
-                  .copyWith(fontWeight: FontWeight.w600,
-                  fontSize: 12,
-                  color: MiddleGreen),
-            ),
-          ),
-          Flexible(
-            fit: FlexFit.tight,
-            flex: 1,
-            child: Text(
-              widget.relation??' ',
-              style: Theme.of(context)
-                  .textTheme.bodyText2!
-                  .copyWith(fontStyle: FontStyle.italic,
-                  fontSize: 12,
-                  color: BluerGrey),
-            ),
-          ),
-          Flexible(
-            fit: FlexFit.tight,
-            flex: 1,
-            child: Text(
-              widget.formTo??' ',
-              style: Theme.of(context)
-                  .textTheme.bodyText2!
-                  .copyWith(fontStyle: FontStyle.italic,
-                  fontSize: 12,
-                  color: BluerGrey),
-            ),
-          ),
-          Flexible(
-            fit: FlexFit.tight,
-            flex: 1,
-            child: Text(
-              widget.glossTo??' ',
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyText2!
-                  .copyWith(fontWeight: FontWeight.w600,
-                  fontSize: 12,
-                  color: MiddleGreen),
-            ),
+              fit: FlexFit.tight,
+              flex: 1,
+              child: Html(data: htmlData),
+
+
+
+
+        // child: RichText(
+        //         text: TextSpan(
+        //           text: widget.formFrom ?? '',
+        //           style: Theme.of(context).textTheme.bodyText2!.copyWith(
+        //               fontWeight: FontWeight.w800,
+        //               fontSize: 12,
+        //               color: BluerGrey),
+        //           children: <TextSpan>[
+        //             TextSpan(
+        //               text: widget.glossFrom ?? '',
+        //               style: Theme.of(context).textTheme.bodyText2!.copyWith(
+        //                   fontWeight: FontWeight.w400,
+        //                   fontSize: 12,
+        //                   color: MiddleGreen),
+        //             ),
+        //             TextSpan(
+        //               text: widget.relation ?? '',
+        //               style: Theme.of(context).textTheme.bodyText2!.copyWith(
+        //                   fontWeight: FontWeight.w300,
+        //                   fontSize: 12,
+        //                   color: BluerGrey),
+        //             ),
+        //             TextSpan(
+        //               text: widget.formTo ?? '',
+        //               style: Theme.of(context).textTheme.bodyText2!.copyWith(
+        //                   fontWeight: FontWeight.w600,
+        //                   fontStyle: FontStyle.italic,
+        //                   fontSize: 12,
+        //                   color: BluerGrey),
+        //             ),
+        //             TextSpan(
+        //               text: widget.glossTo ?? ' ',
+        //               style: Theme.of(context).textTheme.bodyText2!.copyWith(
+        //                   fontWeight: FontWeight.w600,
+        //                   fontStyle: FontStyle.normal,
+        //                   fontSize: 12,
+        //                   color: MiddleGreen),
+        //             ),
+        //           ],
+        //         ),
+        //       )
+
           ),
         ],
       ),

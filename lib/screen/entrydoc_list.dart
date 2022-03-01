@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../config/theme.dart';
+import '../config/colours.dart';
 
 class EntryDocListItem extends StatefulWidget {
   const EntryDocListItem({

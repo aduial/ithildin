@@ -1,38 +1,109 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:ithildin/screen/ithildin_screen.dart';
-import 'package:json_theme/json_theme.dart';
+import 'package:ithildin/screen/minui.dart';
+import 'package:google_fonts/google_fonts.dart';
+
+import 'config/colours.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final themeStr = await rootBundle.loadString('assets/appainter_theme.json');
-  final themeJson = jsonDecode(themeStr);
-  final theme = ThemeDecoder.decodeThemeData(themeJson)!;
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
-  runApp(IthildinApp(theme: theme));
+  runApp(const IthildinApp());
 }
 
 class IthildinApp extends StatelessWidget {
-  final ThemeData theme;
-  const IthildinApp({Key? key, required this.theme}) : super(key: key);
-
-  static const String title = 'Ithildin languages';
+  const IthildinApp({Key? key}) : super(key: key);
+  static const String title = 'Ithildin Dictionary';
 
   @override
   Widget build(BuildContext context) {
-
     return MaterialApp(
-
-      debugShowCheckedModeBanner: false,
-      title: title,
-      // themeMode: ThemeMode.dark,
-      theme: theme,
-      home: const IthildinScreen(),
-      );
-    }
+        debugShowCheckedModeBanner: false,
+        title: title,
+        home: Minui(),
+        themeMode: ThemeMode.system,
+        theme: ThemeData.light().copyWith(
+            primaryColor: DarkBlueGrey,
+            textTheme: TextTheme(
+              headline1: GoogleFonts.notoSerifDisplay(
+                fontSize: 101,
+                fontWeight: FontWeight.w200,
+                letterSpacing: -1.5,
+                color: Ithildin,
+              ),
+              headline2: GoogleFonts.notoSerifDisplay(
+                fontSize: 63,
+                fontWeight: FontWeight.w200,
+                letterSpacing: -0.5,
+                color: Ithildin,
+              ),
+              headline3: GoogleFonts.notoSerifDisplay(
+                fontSize: 50,
+                fontWeight: FontWeight.w200,
+                color: Ithildin,
+              ),
+              headline4: GoogleFonts.lato(
+                fontSize: 36,
+                fontWeight: FontWeight.w400,
+                letterSpacing: 0.25,
+                color: ThemeTextColour,
+              ),
+              headline5: GoogleFonts.lato(
+                fontSize: 25,
+                fontWeight: FontWeight.w400,
+                color: ThemeTextColour,
+              ),
+              headline6: GoogleFonts.lato(
+                fontSize: 21,
+                fontWeight: FontWeight.w500,
+                letterSpacing: 0.15,
+                color: ThemeTextColour,
+              ),
+              subtitle1: GoogleFonts.lato(
+                fontSize: 17,
+                fontWeight: FontWeight.w400,
+                letterSpacing: 0.15,
+                color: ThemeTextColour,
+              ),
+              subtitle2: GoogleFonts.lato(
+                fontSize: 15,
+                fontWeight: FontWeight.w500,
+                letterSpacing: 0.1,
+                color: ThemeTextColour,
+              ),
+              bodyText1: GoogleFonts.lato(
+                fontSize: 17,
+                fontWeight: FontWeight.w400,
+                letterSpacing: 0.5,
+                color: ThemeTextColour,
+              ),
+              bodyText2: GoogleFonts.lato(
+                fontSize: 15,
+                fontWeight: FontWeight.w400,
+                letterSpacing: 0.25,
+                color: ThemeTextColour,
+              ),
+              button: GoogleFonts.lato(
+                fontSize: 15,
+                fontWeight: FontWeight.w500,
+                letterSpacing: 1.25,
+                color: ThemeTextColour,
+              ),
+              caption: GoogleFonts.lato(
+                fontSize: 13,
+                fontWeight: FontWeight.w400,
+                letterSpacing: 0.4,
+                color: ThemeTextColour,
+              ),
+              overline: GoogleFonts.lato(
+                fontSize: 10,
+                fontWeight: FontWeight.w400,
+                letterSpacing: 1.5,
+                color: ThemeTextColour,
+              ),
+            )));
   }
+}

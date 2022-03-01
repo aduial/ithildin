@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:ithildin/model/lexicon_cognate.dart';
 import 'package:ithildin/model/lexicon_header.dart';
 import 'package:ithildin/screen/related_list.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 
-import '../config/theme.dart';
+import '../config/colours.dart';
 import '../db/eldamo_db.dart';
 import '../model/entry_doc.dart';
 import '../model/lexicon_gloss.dart';
@@ -12,6 +13,8 @@ import '../model/lexicon_related.dart';
 import '../model/simplexicon.dart';
 import 'cognate_list.dart';
 import 'gloss_list.dart';
+import 'package:expandable/expandable.dart';
+import 'dart:math' as math;
 
 class EntryScreen extends StatefulWidget {
   const EntryScreen(this.entryId, {Key? key}) : super(key: key);
@@ -23,8 +26,6 @@ class EntryScreen extends StatefulWidget {
 
 class _EntryScreenState extends State<EntryScreen> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
-  SharedPreferences? preferences;
-  List<bool> _toggleState = List.generate(4, (_) => true);
   bool isDataLoading = true;
   bool cognatesVisible = false;
 
@@ -37,11 +38,6 @@ class _EntryScreenState extends State<EntryScreen> {
 
   void initState() {
     super.initState();
-    initializePreference().whenComplete(() {
-      // now preferences is accessible
-      print(preferences?.getKeys());
-    });
-    getToggleState();
     getData();
     setState(() {});
   }
@@ -98,633 +94,451 @@ class _EntryScreenState extends State<EntryScreen> {
     setState(() => isDataLoading = false);
   }
 
-  Future<void> initializePreference() async {
-    preferences = await SharedPreferences.getInstance();
-  }
-
-  saveToggleState(int index) async {
-    _toggleState[index] = !_toggleState[index];
-
-    print("toggled: " +
-        index.toString() +
-        " to " +
-        (_toggleState[index] == true ? "true" : "false"));
-    preferences = await SharedPreferences.getInstance();
-    // setState(() {
-    preferences?.setStringList(
-      "toggleState",
-      _toggleState.map((e) => e ? 'true' : 'false').toList(),
-    );
-    preferences?.setBool('repeat', true);
-    // });
-  }
-
-  getToggleState() async {
-    preferences = await SharedPreferences.getInstance();
-    setState(() {
-      _toggleState = (preferences
-              ?.getStringList('toggleState')
-              ?.map((e) => e == 'true' ? true : false)
-              .toList() ??
-          [false, false, false, false]);
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       key: scaffoldKey,
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: Column(
-        mainAxisSize: MainAxisSize.max,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          // Navigation back button
-          Stack(
-            children: [
-              Align(
-                alignment: const AlignmentDirectional(0, 0),
-                child: Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: 90,
-                  decoration: const BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [VeryVeryDark, InvisibleDark],
-                      stops: [0, 1],
-                      begin: AlignmentDirectional(0, -1),
-                      end: AlignmentDirectional(0, 1),
-                    ),
-                  ),
-                ),
+      backgroundColor: OffWhite,
+
+      appBar: AppBar(
+        backgroundColor: BlueGrey,
+        title: Text(
+          isDataLoading ? "Loading..." : entry.form,
+          style: Theme.of(context)
+              .textTheme
+              .headline5!
+              .copyWith(fontWeight: FontWeight.w300, color: Laurelin),
+        ),
+      ),
+
+      body: isDataLoading
+          ? Text("loading ...")
+          : ExpandableTheme(
+              data: const ExpandableThemeData(
+                iconColor: Colors.yellow,
+                useInkWell: true,
               ),
-              Padding(
-                padding: const EdgeInsetsDirectional.fromSTEB(16, 40, 16, 16),
-                child: InkWell(
-                  onTap: () async {
-                    Navigator.pop(context);
-                  },
-                  child: Card(
-                    clipBehavior: Clip.antiAliasWithSaveLayer,
-                    color: Theme.of(context).primaryColor,
-                    elevation: 3,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsetsDirectional.fromSTEB(4, 4, 4, 4),
-                      child: Icon(
-                        Icons.arrow_back_rounded,
-                        color: Theme.of(context).buttonColor,
-                        size: 24,
-                      ),
+              child: ListView(
+                physics: const BouncingScrollPhysics(),
+                children: <Widget>[
+                  headerCard(header, isDataLoading),
+                  GlossCard(lexiconGlosses, isDataLoading),
+                  CognateCard(lexiconCognates, isDataLoading),
+                  RelatedCard(lexiconRelated, isDataLoading),
+                  NotesCard(entryDocs, isDataLoading),
+                ],
+              ),
+            ),
+
+
+    );
+  }
+}
+
+class headerCard extends StatelessWidget {
+  LexiconHeader header;
+  bool isDataLoading;
+
+  headerCard(this.header, this.isDataLoading);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsetsDirectional.fromSTEB(12, 14, 12, 4),
+      child: isDataLoading
+          ? Text("loading ...")
+          : RichText(
+              text: TextSpan(
+                text: header.language!.toUpperCase() + '. ',
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyText2!
+                    .copyWith(fontWeight: FontWeight.w700),
+                children: <TextSpan>[
+                  TextSpan(
+                    text: header.type ?? '',
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyText2!
+                        .copyWith(fontStyle: FontStyle.italic),
+                  ),
+                  TextSpan(
+                    text: ' "' + header.gloss! + '"',
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyText2!
+                        .copyWith(fontWeight: FontWeight.w300, fontSize: 12),
+                  ),
+                ],
+              ),
+            ),
+    );
+  }
+}
+
+class GlossCard extends StatelessWidget {
+  List<LexiconGloss> lexiconGlosses;
+  bool isDataLoading;
+
+  GlossCard(this.lexiconGlosses, this.isDataLoading);
+
+  @override
+  Widget build(BuildContext context) {
+    buildList() {
+      return Container(
+          color: OffWhite,
+          child: ListView.separated(
+              separatorBuilder: (BuildContext context, int index) =>
+                  const Divider(height: 3),
+              primary: false,
+              itemCount: lexiconGlosses.length,
+              padding: const EdgeInsetsDirectional.fromSTEB(4, 4, 4, 4),
+              shrinkWrap: true,
+              itemBuilder: (context, index) {
+                return GlossListItem(
+                  entryId: lexiconGlosses[index].entryId,
+                  gloss: '"' + lexiconGlosses[index].gloss + '" ',
+                  reference: lexiconGlosses[index].reference,
+                );
+              }));
+    }
+
+    return ExpandableNotifier(
+        child: Padding(
+      padding: const EdgeInsets.all(10),
+      child: ScrollOnExpand(
+        child: Card(
+          clipBehavior: Clip.antiAlias,
+          child: Column(
+            children: <Widget>[
+              ExpandablePanel(
+                theme: const ExpandableThemeData(
+                  headerAlignment: ExpandablePanelHeaderAlignment.center,
+                  tapBodyToExpand: true,
+                  tapBodyToCollapse: true,
+                  hasIcon: false,
+                ),
+                header: Container(
+                  color: BlueGrey,
+                  child: Padding(
+                    padding: const EdgeInsets.all(2.0),
+                    child: Row(
+                      children: [
+                        ExpandableIcon(
+                          theme: const ExpandableThemeData(
+                            // fadeCurve: Curves.decelerate,
+                            // animationDuration: const Duration(milliseconds: 400),
+                            // scrollAnimationDuration: const Duration(milliseconds: 400),
+                            expandIcon: Icons.arrow_right,
+                            collapseIcon: Icons.arrow_drop_down,
+                            iconColor: Colors.white,
+                            iconSize: 28.0,
+                            iconRotationAngle: math.pi / 2,
+                            iconPadding: EdgeInsets.only(right: 5),
+                            hasIcon: false,
+                          ),
+                        ),
+                        Expanded(
+                          child: lexiconGlosses.isEmpty
+                              ? Text("no glosses found",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyText1!
+                                  .copyWith(color: LightBlueGrey))
+                              : Text(
+                            "gloss" + (lexiconGlosses.length > 1 ? "es" : "") ,
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyText1!
+                                .copyWith(color: Laurelin),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
+                collapsed: Container(),
+                expanded: buildList(),
               ),
             ],
           ),
+        ),
+      ),
+    ));
+  }
+}
 
-          // Header (form)
-          Padding(
-            padding: const EdgeInsetsDirectional.fromSTEB(12, 4, 12, 4),
-            child: Row(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Flexible(
-                  flex: 1,
-                  fit: FlexFit.loose,
+class CognateCard extends StatelessWidget {
+  List<LexiconCognate> lexiconCognates;
+  bool isDataLoading;
+
+  CognateCard(this.lexiconCognates, this.isDataLoading);
+
+  @override
+  Widget build(BuildContext context) {
+    buildList() {
+      return Container(
+          color: OffWhite,
+          child: ListView.separated(
+              separatorBuilder: (BuildContext context, int index) =>
+                  const Divider(height: 3),
+              primary: false,
+              itemCount: lexiconCognates.length,
+              padding: const EdgeInsetsDirectional.fromSTEB(4, 4, 4, 4),
+              shrinkWrap: true,
+              itemBuilder: (context, index) {
+                return CognateListItem(
+                  entryId: lexiconCognates[index].entryId,
+                  language: lexiconCognates[index].language + ' ',
+                  form: lexiconCognates[index].form + ' ',
+                  gloss: ' "' + lexiconCognates[index].gloss! + '" ',
+                  sources: lexiconCognates[index].sources,
+                );
+              }));
+    }
+
+    return ExpandableNotifier(
+        child: Padding(
+      padding: const EdgeInsets.all(10),
+      child: ScrollOnExpand(
+        child: Card(
+          clipBehavior: Clip.antiAlias,
+          child: Column(
+            children: <Widget>[
+              ExpandablePanel(
+                theme: const ExpandableThemeData(
+                  headerAlignment: ExpandablePanelHeaderAlignment.center,
+                  tapBodyToExpand: true,
+                  tapBodyToCollapse: true,
+                  hasIcon: false,
+                ),
+                header: Container(
+                  color: BlueGrey,
                   child: Padding(
-                    padding: const EdgeInsetsDirectional.fromSTEB(0, 4, 0, 4),
-                    child: Text(
-                      isDataLoading ? "Loading..." : entry.form,
-                      style: Theme.of(context).textTheme.headline4!.copyWith(
-                          fontWeight: FontWeight.w300, color: MiddleGreen),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          // Header row (form)
-          Padding(
-            padding: const EdgeInsetsDirectional.fromSTEB(12, 4, 12, 4),
-            child: Row(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Flexible(
-                    flex: 1,
-                    fit: FlexFit.loose,
-                    child: Padding(
-                      padding: const EdgeInsetsDirectional.fromSTEB(0, 4, 4, 2),
-                      child: Text(
-                        isDataLoading
-                            ? "Loading..."
-                            : (header.language == null)
-                                ? ''
-                                : header.language!.toUpperCase() + '.',
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyText2!
-                            .copyWith(fontWeight: FontWeight.w700),
-                      ),
-                    )),
-                Flexible(
-                  flex: 3,
-                  fit: FlexFit.tight,
-                  child: Padding(
-                    padding: const EdgeInsetsDirectional.fromSTEB(2, 4, 4, 2),
-                    child: Text(
-                      isDataLoading
-                          ? "Loading..."
-                          : (header.type == null)
-                              ? ''
-                              : header.type!,
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyText2!
-                          .copyWith(fontStyle: FontStyle.italic),
-                    ),
-                  ),
-                ),
-                Flexible(
-                  flex: 7,
-                  fit: FlexFit.tight,
-                  child: Padding(
-                    padding: const EdgeInsetsDirectional.fromSTEB(2, 4, 4, 2),
-                    child: Text(
-                      isDataLoading
-                          ? "Loading..."
-                          : (header.gloss == null)
-                              ? ''
-                              : ('"' + header.gloss! + '"'),
-                      style: Theme.of(context).textTheme.bodyText2!.copyWith(
-                          fontStyle: FontStyle.italic, color: BluerGrey),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          //
-          //
-          // divider glosses
-          Flexible(
-            flex: 1,
-            fit: FlexFit.loose,
-            child: Container(
-              width: MediaQuery.of(context).size.width * 0.93,
-              height: 1,
-              decoration: BoxDecoration(
-                color: Theme.of(context).dividerColor,
-              ),
-            ),
-          ),
-
-          // row glosses
-          Flexible(
-            flex: 2,
-            fit: FlexFit.loose,
-            child: AnimatedContainer(
-              width: _toggleState[0]
-                  ? MediaQuery.of(context).size.width
-                  : MediaQuery.of(context).size.width,
-              height: _toggleState[0] ? 50.0 : 0.0,
-              alignment:
-                  _toggleState[0] ? Alignment.topLeft : Alignment.topLeft,
-              duration: const Duration(seconds: 1),
-              curve: Curves.fastOutSlowIn,
-              child: Visibility(
-                visible: _toggleState[0],
-                child: Padding(
-                  padding: const EdgeInsetsDirectional.fromSTEB(12, 4, 12, 0),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      Padding(
-                        padding:
-                            const EdgeInsetsDirectional.fromSTEB(0, 4, 0, 0),
-                        child: Icon(
-                          Icons.list_alt_outlined,
-                          color: Theme.of(context).primaryColor,
-                          size: 20,
-                        ),
-                      ),
-                      Padding(
-                        padding:
-                            const EdgeInsetsDirectional.fromSTEB(4, 4, 0, 2),
-                        child: Text(
-                          'glosses',
-                          style: Theme.of(context).textTheme.bodyText1,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-          //
-          // List of glosses
-          Flexible(
-            flex: 5,
-            fit: FlexFit.loose,
-            child: AnimatedContainer(
-              width: _toggleState[0] ? MediaQuery.of(context).size.width
-                  : MediaQuery.of(context).size.width,
-              height: _toggleState[0] ? 100.0 : 0.0,
-              alignment:
-                  _toggleState[0] ? Alignment.topLeft : Alignment.topLeft,
-              duration: const Duration(seconds: 1),
-              curve: Curves.fastOutSlowIn,
-              child: Padding(
-                padding: const EdgeInsetsDirectional.fromSTEB(12, 0, 12, 0),
-                child: Row(
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    isDataLoading
-                        ? const CircularProgressIndicator()
-                        : lexiconGlosses.isEmpty
-                            ? const Text(
-                                'No glosses found',
-                                style: TextStyle(
-                                    color: Colors.deepPurpleAccent,
-                                    fontSize: 12),
-                              )
-                            : Expanded(
-                                child:
-                                ListView.builder(
-                                    primary: false,
-                                    itemCount: lexiconGlosses.length,
-                                    padding:
-                                        const EdgeInsetsDirectional.fromSTEB(
-                                            4, 0, 4, 0),
-                                    shrinkWrap: true,
-                                    // itemExtent: 40.0,
-                                    itemBuilder: (context, index) {
-                                      return GlossListItem(
-                                        entryId: lexiconGlosses[index].entryId,
-                                        gloss: lexiconGlosses[index].gloss,
-                                        reference:
-                                            lexiconGlosses[index].reference,
-                                      );
-                                    })
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          //
-          // divider cognates
-          Flexible(
-            flex: 1,
-            fit: FlexFit.loose,
-            child: AnimatedContainer(
-              width: _toggleState[0]
-                  ? MediaQuery.of(context).size.width * 0.93
-                  : MediaQuery.of(context).size.width * 0.93,
-              height: _toggleState[0] ? 1.0 : 0.0,
-              duration: const Duration(seconds: 2),
-              curve: Curves.fastOutSlowIn,
-              decoration: BoxDecoration(
-                color: Theme.of(context).dividerColor,
-              ),
-            ),
-          ),
-          //
-          // row cognates
-          Flexible(
-            flex: 2,
-            fit: FlexFit.loose,
-            child: AnimatedContainer(
-              width: _toggleState[1]
-                  ? MediaQuery.of(context).size.width
-                  : MediaQuery.of(context).size.width,
-              height: _toggleState[1] ? 100.0 : 0.0,
-              alignment:
-                  _toggleState[1] ? Alignment.topLeft : Alignment.topLeft,
-              duration: const Duration(seconds: 1),
-              curve: Curves.fastOutSlowIn,
-              child: Visibility(
-                visible: _toggleState[1],
-                child: Padding(
-                  padding: const EdgeInsetsDirectional.fromSTEB(12, 4, 12, 0),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      Padding(
-                        padding:
-                            const EdgeInsetsDirectional.fromSTEB(0, 4, 0, 2),
-                        child: Icon(
-                          Icons.group_work_outlined,
-                          color: Theme.of(context).primaryColor,
-                          size: 20,
-                        ),
-                      ),
-                      Padding(
-                        padding:
-                            const EdgeInsetsDirectional.fromSTEB(4, 4, 0, 4),
-                        child: Text(
-                          'cognates',
-                          style: Theme.of(context).textTheme.bodyText1,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-          //
-          // List cognates
-          Flexible(
-            flex: 3,
-            fit: FlexFit.loose,
-            child: AnimatedContainer(
-              width: _toggleState[1] ? MediaQuery.of(context).size.width
-                  : MediaQuery.of(context).size.width,
-              height: _toggleState[1] ? 100.0 : 0.0,
-              alignment:
-                  _toggleState[1] ? Alignment.topLeft : Alignment.topLeft,
-              duration: const Duration(seconds: 1),
-              curve: Curves.fastOutSlowIn,
-              child: Padding(
-                padding: const EdgeInsetsDirectional.fromSTEB(12, 4, 12, 4),
-                child: Row(
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    isDataLoading
-                        ? const CircularProgressIndicator()
-                        : lexiconCognates.isEmpty
-                            ? const Text(
-                                'No cognates found',
-                                style: TextStyle(
-                                    color: Colors.deepOrange, fontSize: 12),
-                              )
-                            : Expanded(
-                                child: ListView.builder(
-                                    primary: false,
-                                    itemCount: lexiconCognates.length,
-                                    padding:
-                                        const EdgeInsetsDirectional.fromSTEB(
-                                            4, 0, 4, 0),
-                                    shrinkWrap: true,
-                                    itemBuilder: (context, index) {
-                                      return CognateListItem(
-                                        entryId: lexiconCognates[index].entryId,
-                                        language: lexiconCognates[index].language,
-                                        form: lexiconCognates[index].form,
-                                        gloss: lexiconCognates[index].gloss,
-                                        sources: lexiconCognates[index].sources,
-                                      );
-                                    })),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          //
-          // divider related
-          Flexible(
-            flex: 1,
-            fit: FlexFit.loose,
-            child: AnimatedContainer(
-              width: _toggleState[1]
-                  ? MediaQuery.of(context).size.width * 0.93
-                  : MediaQuery.of(context).size.width * 0.93,
-              height: _toggleState[1] ? 1.0 : 0.0,
-              duration: const Duration(seconds: 2),
-              curve: Curves.fastOutSlowIn,
-              decoration: BoxDecoration(
-                color: Theme.of(context).dividerColor,
-              ),
-            ),
-          ),
-          //
-          // row related
-          Flexible(
-            flex: 2,
-            fit: FlexFit.loose,
-            child: AnimatedContainer(
-              width: _toggleState[2]
-                  ? MediaQuery.of(context).size.width
-                  : MediaQuery.of(context).size.width,
-              height: _toggleState[2] ? 100.0 : 0.0,
-              alignment:
-                  _toggleState[2] ? Alignment.topLeft : Alignment.topLeft,
-              duration: const Duration(seconds: 1),
-              curve: Curves.fastOutSlowIn,
-              child: Visibility(
-                visible: _toggleState[2],
-                child: Padding(
-                  padding: const EdgeInsetsDirectional.fromSTEB(12, 4, 12, 0),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      Padding(
-                        padding:
-                            const EdgeInsetsDirectional.fromSTEB(0, 4, 0, 2),
-                        child: Icon(
-                          Icons.people_outline,
-                          color: Theme.of(context).primaryColor,
-                          size: 20,
-                        ),
-                      ),
-                      Padding(
-                        padding:
-                            const EdgeInsetsDirectional.fromSTEB(4, 4, 0, 4),
-                        child: Text(
-                          'related',
-                          style: Theme.of(context).textTheme.bodyText1,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-          //
-          // list related
-          Flexible(
-            flex: 3,
-            fit: FlexFit.loose,
-            child: AnimatedContainer(
-              width: _toggleState[2] ? MediaQuery.of(context).size.width
-                  : MediaQuery.of(context).size.width,
-              height: _toggleState[2] ? 100.0 : 0.0,
-              alignment:
-                  _toggleState[2] ? Alignment.topLeft : Alignment.topLeft,
-              duration: const Duration(seconds: 1),
-              curve: Curves.fastOutSlowIn,
-              child: Padding(
-                padding: const EdgeInsetsDirectional.fromSTEB(12, 4, 12, 4),
-                child: Row(
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    isDataLoading
-                        ? const CircularProgressIndicator()
-                        : lexiconRelated.isEmpty
-                            ? const Text(
-                                'No related entries found',
-                                style: TextStyle(
-                                    color: Colors.blueAccent, fontSize: 12),
-                              )
-                            : Expanded(
-                                child: ListView.builder(
-                                    primary: false,
-                                    itemCount: lexiconRelated.length,
-                                    padding:
-                                        const EdgeInsetsDirectional.fromSTEB(
-                                            4, 0, 4, 0),
-                                    shrinkWrap: true,
-                                    itemBuilder: (context, index) {
-                                      return RelatedListItem(
-                                        entryId: lexiconRelated[index].entryId,
-                                        formFrom:
-                                            lexiconRelated[index].formFrom,
-                                        glossFrom:
-                                            lexiconRelated[index].glossFrom,
-                                        relation:
-                                            lexiconRelated[index].relation,
-                                        formTo: lexiconRelated[index].formTo,
-                                        glossTo: lexiconRelated[index].glossTo,
-                                      );
-                                    })),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          //
-          // divider notes
-          Flexible(
-            flex: 1,
-            fit: FlexFit.loose,
-            child: AnimatedContainer(
-              width: _toggleState[2]
-                  ? MediaQuery.of(context).size.width * 0.93
-                  : 0,
-              height: _toggleState[2] ? 1.0 : 0.0,
-              duration: const Duration(seconds: 2),
-              curve: Curves.fastOutSlowIn,
-              decoration: BoxDecoration(
-                color: Theme.of(context).dividerColor,
-              ),
-            ),
-          ),
-          //
-          // row notes
-          Flexible(
-            flex: 2,
-            fit: FlexFit.loose,
-            child: AnimatedContainer(
-              width: _toggleState[3]
-                  ? MediaQuery.of(context).size.width
-                  : MediaQuery.of(context).size.width,
-              height: _toggleState[3] ? 50.0 : 0.0,
-              alignment:
-                  _toggleState[3] ? Alignment.topLeft : Alignment.topLeft,
-              duration: const Duration(seconds: 1),
-              curve: Curves.fastOutSlowIn,
-              child: Visibility(
-                visible: _toggleState[3],
-                child: Padding(
-                  padding: const EdgeInsetsDirectional.fromSTEB(12, 4, 12, 8),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      Padding(
-                        padding:
-                            const EdgeInsetsDirectional.fromSTEB(0, 4, 0, 2),
-                        child: Icon(
-                          Icons.auto_stories_outlined,
-                          color: Theme.of(context).primaryColor,
-                          size: 20,
-                        ),
-                      ),
-                      Padding(
-                        padding:
-                            const EdgeInsetsDirectional.fromSTEB(4, 4, 0, 4),
-                        child: Text(
-                          'notes',
-                          style: Theme.of(context).textTheme.bodyText1,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-          //
-          // scrollview notes
-          Flexible(
-            flex: 4,
-            fit: FlexFit.loose,
-            child: AnimatedContainer(
-              width: _toggleState[3] ? MediaQuery.of(context).size.width
-                  : MediaQuery.of(context).size.width,
-              height: _toggleState[3] ? 100.0 : 0.0,
-              alignment:
-                  _toggleState[3] ? Alignment.topLeft : Alignment.topLeft,
-              duration: const Duration(seconds: 1),
-              curve: Curves.fastOutSlowIn,
-              child: Padding(
-                padding: const EdgeInsetsDirectional.fromSTEB(
-                    12, 0, 12, 4),
-
-              child: isDataLoading
-                  ? const CircularProgressIndicator()
-                  : entryDocs.isEmpty
-                      ? const Text(
-                          'No documents found',
-                          style: TextStyle(color: Colors.green, fontSize: 12),
-                        )
-                      : SingleChildScrollView(
-                          scrollDirection: Axis.vertical,
-                            child: Text(
-                              entryDocs[0].doc??'',
-                              textAlign: TextAlign.start,
-                              style: Theme.of(context).textTheme.bodyText2,
-                            ),
+                    padding: const EdgeInsets.all(2.0),
+                    child: Row(
+                      children: [
+                        ExpandableIcon(
+                          theme: const ExpandableThemeData(
+                            // fadeCurve: Curves.decelerate,
+                            // animationDuration: const Duration(milliseconds: 400),
+                            // scrollAnimationDuration: const Duration(milliseconds: 400),
+                            expandIcon: Icons.arrow_right,
+                            collapseIcon: Icons.arrow_drop_down,
+                            iconColor: Colors.white,
+                            iconSize: 28.0,
+                            iconRotationAngle: math.pi / 2,
+                            iconPadding: EdgeInsets.only(right: 5),
+                            hasIcon: false,
                           ),
                         ),
-            ),
-          ),
-        ],
-      ),
-      // toggle buttons
-      bottomNavigationBar: BottomAppBar(
-          color: BlueGrey,
-          child: Container(
-            height: 40.0,
-            child: Center(
-              child: ToggleButtons(
-                children: const <Widget>[
-                  Icon(Icons.list_alt_outlined),
-                  Icon(Icons.group_work_outlined),
-                  Icon(Icons.people_outline),
-                  Icon(Icons.auto_stories_outlined),
-                ],
-                color: DisabledButtons,
-                selectedColor: BrightGreen,
-                fillColor: BluerGrey,
-                splashColor: BrightBlue,
-                isSelected: _toggleState,
-                onPressed: (int index) {
-                  setState(() {
-                    saveToggleState(index);
-                  });
-                },
+                        Expanded(
+                          child: lexiconCognates.isEmpty
+                              ? Text("no cognates found",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyText1!
+                                  .copyWith(color: LightBlueGrey))
+                              : Text(
+                            "cognate" + (lexiconCognates.length > 1 ? "s" : "") ,
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyText1!
+                                .copyWith(color: Laurelin),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                collapsed: Container(),
+                expanded: buildList(),
               ),
-            ),
-          )),
-    );
+            ],
+          ),
+        ),
+      ),
+    ));
+  }
+}
+
+class RelatedCard extends StatelessWidget {
+  List<LexiconRelated> lexiconRelated;
+  bool isDataLoading;
+
+  RelatedCard(this.lexiconRelated, this.isDataLoading);
+
+  @override
+  Widget build(BuildContext context) {
+    buildList() {
+      return Container(
+          color: OffWhite,
+          child: ListView.separated(
+              separatorBuilder: (BuildContext context, int index) =>
+                  const Divider(height: 3),
+              primary: false,
+              itemCount: lexiconRelated.length,
+              padding: const EdgeInsetsDirectional.fromSTEB(4, 4, 4, 4),
+              shrinkWrap: true,
+              itemBuilder: (context, index) {
+                return RelatedListItem(
+                  entryId: lexiconRelated[index].entryId,
+                  formFrom: lexiconRelated[index].formFrom!,
+                  glossFrom: lexiconRelated[index].glossFrom!,
+                  relation: lexiconRelated[index].relation,
+                  formTo: lexiconRelated[index].formTo!,
+                  glossTo: lexiconRelated[index].glossTo,
+                );
+              }));
+    }
+
+    return ExpandableNotifier(
+        child: Padding(
+      padding: const EdgeInsets.all(10),
+      child: ScrollOnExpand(
+        child: Card(
+          clipBehavior: Clip.antiAlias,
+          child: Column(
+            children: <Widget>[
+              ExpandablePanel(
+                theme: const ExpandableThemeData(
+                  headerAlignment: ExpandablePanelHeaderAlignment.center,
+                  tapBodyToExpand: true,
+                  tapBodyToCollapse: true,
+                  hasIcon: false,
+                ),
+                header: Container(
+                  color: BlueGrey,
+                  child: Padding(
+                    padding: const EdgeInsets.all(2.0),
+                    child: Row(
+                      children: [
+                        ExpandableIcon(
+                          theme: const ExpandableThemeData(
+                            // fadeCurve: Curves.decelerate,
+                            // animationDuration: const Duration(milliseconds: 400),
+                            // scrollAnimationDuration: const Duration(milliseconds: 400),
+                            expandIcon: Icons.arrow_right,
+                            collapseIcon: Icons.arrow_drop_down,
+                            iconColor: Colors.white,
+                            iconSize: 28.0,
+                            iconRotationAngle: math.pi / 2,
+                            iconPadding: EdgeInsets.only(right: 5),
+                            hasIcon: false,
+                          ),
+                        ),
+                        Expanded(
+                          child: lexiconRelated.isEmpty
+                              ? Text("no related words found",
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyText1!
+                                      .copyWith(color: LightBlueGrey))
+                              : Text(
+                                  "related word" + (lexiconRelated.length > 1 ? "s" : "") ,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyText1!
+                                      .copyWith(color: Laurelin)
+                                ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                collapsed: Container(),
+                expanded: buildList(),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ));
+  }
+}
+
+class NotesCard extends StatelessWidget {
+  List<EntryDoc> entryDoc;
+  bool isDataLoading;
+
+  NotesCard(this.entryDoc, this.isDataLoading);
+
+  @override
+  Widget build(BuildContext context) {
+    buildNote() {
+      if (entryDoc.isEmpty) {
+        return Container();
+      } else {
+        return Container(
+          color: OffWhite,
+          child: Html(data: entryDoc[0].doc ?? ''),
+        );
+      }
+    }
+
+    return ExpandableNotifier(
+        child: Padding(
+      padding: const EdgeInsets.all(10),
+      child: ScrollOnExpand(
+        child: Card(
+          clipBehavior: Clip.antiAlias,
+          child: Column(
+            children: <Widget>[
+              ExpandablePanel(
+                theme: const ExpandableThemeData(
+                  headerAlignment: ExpandablePanelHeaderAlignment.center,
+                  tapBodyToExpand: true,
+                  tapBodyToCollapse: true,
+                  hasIcon: false,
+                ),
+                header: Container(
+                  color: BlueGrey,
+                  child: Padding(
+                    padding: const EdgeInsets.all(2.0),
+                    child: Row(
+                      children: [
+                        ExpandableIcon(
+                          theme: const ExpandableThemeData(
+                            // fadeCurve: Curves.decelerate,
+                            // animationDuration: const Duration(milliseconds: 400),
+                            // scrollAnimationDuration: const Duration(milliseconds: 400),
+                            expandIcon: Icons.arrow_right,
+                            collapseIcon: Icons.arrow_drop_down,
+                            iconColor: Colors.white,
+                            iconSize: 28.0,
+                            iconRotationAngle: math.pi / 2,
+                            iconPadding: EdgeInsets.only(right: 5),
+                            hasIcon: false,
+                          ),
+                        ),
+                        Expanded(
+                          child: entryDoc.isEmpty
+                              ? Text(
+                                  "no notes found",
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyText1!
+                                      .copyWith(color: LightBlueGrey),
+                                )
+                              : Text(
+                                  "notes",
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyText1!
+                                      .copyWith(color: Laurelin),
+                                ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                collapsed: Container(),
+                expanded: buildNote(),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ));
   }
 }

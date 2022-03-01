@@ -9,7 +9,7 @@ class LexiconRelatedFields {
   static const String entryId = 'entry_id';
   static const String formFrom = 'form_from';
   static const String glossFrom = 'gloss_from';
-  static const String relation = 'relatiom';
+  static const String relation = 'relation';
   static const String formTo = 'form_to';
   static const String glossTo = 'gloss_to';
 }

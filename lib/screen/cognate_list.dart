@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../config/theme.dart';
+import '../config/colours.dart';
 
 class CognateListItem extends StatefulWidget {
   const CognateListItem({
@@ -27,70 +27,45 @@ class _CognateListItemState extends State<CognateListItem> {
   Widget build(BuildContext context) {
 
     return Container(
-      padding: const EdgeInsets.fromLTRB(5.0, 3.0, 5.0, 3.0),
-      decoration: const BoxDecoration(
-        border: Border(
-          bottom: BorderSide(
-              width: 1.0,
-              color: DividerColour
-          ),
-        ),
-        // color: MiddleGreen,
-      ),
+      padding: const EdgeInsets.fromLTRB(5.0, 0.0, 5.0, 0.0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Flexible(
-            fit: FlexFit.tight,
-            flex: 1,
-            child: Text(
-              widget.language,
-
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyText2!
-                  .copyWith(fontWeight: FontWeight.w600,
-                            fontSize: 12,
-                            color: MiddleGreen),
-            ),
-          ),
-          Flexible(
-            fit: FlexFit.tight,
-            flex: 2,
-            child: Text(
-              widget.form,
-              style: Theme.of(context)
-                  .textTheme.bodyText2!
-                  .copyWith(fontStyle: FontStyle.italic,
-                            fontSize: 12,
-                            color: BluerGrey),
-            ),
-          ),
-          Flexible(
-            fit: FlexFit.tight,
-            flex: 5,
-            child: Text(
-              widget.gloss??' ',
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyText2!
-                  .copyWith(fontWeight: FontWeight.w600,
-                  fontSize: 12,
-                  color: MiddleGreen),
-            ),
-          ),
-          Flexible(
-            fit: FlexFit.tight,
-            flex: 2,
-            child: Text(
-              widget.sources,
-              style: Theme.of(context)
-                  .textTheme.bodyText2!
-                  .copyWith(fontStyle: FontStyle.italic,
-                  fontSize: 12,
-                  color: BluerGrey),
-            ),
-          ),
+              fit: FlexFit.tight,
+              flex: 1,
+              child: RichText(
+                text: TextSpan(
+                  text: widget.language.toUpperCase(),
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyText2!
+                      .copyWith(fontWeight: FontWeight.w700),
+                  children: <TextSpan>[
+                    TextSpan(
+                      text: widget.form,
+                      style: Theme.of(context).textTheme.bodyText2!.copyWith(
+                          fontWeight: FontWeight.w800,
+                          fontSize: 12,
+                          color: BluerGrey),
+                    ),
+                    TextSpan(
+                      text: widget.gloss,
+                      style: Theme.of(context).textTheme.bodyText2!.copyWith(
+                          fontWeight: FontWeight.w300,
+                          fontSize: 12,
+                          color: BluerGrey),
+                    ),
+                    TextSpan(
+                      text: widget.sources,
+                      style: Theme.of(context).textTheme.bodyText2!.copyWith(
+                          fontWeight: FontWeight.w300,
+                          fontSize: 12,
+                          color: DarkGreen),
+                    ),
+                  ],
+                ),
+              )),
         ],
       ),
     );

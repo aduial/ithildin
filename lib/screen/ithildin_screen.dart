@@ -7,9 +7,10 @@ import 'package:ithildin/screen/slex_list.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:toggle_switch/toggle_switch.dart';
+import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 
 import '../config/config.dart';
-import '../config/theme.dart';
+import '../config/colours.dart';
 
 class IthildinScreen extends StatefulWidget {
   const IthildinScreen({Key? key}) : super(key: key);
@@ -20,6 +21,17 @@ class IthildinScreen extends StatefulWidget {
 
 class _IthildinScreenState extends State<IthildinScreen> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
+
+  late TutorialCoachMark tutorialCoachMark;
+  List<TargetFocus> targets = <TargetFocus>[];
+
+  GlobalKey keyLangSetButton = GlobalKey();
+  GlobalKey keyEldarinLangSelect = GlobalKey();
+  GlobalKey keyModernLangSelect = GlobalKey();
+  GlobalKey keyFormOrGloss = GlobalKey();
+  GlobalKey keySearchField = GlobalKey();
+  GlobalKey keyResultList = GlobalKey();
+
   late List<Language> eldarinLanguages;
   late List<Language> modernLanguages;
 
@@ -55,8 +67,6 @@ class _IthildinScreenState extends State<IthildinScreen> {
   }
 
   void _doSearch() {
-    print('Searched for: ${searchController.text}');
-    // if (searchController.text.length > 1) {
     /// query simplexicon
     if (_formOrGloss == 0) {
       simplexiconFormFilter(searchController.text);
@@ -112,18 +122,19 @@ class _IthildinScreenState extends State<IthildinScreen> {
     return Scaffold(
       key: scaffoldKey,
       appBar: AppBar(
-        backgroundColor: Colors.blueGrey.shade700,
+        backgroundColor: DarkBlueGrey,
         automaticallyImplyLeading: true,
         leading: Builder(
           builder: (BuildContext context) {
-
             return PopupMenuButton<String>(
+                color: Laurelin,
                 elevation: 4,
-                icon: const Icon(
+                icon: Icon(
                   CupertinoIcons.square_stack_3d_down_right,
                   color: BrightGreen,
                   size: 24.0,
                   semanticLabel: 'choose language set',
+                  key: keyLangSetButton,
                 ),
                 shape: const RoundedRectangleBorder(
                   borderRadius: BorderRadius.all(
@@ -138,11 +149,20 @@ class _IthildinScreenState extends State<IthildinScreen> {
                       value: choice,
                     );
                   }).toList();
-                }
-             );
+                });
           },
         ),
         title: const Text("Ithildin word search"),
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(CupertinoIcons.info_circle),
+            color: BrightestBlue,
+            tooltip: 'help',
+            onPressed: () {
+              showTutorial();
+            },
+          ),
+        ],
         centerTitle: true,
         elevation: 4,
       ),
@@ -176,7 +196,7 @@ class _IthildinScreenState extends State<IthildinScreen> {
                           padding:
                               const EdgeInsetsDirectional.fromSTEB(0, 0, 4, 0),
                           child: DropdownSearch<Language>(
-
+                            key: keyEldarinLangSelect,
                             mode: Mode.BOTTOM_SHEET,
                             items: isLanguageLoading
                                 ? [const Language(id: 0, name: "Loading...")]
@@ -245,7 +265,6 @@ class _IthildinScreenState extends State<IthildinScreen> {
                               ),
                             ),
                             onChanged: (Language? eldarinLang) {
-                              print(eldarinLang);
                               _formLangId = eldarinLang?.id;
                               _doSearch();
                             },
@@ -261,6 +280,7 @@ class _IthildinScreenState extends State<IthildinScreen> {
                       height: 50,
                       decoration: const BoxDecoration(),
                       child: DropdownSearch<Language>(
+                        key: keyModernLangSelect,
                         mode: Mode.BOTTOM_SHEET,
                         items: isLanguageLoading
                             ? [const Language(id: 0, name: "Loading...")]
@@ -328,7 +348,6 @@ class _IthildinScreenState extends State<IthildinScreen> {
                           ),
                         ),
                         onChanged: (Language? modernLang) {
-                          print(modernLang);
                           _glossLangId = modernLang?.id;
                           _doSearch();
                         },
@@ -338,6 +357,8 @@ class _IthildinScreenState extends State<IthildinScreen> {
                 ),
               ),
 
+              //
+              // Form-Gloss toggle button
               Padding(
                 padding: const EdgeInsetsDirectional.fromSTEB(0, 0, 0, 10),
                 child: Row(
@@ -345,34 +366,34 @@ class _IthildinScreenState extends State<IthildinScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     ToggleSwitch(
-
+                      key: keyFormOrGloss,
                       minHeight: 44.0,
                       minWidth: 70.0,
-
                       cornerRadius: 15.0,
                       borderWidth: 1,
                       borderColor: const [Colors.white],
-                      dividerColor: Colors.blueGrey,
+                      dividerColor: BlueGrey,
                       activeBgColors: const [
-                        [MiddleGreen],
-                        [EarthGrey]
+                        [BrightGreen],
+                        [Telperion]
                       ],
-                      activeFgColor: Colors.white,
-                      inactiveBgColor: Colors.grey,
-                      inactiveFgColor: Colors.white,
+                      activeFgColor: VeryVeryDark,
+                      inactiveBgColor: BlueGrey,
+                      inactiveFgColor: DarkerBlueGrey,
+                      fontSize: 18,
+
                       totalSwitches: 2,
                       initialLabelIndex: _formOrGloss,
                       labels: const ['form', 'gloss'],
                       animate: true,
                       // with just animate set to true, default curve = Curves.easeIn
                       curve: Curves.ease,
-                      // animat
+                      // animate
                       onToggle: (index) {
                         setState(() {
                           _formOrGloss = index!;
                         });
                         _doSearch();
-                        print('switched to: $index');
                       },
                     ),
 
@@ -389,6 +410,7 @@ class _IthildinScreenState extends State<IthildinScreen> {
                         child: Align(
                           alignment: const AlignmentDirectional(0, 0),
                           child: TextField(
+                            key: keySearchField,
                             // cursorHeight: ,
                             controller: searchController,
                             decoration: const InputDecoration(
@@ -409,7 +431,7 @@ class _IthildinScreenState extends State<IthildinScreen> {
 
               Expanded(
                   child: isSimplexiconLoading
-                      ? const CircularProgressIndicator()
+                      ? Container()
                       : simplexicons.isEmpty
                           ? const Text(
                               'No entries found',
@@ -417,6 +439,7 @@ class _IthildinScreenState extends State<IthildinScreen> {
                                   TextStyle(color: Colors.white, fontSize: 14),
                             )
                           : ListView.builder(
+                              key: keyResultList,
                               itemCount: simplexicons.length,
                               padding: const EdgeInsets.all(4.0),
                               shrinkWrap: true,
@@ -434,6 +457,300 @@ class _IthildinScreenState extends State<IthildinScreen> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  void showTutorial() {
+    initTargets();
+    tutorialCoachMark = TutorialCoachMark(
+      context,
+      targets: targets,
+      colorShadow: TanteRiaSAvonds,
+      textSkip: "Cancel",
+      paddingFocus: 10,
+      opacityShadow: 0.9,
+      onFinish: () {
+        print("finish");
+      },
+      onClickTarget: (target) {
+        print('onClickTarget: $target');
+      },
+      onClickOverlay: (target) {
+        print('onClickOverlay: $target');
+      },
+      onSkip: () {
+        print("skip");
+      },
+    )..show();
+  }
+
+  void initTargets() {
+    targets.clear();
+
+    targets.add(
+      TargetFocus(
+        identify: "keyLangSetButton",
+        keyTarget: keyLangSetButton,
+        enableOverlayTab: true,
+        alignSkip: Alignment.bottomRight,
+        contents: [
+          TargetContent(
+            align: ContentAlign.bottom,
+            builder: (context, controller) {
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    "Choose language set",
+                    style: Theme.of(context).textTheme.headline6!.copyWith(
+                        fontWeight: FontWeight.w600, color: BrightestBlue),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10.0),
+                    child: Text(
+                      "Choose what languages you want available in the language selector: from Minimal "
+                      "(only Quenya and Sindarin), via Basic (largest vocabularies) to Complete (everything from Eldamo.org).",
+                      style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                          fontWeight: FontWeight.w300, color: BrightestBlue),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10.0),
+                    child: Text(
+                      "Languages in the Basic set have thousands of entries, "
+                      "decreasing to a handful for the most obscure languages.\n\n",
+                      style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                          fontWeight: FontWeight.w300, color: BrightestBlue),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10.0),
+                    child: Text(
+                      "(tap anywhere to proceed or Cancel to quit).",
+                      style: Theme.of(context).textTheme.bodyText2!.copyWith(
+                          fontWeight: FontWeight.w300,
+                          fontStyle: FontStyle.italic,
+                          color: BrightGreen),
+                    ),
+                  )
+                ],
+              );
+            },
+          ),
+        ],
+      ),
+    );
+
+    targets.add(
+      TargetFocus(
+        identify: "keyEldarinLangSelect",
+        keyTarget: keyEldarinLangSelect,
+        alignSkip: Alignment.bottomRight,
+        enableOverlayTab: true,
+        contents: [
+          TargetContent(
+            align: ContentAlign.bottom,
+            builder: (context, controller) {
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    "Eldarin language chooser",
+                    style: Theme.of(context).textTheme.headline6!.copyWith(
+                        fontWeight: FontWeight.w600, color: BrightestBlue),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10.0),
+                    child: Text(
+                      "Shows the current Eldarin language.",
+                      style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                          fontWeight: FontWeight.w300, color: BrightestBlue),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10.0),
+                    child: Text(
+                      "Tap to select another language from the active Set in the "
+                      "pop-up list below.\n\nScroll if the list is too long, or "
+                      "filter by typing one or more characters in the field "
+                      "marked 'Filter on'.",
+                      style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                          fontWeight: FontWeight.w300, color: BrightestBlue),
+                    ),
+                  )
+                ],
+              );
+            },
+          )
+        ],
+        shape: ShapeLightFocus.RRect,
+        radius: 5,
+      ),
+    );
+
+    targets.add(
+      TargetFocus(
+        identify: "keyModernLangSelect",
+        keyTarget: keyModernLangSelect,
+        alignSkip: Alignment.bottomRight,
+        enableOverlayTab: true,
+        contents: [
+          TargetContent(
+            align: ContentAlign.bottom,
+            builder: (context, controller) {
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    "Modern language chooser",
+                    style: Theme.of(context)
+                        .textTheme
+                        .headline6!
+                        .copyWith(fontWeight: FontWeight.w600, color: Disabled),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10.0),
+                    child: Text(
+                      "(not currently active because only English is available at this time)",
+                      style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                          fontWeight: FontWeight.w300, color: Disabled),
+                    ),
+                  ),
+                ],
+              );
+            },
+          )
+        ],
+        shape: ShapeLightFocus.RRect,
+        radius: 5,
+      ),
+    );
+
+    targets.add(
+      TargetFocus(
+        identify: "keyFormOrGloss",
+        keyTarget: keyFormOrGloss,
+        alignSkip: Alignment.bottomRight,
+        enableOverlayTab: true,
+        contents: [
+          TargetContent(
+            align: ContentAlign.bottom,
+            builder: (context, controller) {
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    "Form - Gloss switch",
+                    style: Theme.of(context).textTheme.headline6!.copyWith(
+                        fontWeight: FontWeight.w600, color: BrightestBlue),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10.0),
+                    child: Text(
+                      "Set to search on forms (Eldarin words) or glosses (their "
+                      "translations)",
+                      style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                          fontWeight: FontWeight.w300, color: BrightestBlue),
+                    ),
+                  ),
+                ],
+              );
+            },
+          )
+        ],
+        shape: ShapeLightFocus.RRect,
+        radius: 5,
+      ),
+    );
+
+    targets.add(
+      TargetFocus(
+        identify: "keySearchField",
+        keyTarget: keySearchField,
+        alignSkip: Alignment.bottomRight,
+        enableOverlayTab: true,
+        contents: [
+          TargetContent(
+            align: ContentAlign.bottom,
+            builder: (context, controller) {
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    "search field",
+                    style: Theme.of(context).textTheme.headline6!.copyWith(
+                        fontWeight: FontWeight.w600, color: BrightestBlue),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10.0),
+                    child: Text(
+                      "Tap and enter one or more characters to search",
+                      style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                          fontWeight: FontWeight.w300, color: BrightestBlue),
+                    ),
+                  ),
+                ],
+              );
+            },
+          )
+        ],
+        shape: ShapeLightFocus.RRect,
+        radius: 5,
+      ),
+    );
+
+    targets.add(
+      TargetFocus(
+        identify: "keyResultList",
+        keyTarget: keyResultList,
+        alignSkip: Alignment.bottomRight,
+        enableOverlayTab: true,
+        contents: [
+          TargetContent(
+            align: ContentAlign.top,
+            builder: (context, controller) {
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.only(top: 20.0),
+                    child: Text(
+                      "Boekekoeke\n",
+                      style: Theme.of(context).textTheme.headline6!.copyWith(
+                          fontWeight: FontWeight.w600, color: BrightestBlue),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 20.0),
+                    child: Text(
+                      "wwww result list",
+                      style: Theme.of(context).textTheme.headline6!.copyWith(
+                          fontWeight: FontWeight.w600, color: BrightestBlue),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10.0),
+                    child: Text(
+                      "Shows the list of entries containing the characters in the search "
+                      "field. Tap on a word to see available details.",
+                      style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                          fontWeight: FontWeight.w300, color: BrightestBlue),
+                    ),
+                  ),
+                ],
+              );
+            },
+          )
+        ],
+        shape: ShapeLightFocus.RRect,
+        radius: 1,
       ),
     );
   }

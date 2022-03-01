@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ithildin/screen/entry_screen.dart';
+import 'package:auto_size_text/auto_size_text.dart';
+import '../config/colours.dart';
 
 class SLexListItem extends StatefulWidget {
   const SLexListItem({
@@ -19,13 +21,13 @@ class SLexListItem extends StatefulWidget {
 
   @override
   State<SLexListItem> createState() => _SLexListItemState();
-  // _SLexListItemState createState() => _SLexListItemState();
+// _SLexListItemState createState() => _SLexListItemState();
 }
-
 
 Route _detailRoute(int entryId) {
   return PageRouteBuilder(
-    pageBuilder: (context, animation, secondaryAnimation) => EntryScreen(entryId),
+    pageBuilder: (context, animation, secondaryAnimation) =>
+        EntryScreen(entryId),
     transitionsBuilder: (context, animation, secondaryAnimation, child) {
       const begin = Offset(0.0, 1.0);
       const end = Offset.zero;
@@ -42,7 +44,6 @@ Route _detailRoute(int entryId) {
 }
 
 class _SLexListItemState extends State<SLexListItem> {
-
   @override
   Widget build(BuildContext context) {
     // return Padding(
@@ -51,7 +52,6 @@ class _SLexListItemState extends State<SLexListItem> {
     return GestureDetector(
       onTap: () {
         setState(() {
-          print('tapped on Entry:' + widget.id.toString());
           Navigator.of(context).push(_detailRoute(widget.id));
         });
       },
@@ -61,54 +61,66 @@ class _SLexListItemState extends State<SLexListItem> {
           border: Border(
             bottom: BorderSide(width: 1.0, color: Colors.lightBlue.shade100),
           ),
-          color: Colors.blueGrey.shade600,
+          color: DarkBlueGrey,//Colors.blueGrey.shade600,
         ),
-
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             Expanded(
-              flex: 1,
-              child: Text(
-                widget.formLangAbbr,
-                style: const TextStyle(
-                  color: Colors.limeAccent,
-                  fontWeight: FontWeight.w300,
-                  fontSize: 12.0,
+              flex: 2,
+              child: Padding(
+                padding: const EdgeInsetsDirectional.fromSTEB(0, 0, 0, 0),
+                child: Text(
+                  widget.formLangAbbr,
+                  style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                      color: Telperion,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500),
                 ),
               ),
             ),
             Expanded(
               flex: 1,
-              child: Text(
-                widget.mark,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w500,
-                  fontSize: 12.0,
+              child: Padding(
+                padding: const EdgeInsetsDirectional.fromSTEB(0, 0, 4, 0),
+                child: Text(
+                  widget.mark,
+                  style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                      color: BrightGreen,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500),
                 ),
               ),
             ),
             Expanded(
               flex: 8,
-              child: Text(
-                widget.form,
-                style: const TextStyle(
-                  color: Colors.lightBlueAccent,
-                  fontWeight: FontWeight.w900,
-                  fontSize: 12.0,
+              child: Padding(
+                padding: const EdgeInsetsDirectional.fromSTEB(0, 0, 6, 0),
+                child: AutoSizeText(
+                  widget.form,
+                  style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                      color: LightBlueAccent,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500),
+                  minFontSize: 12,
+                  stepGranularity: 4,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ),
             Expanded(
               flex: 12,
-              child: Text(
+              child: AutoSizeText(
                 widget.gloss,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w500,
-                  fontSize: 12.0,
-                ),
+                style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w300),
+                minFontSize: 12,
+                stepGranularity: 4,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           ],

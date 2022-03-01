@@ -20,7 +20,6 @@ class EldamoDb {
 
   void setLangCatWhere(String whereClause){
     langCatWhere = whereClause;
-    print(langCatWhere);
     loadEldarinLanguages();
   }
 
@@ -65,8 +64,6 @@ class EldamoDb {
     const orderBy = "${LanguageFields.listOrder} ASC";
     final result = await db.rawQuery(
         "SELECT * FROM $languageTable WHERE CATEGORY $langCatWhere ORDER BY $orderBy");
-
-    print("reloaded");
     return result.map((json) => Language.fromJson(json)).toList();
   }
 

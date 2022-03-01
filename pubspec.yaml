@@ -36,18 +36,13 @@ dependencies:
   font_awesome_flutter: ^9.2.0
   toggle_switch: ^1.3.0
   shared_preferences: ^2.0.13
-  json_theme: ^3.2.5
-
-  # format DateTime
+  flutter_html: ^3.0.0-alpha.2
+  expandable: ^5.0.1
+  tutorial_coach_mark: ^1.2.1
+  auto_size_text: ^3.0.0
   intl: ^0.17.0
-
-  # display todos in grid
-  #  flutter_staggered_grid_view: ^0.4.0-nullsafety.3
-
-
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
+  google_fonts: ^2.3.1
 
 dev_dependencies:
 
@@ -75,19 +70,38 @@ flutter:
   #   - images/a_dot_ham.jpeg
   assets:
     - assets/eldamo.sqlite
-    - assets/appainter_theme.json
-  fonts:
-    - family: Lato
-      fonts:
-        - asset: fonts/Lato-Regular.ttf
-        - asset: fonts/Lato-Italic.ttf
-        - asset: fonts/Lato-Medium.ttf
-        - asset: fonts/Lato-MediumItalic.ttf
-        - asset: fonts/Lato-Bold.ttf
-        - asset: fonts/Lato-BoldItalic.ttf
-        - asset: fonts/Lato-Light.ttf
-        - asset: fonts/Lato-LightItalic.ttf
-        - asset: fonts/Lato-SemiBold.ttf
+#  fonts:
+#    - family: Lato
+#      fonts:
+#        - asset: fonts/Lato-Regular.ttf
+#          weight: 400
+#        - asset: fonts/Lato-Italic.ttf
+#          style: italic
+#          weight: 400
+#        - asset: fonts/Lato-Medium.ttf
+#          weight: 500
+#        - asset: fonts/Lato-MediumItalic.ttf
+#          style: italic
+#          weight: 500
+#        - asset: fonts/Lato-Bold.ttf
+#          weight: 700
+#        - asset: fonts/Lato-BoldItalic.ttf
+#          style: italic
+#          weight: 700
+#        - asset: fonts/Lato-Light.ttf
+#          weight: 300
+#        - asset: fonts/Lato-LightItalic.ttf
+#          style: italic
+#          weight: 300
+#        - asset: fonts/Lato-SemiBold.ttf
+#          weight: 600
+#    - family: Literata
+#      fonts:
+#        - asset: fonts/Literata72pt-ExtraLight.ttf
+#          weight: 200
+#        - asset: fonts/Literata72pt-ExtraLightItalic.ttf
+#          style: italic
+#          weight: 200
 
 
 
