@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+const White = Colors.white;
 
 const BlueTop = const Color(0xFF1D3B7B);
 const Ithildin = const Color(0xFFE2FFFE);
@@ -36,6 +37,7 @@ const Telperion = const Color(0xFFFFF7BC);
 
 const LimeAccent = const Color(0xFFEEFF41);
 const LightBlueAccent = const Color (0xFF40C4FF);
+const PinkAccent = const Color (0xFFFFB0A0);
 
 const InvisibleDark = const Color(0x00090F13);
 const VeryVeryDark = Color(0xB3090F13);

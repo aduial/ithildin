@@ -56,19 +56,20 @@ class _MinuiState extends State<Minui> {
             Text(
               "Ithildin",
               style: GoogleFonts.notoSerifDisplay(
-                textStyle: Theme.of(context).textTheme.bodyText1,
+                textStyle: Theme.of(context).textTheme.headline1,
                 fontWeight: FontWeight.w200,
                 fontSize: 70,
               ),
             ),
             Text(
               "an Elvish dictionary",
-              style: GoogleFonts.notoSerifDisplay(
-                textStyle: Theme.of(context).textTheme.bodyText1,
+              style: Theme.of(context)
+                  .textTheme
+                  .headline2!
+                  .copyWith(color: Ithildin,
                 fontWeight: FontWeight.w300,
                 fontStyle: FontStyle.italic,
-                fontSize: 24,
-              ),
+                fontSize: 24),
             ),
             const SizedBox(
               width: double.infinity,
@@ -112,11 +113,13 @@ class _MinuiState extends State<Minui> {
                   child: Text(
                     "A dictionary of Tolkienian languages based on the Eldamo Lexicon by Paul Strack.",
                     textAlign: TextAlign.center,
-                    style: GoogleFonts.lato(
-                      textStyle: Theme.of(context).textTheme.bodyText1,
-                      fontWeight: FontWeight.w300,
-                      fontSize: 15,
-                    ),
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyText1!
+                        .copyWith(color: Ithildin,
+                        fontWeight: FontWeight.w300,
+                        fontStyle: FontStyle.italic,
+                        fontSize: 15),
                   ),
                 ),
               ),
@@ -155,11 +158,12 @@ class _MinuiState extends State<Minui> {
                   child: Text(
                     "Usage: tap the [i] icon top right in the next screen",
                     textAlign: TextAlign.center,
-                    style: GoogleFonts.lato(
-                      textStyle: Theme.of(context).textTheme.bodyText1,
-                      fontWeight: FontWeight.w300,
-                      fontSize: 14,
-                    ),
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyText1!
+                        .copyWith(color: Ithildin,
+                        fontWeight: FontWeight.w300,
+                        fontSize: 14),
                   ),
                 ),
               ),

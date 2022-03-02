@@ -452,6 +452,8 @@ class _IthildinScreenState extends State<IthildinScreen> {
                                   mark: simplexicons[index].mark!,
                                   form: simplexicons[index].form,
                                   gloss: simplexicons[index].gloss,
+                                  isRoot:
+                                      simplexicons[index].entryClassId == 603,
                                 );
                               })),
             ],
@@ -493,6 +495,7 @@ class _IthildinScreenState extends State<IthildinScreen> {
         identify: "keyLangSetButton",
         keyTarget: keyLangSetButton,
         enableOverlayTab: true,
+        enableTargetTab: true,
         alignSkip: Alignment.bottomRight,
         contents: [
           TargetContent(
@@ -500,20 +503,25 @@ class _IthildinScreenState extends State<IthildinScreen> {
             builder: (context, controller) {
               return Column(
                 mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(
                     "Choose language set",
-                    style: Theme.of(context).textTheme.headline6!.copyWith(
-                        fontWeight: FontWeight.w600, color: BrightestBlue),
+                    style: Theme.of(context)
+                        .textTheme
+                        .headline6!
+                        .copyWith(fontWeight: FontWeight.w200, color: Ithildin),
+                    textAlign: TextAlign.center,
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 10.0),
                     child: Text(
                       "Choose what languages you want available in the language selector: from Minimal "
                       "(only Quenya and Sindarin), via Basic (largest vocabularies) to Complete (everything from Eldamo.org).",
-                      style: Theme.of(context).textTheme.bodyText1!.copyWith(
-                          fontWeight: FontWeight.w300, color: BrightestBlue),
+                      style: Theme.of(context).textTheme.bodyText2!.copyWith(
+                          fontWeight: FontWeight.w200,
+                          fontSize: 15,
+                          color: Ithildin),
+                      textAlign: TextAlign.center,
                     ),
                   ),
                   Padding(
@@ -521,20 +529,31 @@ class _IthildinScreenState extends State<IthildinScreen> {
                     child: Text(
                       "Languages in the Basic set have thousands of entries, "
                       "decreasing to a handful for the most obscure languages.\n\n",
-                      style: Theme.of(context).textTheme.bodyText1!.copyWith(
-                          fontWeight: FontWeight.w300, color: BrightestBlue),
+                      style: Theme.of(context).textTheme.bodyText2!.copyWith(
+                          fontWeight: FontWeight.w200,
+                          fontSize: 15,
+                          color: Ithildin),
+                      textAlign: TextAlign.center,
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 10.0),
-                    child: Text(
-                      "(tap anywhere to proceed or Cancel to quit).",
-                      style: Theme.of(context).textTheme.bodyText2!.copyWith(
-                          fontWeight: FontWeight.w300,
-                          fontStyle: FontStyle.italic,
-                          color: BrightGreen),
-                    ),
-                  )
+                  Row(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          controller.previous();
+                        },
+                        child: Icon(Icons.chevron_left),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          controller.next();
+                        },
+                        child: Icon(Icons.chevron_right),
+                      ),
+                    ],
+                  ),
                 ],
               );
             },
@@ -549,38 +568,65 @@ class _IthildinScreenState extends State<IthildinScreen> {
         keyTarget: keyEldarinLangSelect,
         alignSkip: Alignment.bottomRight,
         enableOverlayTab: true,
+        enableTargetTab: true,
         contents: [
           TargetContent(
             align: ContentAlign.bottom,
             builder: (context, controller) {
               return Column(
                 mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(
                     "Eldarin language chooser",
-                    style: Theme.of(context).textTheme.headline6!.copyWith(
-                        fontWeight: FontWeight.w600, color: BrightestBlue),
+                    style: Theme.of(context)
+                        .textTheme
+                        .headline6!
+                        .copyWith(fontWeight: FontWeight.w200, color: Ithildin),
+                    textAlign: TextAlign.center,
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 10.0),
                     child: Text(
                       "Shows the current Eldarin language.",
-                      style: Theme.of(context).textTheme.bodyText1!.copyWith(
-                          fontWeight: FontWeight.w300, color: BrightestBlue),
+                      style: Theme.of(context).textTheme.bodyText2!.copyWith(
+                          fontWeight: FontWeight.w200,
+                          fontSize: 15,
+                          color: Ithildin),
+                      textAlign: TextAlign.center,
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(top: 10.0),
+                    padding: const EdgeInsetsDirectional.fromSTEB(0, 20, 0, 20),
                     child: Text(
                       "Tap to select another language from the active Set in the "
                       "pop-up list below.\n\nScroll if the list is too long, or "
                       "filter by typing one or more characters in the field "
                       "marked 'Filter on'.",
-                      style: Theme.of(context).textTheme.bodyText1!.copyWith(
-                          fontWeight: FontWeight.w300, color: BrightestBlue),
+                      style: Theme.of(context).textTheme.bodyText2!.copyWith(
+                          fontWeight: FontWeight.w200,
+                          fontSize: 15,
+                          color: Ithildin),
+                      textAlign: TextAlign.center,
                     ),
-                  )
+                  ),
+                  Row(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          controller.previous();
+                        },
+                        child: Icon(Icons.chevron_left),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          controller.next();
+                        },
+                        child: Icon(Icons.chevron_right),
+                      ),
+                    ],
+                  ),
                 ],
               );
             },
@@ -597,28 +643,51 @@ class _IthildinScreenState extends State<IthildinScreen> {
         keyTarget: keyModernLangSelect,
         alignSkip: Alignment.bottomRight,
         enableOverlayTab: true,
+        enableTargetTab: true,
         contents: [
           TargetContent(
             align: ContentAlign.bottom,
             builder: (context, controller) {
               return Column(
                 mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
+                // crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(
-                    "Modern language chooser",
+                    "language chooser",
                     style: Theme.of(context)
                         .textTheme
                         .headline6!
-                        .copyWith(fontWeight: FontWeight.w600, color: Disabled),
+                        .copyWith(fontWeight: FontWeight.w200, color: Ithildin),
+                    textAlign: TextAlign.center,
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(top: 10.0),
+                    padding: const EdgeInsetsDirectional.fromSTEB(0, 20, 0, 20),
                     child: Text(
                       "(not currently active because only English is available at this time)",
-                      style: Theme.of(context).textTheme.bodyText1!.copyWith(
-                          fontWeight: FontWeight.w300, color: Disabled),
+                      style: Theme.of(context).textTheme.bodyText2!.copyWith(
+                          fontWeight: FontWeight.w200,
+                          fontSize: 15,
+                          color: Disabled),
+                      textAlign: TextAlign.center,
                     ),
+                  ),
+                  Row(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          controller.previous();
+                        },
+                        child: Icon(Icons.chevron_left),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          controller.next();
+                        },
+                        child: Icon(Icons.chevron_right),
+                      ),
+                    ],
                   ),
                 ],
               );
@@ -636,27 +705,51 @@ class _IthildinScreenState extends State<IthildinScreen> {
         keyTarget: keyFormOrGloss,
         alignSkip: Alignment.bottomRight,
         enableOverlayTab: true,
+        enableTargetTab: true,
         contents: [
           TargetContent(
             align: ContentAlign.bottom,
             builder: (context, controller) {
               return Column(
                 mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(
                     "Form - Gloss switch",
-                    style: Theme.of(context).textTheme.headline6!.copyWith(
-                        fontWeight: FontWeight.w600, color: BrightestBlue),
+                    style: Theme.of(context)
+                        .textTheme
+                        .headline6!
+                        .copyWith(fontWeight: FontWeight.w200, color: Ithildin),
+                    textAlign: TextAlign.center,
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(top: 10.0),
+                    padding: const EdgeInsetsDirectional.fromSTEB(0, 20, 0, 20),
                     child: Text(
                       "Set to search on forms (Eldarin words) or glosses (their "
                       "translations)",
-                      style: Theme.of(context).textTheme.bodyText1!.copyWith(
-                          fontWeight: FontWeight.w300, color: BrightestBlue),
+                      style: Theme.of(context).textTheme.bodyText2!.copyWith(
+                          fontWeight: FontWeight.w200,
+                          fontSize: 15,
+                          color: Ithildin),
+                      textAlign: TextAlign.center,
                     ),
+                  ),
+                  Row(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          controller.previous();
+                        },
+                        child: Icon(Icons.chevron_left),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          controller.next();
+                        },
+                        child: Icon(Icons.chevron_right),
+                      ),
+                    ],
                   ),
                 ],
               );
@@ -674,26 +767,50 @@ class _IthildinScreenState extends State<IthildinScreen> {
         keyTarget: keySearchField,
         alignSkip: Alignment.bottomRight,
         enableOverlayTab: true,
+        enableTargetTab: true,
         contents: [
           TargetContent(
             align: ContentAlign.bottom,
             builder: (context, controller) {
               return Column(
                 mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(
                     "search field",
-                    style: Theme.of(context).textTheme.headline6!.copyWith(
-                        fontWeight: FontWeight.w600, color: BrightestBlue),
+                    style: Theme.of(context)
+                        .textTheme
+                        .headline6!
+                        .copyWith(fontWeight: FontWeight.w200, color: Ithildin),
+                    textAlign: TextAlign.center,
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(top: 10.0),
+                    padding: const EdgeInsetsDirectional.fromSTEB(0, 20, 0, 20),
                     child: Text(
                       "Tap and enter one or more characters to search",
-                      style: Theme.of(context).textTheme.bodyText1!.copyWith(
-                          fontWeight: FontWeight.w300, color: BrightestBlue),
+                      style: Theme.of(context).textTheme.bodyText2!.copyWith(
+                          fontWeight: FontWeight.w200,
+                          fontSize: 15,
+                          color: Ithildin),
+                      textAlign: TextAlign.center,
                     ),
+                  ),
+                  Row(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          controller.previous();
+                        },
+                        child: Icon(Icons.chevron_left),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          controller.next();
+                        },
+                        child: Icon(Icons.chevron_right),
+                      ),
+                    ],
                   ),
                 ],
               );
@@ -708,41 +825,64 @@ class _IthildinScreenState extends State<IthildinScreen> {
     targets.add(
       TargetFocus(
         identify: "keyResultList",
-        keyTarget: keyResultList,
+        targetPosition: TargetPosition(
+          Size(MediaQuery. of(context).size.width * 0.90,
+            MediaQuery. of(context).size.height * 0.3),
+          Offset(20.0, MediaQuery. of(context).size.height * 0.3),
+        ),
+        // keyTarget: keyResultList,
         alignSkip: Alignment.bottomRight,
         enableOverlayTab: true,
+        enableTargetTab: true,
         contents: [
           TargetContent(
-            align: ContentAlign.top,
+            // align: ContentAlign.custom,
+            // customPosition: ,
             builder: (context, controller) {
               return Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.max,
                 children: <Widget>[
                   Padding(
-                    padding: const EdgeInsets.only(top: 20.0),
+                    padding: const EdgeInsetsDirectional.fromSTEB(0, 0, 0, 10),
                     child: Text(
-                      "Boekekoeke\n",
-                      style: Theme.of(context).textTheme.headline6!.copyWith(
-                          fontWeight: FontWeight.w600, color: BrightestBlue),
+                      "result list",
+                      style: Theme.of(context)
+                          .textTheme
+                          .headline6!
+                          .copyWith(fontWeight: FontWeight.w200, color: Ithildin),
+                      textAlign: TextAlign.center,
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(top: 20.0),
-                    child: Text(
-                      "wwww result list",
-                      style: Theme.of(context).textTheme.headline6!.copyWith(
-                          fontWeight: FontWeight.w600, color: BrightestBlue),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 10.0),
+                    padding: const EdgeInsetsDirectional.fromSTEB(0, 10, 0, 20),
                     child: Text(
                       "Shows the list of entries containing the characters in the search "
-                      "field. Tap on a word to see available details.",
-                      style: Theme.of(context).textTheme.bodyText1!.copyWith(
-                          fontWeight: FontWeight.w300, color: BrightestBlue),
+                      "field (word roots are shown in an alternate colour). "
+                          "Tap on a word to see available details.",
+                      style: Theme.of(context).textTheme.bodyText2!.copyWith(
+                          fontWeight: FontWeight.w200,
+                          fontSize: 15,
+                          color: Ithildin),
+                      textAlign: TextAlign.center,
                     ),
+                  ),
+                  Row(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          controller.previous();
+                        },
+                        child: Icon(Icons.chevron_left),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          controller.next();
+                        },
+                        child: Icon(Icons.chevron_right),
+                      ),
+                    ],
                   ),
                 ],
               );
@@ -750,7 +890,7 @@ class _IthildinScreenState extends State<IthildinScreen> {
           )
         ],
         shape: ShapeLightFocus.RRect,
-        radius: 1,
+        radius: 0,
       ),
     );
   }

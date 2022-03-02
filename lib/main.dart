@@ -27,6 +27,19 @@ class IthildinApp extends StatelessWidget {
         themeMode: ThemeMode.system,
         theme: ThemeData.light().copyWith(
             primaryColor: DarkBlueGrey,
+            elevatedButtonTheme: ElevatedButtonThemeData(
+                style: ElevatedButton.styleFrom(
+                    padding:
+                    const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20)),
+                    primary: TanteRia, // background color
+                    textStyle: Theme.of(context).textTheme.bodyText1!.copyWith(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w200,
+                    ),
+                )
+            ),
             textTheme: TextTheme(
               headline1: GoogleFonts.notoSerifDisplay(
                 fontSize: 101,

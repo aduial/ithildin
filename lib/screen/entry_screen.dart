@@ -325,7 +325,7 @@ class CognateCard extends StatelessWidget {
                             // scrollAnimationDuration: const Duration(milliseconds: 400),
                             expandIcon: Icons.arrow_right,
                             collapseIcon: Icons.arrow_drop_down,
-                            iconColor: Colors.white,
+                            iconColor: White,
                             iconSize: 28.0,
                             iconRotationAngle: math.pi / 2,
                             iconPadding: EdgeInsets.only(right: 5),

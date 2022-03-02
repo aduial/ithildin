@@ -11,6 +11,7 @@ class SLexListItem extends StatefulWidget {
     required this.mark,
     required this.form,
     required this.gloss,
+    required this.isRoot,
   }) : super(key: key);
 
   final int id;
@@ -18,6 +19,7 @@ class SLexListItem extends StatefulWidget {
   final String mark;
   final String form;
   final String gloss;
+  final bool isRoot;
 
   @override
   State<SLexListItem> createState() => _SLexListItemState();
@@ -99,7 +101,7 @@ class _SLexListItemState extends State<SLexListItem> {
                 child: AutoSizeText(
                   widget.form,
                   style: Theme.of(context).textTheme.bodyText1!.copyWith(
-                      color: LightBlueAccent,
+                      color: widget.isRoot? PinkAccent : LightBlueAccent ,
                       fontSize: 16,
                       fontWeight: FontWeight.w500),
                   minFontSize: 12,
