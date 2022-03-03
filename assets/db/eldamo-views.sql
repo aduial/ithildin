@@ -237,12 +237,14 @@ CREATE VIEW simplexicon AS
 SELECT e.ID id
   , e.MARK mark
   , f.TXT form
+  , f.NORMALTXT nform
   , e.language_id form_lang_id
   , l.LANG form_lang_abbr
-  , g.TXT gloss
-  , g.language_id gloss_lang_id
+  , CASE WHEN g.TXT IS NULL THEN '' ELSE g.TXT END gloss
+  , CASE WHEN g.language_id IS NULL THEN '' ELSE g.language_id END gloss_lang_id
   , c.LABEL cat
   , sf.TXT stem
+  , ec.created_by created_by
   , e.ENTRY_CLASS_ID entry_class_id
   , t1.TXT entry_class
   , e.ENTRY_TYPE_ID entry_type_id
@@ -250,12 +252,13 @@ SELECT e.ID id
 FROM entry e
 JOIN form f ON e.FORM_ID = f.ID
 JOIN LANGUAGE l ON e.LANGUAGE_ID = l.ID 
-JOIN gloss g ON e.GLOSS_ID = g.ID
+LEFT OUTER JOIN gloss g ON e.GLOSS_ID = g.ID
 LEFT OUTER JOIN CAT c ON e.CAT_ID = c.ID
 LEFT OUTER JOIN form sf ON e.STEM_FORM_ID = sf.id
-JOIN TYPE t1 ON e.ENTRY_CLASS_ID = t1.ID
-JOIN TYPE t2 ON e.ENTRY_TYPE_ID = t2.ID
-WHERE e.ENTRY_CLASS_ID = 600;
+LEFT OUTER JOIN TYPE t1 ON e.ENTRY_CLASS_ID = t1.ID
+LEFT OUTER JOIN TYPE t2 ON e.ENTRY_TYPE_ID = t2.ID
+LEFT OUTER JOIN entry_created ec ON e.ID = ec.entry_id
+WHERE (e.ENTRY_CLASS_ID = 600 OR e.ENTRY_CLASS_ID = 603);
 
 -- entry_doc source
 

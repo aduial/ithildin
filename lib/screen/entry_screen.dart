@@ -99,18 +99,20 @@ class _EntryScreenState extends State<EntryScreen> {
     return Scaffold(
       key: scaffoldKey,
       backgroundColor: OffWhite,
-
       appBar: AppBar(
         backgroundColor: BlueGrey,
-        title: Text(
+        title: AutoSizeText(
           isDataLoading ? "Loading..." : entry.form,
           style: Theme.of(context)
               .textTheme
               .headline5!
               .copyWith(fontWeight: FontWeight.w300, color: Laurelin),
+          minFontSize: 20,
+          stepGranularity: 2,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
       ),
-
       body: isDataLoading
           ? Text("loading ...")
           : ExpandableTheme(
@@ -121,7 +123,8 @@ class _EntryScreenState extends State<EntryScreen> {
               child: ListView(
                 physics: const BouncingScrollPhysics(),
                 children: <Widget>[
-                  headerCard(header, isDataLoading),
+                  headerCard(
+                      header, entry.form, entry.createdBy, isDataLoading),
                   GlossCard(lexiconGlosses, isDataLoading),
                   CognateCard(lexiconCognates, isDataLoading),
                   RelatedCard(lexiconRelated, isDataLoading),
@@ -129,50 +132,85 @@ class _EntryScreenState extends State<EntryScreen> {
                 ],
               ),
             ),
-
-
     );
   }
 }
 
 class headerCard extends StatelessWidget {
   LexiconHeader header;
+  String entryForm;
+  String? createdBy;
   bool isDataLoading;
 
-  headerCard(this.header, this.isDataLoading);
+  headerCard(this.header, this.entryForm, this.createdBy, this.isDataLoading);
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsetsDirectional.fromSTEB(12, 14, 12, 4),
-      child: isDataLoading
-          ? Text("loading ...")
-          : RichText(
-              text: TextSpan(
-                text: header.language!.toUpperCase() + '. ',
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyText2!
-                    .copyWith(fontWeight: FontWeight.w700),
-                children: <TextSpan>[
-                  TextSpan(
-                    text: header.type ?? '',
+    return Column(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsetsDirectional.fromSTEB(16, 24, 16, 4),
+            child: isDataLoading
+                ? Text("loading ...")
+                : Text(entryForm,
+                    textAlign: TextAlign.left,
                     style: Theme.of(context)
                         .textTheme
-                        .bodyText2!
-                        .copyWith(fontStyle: FontStyle.italic),
-                  ),
-                  TextSpan(
-                    text: ' "' + header.gloss! + '"',
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyText2!
-                        .copyWith(fontWeight: FontWeight.w300, fontSize: 12),
-                  ),
-                ],
-              ),
-            ),
-    );
+                        .headline5!
+                        .copyWith(color: MountainBlue)),
+          ),
+          (createdBy?.isEmpty ?? true)
+              ? Container(height: 0, width: 0)
+              : Padding(
+                  padding: const EdgeInsetsDirectional.fromSTEB(16, 4, 16, 4),
+                  child: isDataLoading
+                      ? Text("loading ...")
+                      : Text('created by: ' + (createdBy?? ''),
+                          textAlign: TextAlign.left,
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyText2!
+                              .copyWith(color: BlueGrey,
+                          fontWeight: FontWeight.w300,
+                          fontStyle: FontStyle.italic)),
+                ),
+          Padding(
+              padding: const EdgeInsetsDirectional.fromSTEB(16, 8, 16, 10),
+              child: isDataLoading
+                  ? Text("loading ...")
+                  : AutoSizeText.rich(
+                      TextSpan(
+                        children: [
+                          TextSpan(
+                            text: header.language!.toUpperCase() + '.  ',
+                            style: const TextStyle(
+                                color: ThemeTextColour2,
+                                fontWeight: FontWeight.w700),
+                          ),
+                          TextSpan(
+                            text: (header.type ?? '') + '  ',
+                            style: const TextStyle(
+                                color: MountainBlue,
+                                fontWeight: FontWeight.w400,
+                                fontStyle: FontStyle.italic),
+                          ),
+                          TextSpan(
+                            text: ' "' + header.gloss! + '"',
+                            style: const TextStyle(
+                                color: MiddleGreen,
+                                fontWeight: FontWeight.w300),
+                          ),
+                        ],
+                      ),
+                      style: const TextStyle(fontSize: 20),
+                      minFontSize: 12,
+                      stepGranularity: 2,
+                      maxLines: 2,
+                    )),
+        ]);
   }
 }
 
@@ -186,10 +224,10 @@ class GlossCard extends StatelessWidget {
   Widget build(BuildContext context) {
     buildList() {
       return Container(
-          color: OffWhite,
+          color: NotepaperWhite,
           child: ListView.separated(
               separatorBuilder: (BuildContext context, int index) =>
-                  const Divider(height: 3),
+                  const Divider(height: 3, color: BlueBottom),
               primary: false,
               itemCount: lexiconGlosses.length,
               padding: const EdgeInsetsDirectional.fromSTEB(4, 4, 4, 4),
@@ -197,7 +235,7 @@ class GlossCard extends StatelessWidget {
               itemBuilder: (context, index) {
                 return GlossListItem(
                   entryId: lexiconGlosses[index].entryId,
-                  gloss: '"' + lexiconGlosses[index].gloss + '" ',
+                  gloss: lexiconGlosses[index].gloss,
                   reference: lexiconGlosses[index].reference,
                 );
               }));
@@ -241,17 +279,18 @@ class GlossCard extends StatelessWidget {
                         Expanded(
                           child: lexiconGlosses.isEmpty
                               ? Text("no glosses found",
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyText1!
-                                  .copyWith(color: LightBlueGrey))
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyText1!
+                                      .copyWith(color: LightBlueGrey))
                               : Text(
-                            "gloss" + (lexiconGlosses.length > 1 ? "es" : "") ,
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyText1!
-                                .copyWith(color: Laurelin),
-                          ),
+                                  "gloss" +
+                                      (lexiconGlosses.length > 1 ? "es" : ""),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyText1!
+                                      .copyWith(color: Laurelin),
+                                ),
                         ),
                       ],
                     ),
@@ -278,10 +317,10 @@ class CognateCard extends StatelessWidget {
   Widget build(BuildContext context) {
     buildList() {
       return Container(
-          color: OffWhite,
+          color: NotepaperWhite,
           child: ListView.separated(
               separatorBuilder: (BuildContext context, int index) =>
-                  const Divider(height: 3),
+                  const Divider(height: 3, color: BlueBottom),
               primary: false,
               itemCount: lexiconCognates.length,
               padding: const EdgeInsetsDirectional.fromSTEB(4, 4, 4, 4),
@@ -289,9 +328,9 @@ class CognateCard extends StatelessWidget {
               itemBuilder: (context, index) {
                 return CognateListItem(
                   entryId: lexiconCognates[index].entryId,
-                  language: lexiconCognates[index].language + ' ',
-                  form: lexiconCognates[index].form + ' ',
-                  gloss: ' "' + lexiconCognates[index].gloss! + '" ',
+                  language: lexiconCognates[index].language,
+                  form: lexiconCognates[index].form,
+                  gloss: lexiconCognates[index].gloss!,
                   sources: lexiconCognates[index].sources,
                 );
               }));
@@ -335,17 +374,18 @@ class CognateCard extends StatelessWidget {
                         Expanded(
                           child: lexiconCognates.isEmpty
                               ? Text("no cognates found",
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyText1!
-                                  .copyWith(color: LightBlueGrey))
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyText1!
+                                      .copyWith(color: LightBlueGrey))
                               : Text(
-                            "cognate" + (lexiconCognates.length > 1 ? "s" : "") ,
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyText1!
-                                .copyWith(color: Laurelin),
-                          ),
+                                  "cognate" +
+                                      (lexiconCognates.length > 1 ? "s" : ""),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyText1!
+                                      .copyWith(color: Laurelin),
+                                ),
                         ),
                       ],
                     ),
@@ -372,10 +412,10 @@ class RelatedCard extends StatelessWidget {
   Widget build(BuildContext context) {
     buildList() {
       return Container(
-          color: OffWhite,
+          color: NotepaperWhite,
           child: ListView.separated(
               separatorBuilder: (BuildContext context, int index) =>
-                  const Divider(height: 3),
+                  const Divider(height: 3, color: BlueBottom),
               primary: false,
               itemCount: lexiconRelated.length,
               padding: const EdgeInsetsDirectional.fromSTEB(4, 4, 4, 4),
@@ -435,12 +475,12 @@ class RelatedCard extends StatelessWidget {
                                       .bodyText1!
                                       .copyWith(color: LightBlueGrey))
                               : Text(
-                                  "related word" + (lexiconRelated.length > 1 ? "s" : "") ,
+                                  "related word" +
+                                      (lexiconRelated.length > 1 ? "s" : ""),
                                   style: Theme.of(context)
                                       .textTheme
                                       .bodyText1!
-                                      .copyWith(color: Laurelin)
-                                ),
+                                      .copyWith(color: Laurelin)),
                         ),
                       ],
                     ),
@@ -470,8 +510,17 @@ class NotesCard extends StatelessWidget {
         return Container();
       } else {
         return Container(
-          color: OffWhite,
-          child: Html(data: entryDoc[0].doc ?? ''),
+          padding: const EdgeInsets.fromLTRB(5.0, 0.0, 5.0, 0.0),
+          color: NotepaperWhite,
+          child: Html(
+            data: entryDoc[0].doc ?? '',
+            style: {
+              "body": Style(
+                fontSize: FontSize(15.0),
+                color: ThemeTextColour,
+              ),
+            },
+          ),
         );
       }
     }

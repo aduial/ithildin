@@ -856,9 +856,11 @@ class _IthildinScreenState extends State<IthildinScreen> {
                   Padding(
                     padding: const EdgeInsetsDirectional.fromSTEB(0, 10, 0, 20),
                     child: Text(
-                      "Shows the list of entries containing the characters in the search "
-                      "field (word roots are shown in an alternate colour). "
-                          "Tap on a word to see available details.",
+                      "Shows the list of entries matching the search string "
+                      "(word roots are shown in an alternate colour). "
+                          "Tap on a word to see available details.\n\n"
+                          "Author(s) of neo-entries are shown in the details "
+                          "screen insofar they were recorded in Eldamo.",
                       style: Theme.of(context).textTheme.bodyText2!.copyWith(
                           fontWeight: FontWeight.w200,
                           fontSize: 15,

@@ -47,12 +47,7 @@ class EldamoDb {
       // Write and flush the bytes written
       await io.File(dbPath).writeAsBytes(bytes, flush: true);
     }
-
     return await openDatabase(dbPath, version: 1);
-
-    // final dbPath = await getDatabasesPath();
-    // final path = join(dbPath, filePath);
-    // return await openDatabase(path, version: 1);
   }
 
 
@@ -162,7 +157,7 @@ class EldamoDb {
     String glossLang = "= ${glossLangId.toString()}";
     String whereFormLangId = formLangWhereClause(formLangId);
     String whereGlossLangId = "${SimplexiconFields.glossLangId} $glossLang";
-    String whereFormLike = "${SimplexiconFields.form} LIKE '%$formFilter%'";
+    String whereFormLike = "${SimplexiconFields.nform} LIKE '%$formFilter%'";
     final result = await db.rawQuery("SELECT * from $simplexiconTable "
         "WHERE $whereFormLangId "
         "AND $whereGlossLangId "

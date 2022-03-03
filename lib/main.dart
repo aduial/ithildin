@@ -16,7 +16,7 @@ Future main() async {
 
 class IthildinApp extends StatelessWidget {
   const IthildinApp({Key? key}) : super(key: key);
-  static const String title = 'Ithildin Dictionary'; 
+  static const String title = 'Ithildin Dictionary';
 
   @override
   Widget build(BuildContext context) {

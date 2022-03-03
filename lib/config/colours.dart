@@ -42,13 +42,30 @@ const PinkAccent = const Color (0xFFFFB0A0);
 const InvisibleDark = const Color(0x00090F13);
 const VeryVeryDark = Color(0xB3090F13);
 
-const OffWhite = Color(0xFFE9E8E9);
+const OffWhite = Color(0xFFF9F8F9);
+const NotepaperWhite = Color(0xFFE6F0E3);
 
 const DividerColour = Color(0x2F0000F0);
 const ThemeTextColour = Color(0xDD000000);
+const ThemeTextColour2 = Color(0xFF444444);
+
+const String CSSText = StartSpan + CSSColText + '; ' + FontLight + EndSpan;
+const String CSSBoldBlueGrey = StartSpan + CSSColBlueGrey + '; ' + FontBolder + EndSpan;
+const String CSSBolder = StartSpan + CSSColText + '; ' + FontBolder + EndSpan;
+const String CSSGreenItalic = StartSpan + CSSColGreen + '; ' + FontItalic + '; ' + FontNormal + EndSpan;
+const String CSSBoldGreen = StartSpan + CSSColGreen + '; ' + FontBold + EndSpan;
+const String CSSBlueGreyItalic = StartSpan + CSSColBlueGrey + '; ' + FontItalic + '; ' + FontLight + EndSpan;
+const String CSSBoldItalic = StartSpan + CSSColText + '; ' + FontBold + ';' + FontItalic + EndSpan;
 
 
-const String CSSTextTheme = '<span style="color:#444444";>';
-const String CSSGreen = '<span style="color:#4C7F66";>';
-const String CSSBlueGrey = '<span style="color:#455A64";>';
-const String EndSpan = '</span>';
+const String StartSpan = '<span style="';
+const String FontLight = "font-weight:300";
+const String FontNormal = "font-weight:400";
+const String FontBold = "font-weight:600";
+const String FontBolder = "font-weight:800";
+const String FontItalic = "font-style:italic";
+const String CSSColText = "color:#444444";
+const String CSSColGreen = "color:#267F54";
+const String CSSColBlueGrey = "color:#264F7F";
+const String EndSpan = '">';
+const String CloseSpan = "</span>";
