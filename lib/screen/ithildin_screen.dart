@@ -152,7 +152,7 @@ class _IthildinScreenState extends State<IthildinScreen> {
                 });
           },
         ),
-        title: const Text("Ithildin word search"),
+        title: const Text("word search"),
         actions: <Widget>[
           IconButton(
             icon: const Icon(CupertinoIcons.info_circle),
@@ -472,18 +472,18 @@ class _IthildinScreenState extends State<IthildinScreen> {
       textSkip: "Cancel",
       paddingFocus: 10,
       opacityShadow: 0.9,
-      onFinish: () {
-        print("finish");
-      },
-      onClickTarget: (target) {
-        print('onClickTarget: $target');
-      },
-      onClickOverlay: (target) {
-        print('onClickOverlay: $target');
-      },
-      onSkip: () {
-        print("skip");
-      },
+      // onFinish: () {
+      //   print("finish");
+      // },
+      // onClickTarget: (target) {
+      //   print('onClickTarget: $target');
+      // },
+      // onClickOverlay: (target) {
+      //   print('onClickOverlay: $target');
+      // },
+      // onSkip: () {
+      //   print("skip");
+      // },
     )..show();
   }
 

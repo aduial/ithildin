@@ -11,6 +11,7 @@ class Minui extends StatefulWidget {
 }
 
 class _MinuiState extends State<Minui> {
+
   getOnWithIt() {
     Future.delayed(Duration.zero, () {
       Navigator.push(context,
