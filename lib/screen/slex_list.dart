@@ -48,8 +48,28 @@ Route _detailRoute(int entryId) {
 class _SLexListItemState extends State<SLexListItem> {
   @override
   Widget build(BuildContext context) {
-    // return Padding(
-    //   padding: const EdgeInsets.symmetric(horizontal: 5.0),
+
+    Color getFormColour(String mark, bool isRoot){
+      if (mark.contains("|")) {
+        return StruckOutFormColour;
+      } else if (isRoot) {
+        return RootColour;
+      } else if (mark.contains("!")) {
+        return NeoFormColour;
+      } else if (mark.contains("‽")) {
+        return QuestionedFormColour;
+      } else if (mark.contains("?")) {
+        return SpeculativeFormColour;
+      } else if (mark.contains("^")) {
+        return ReformulatedFormColour;
+      } else if (mark.contains("*")) {
+        return ReconstructedFormColour;
+      } else if (mark.contains("#")) {
+        return DerivedFormColour;
+      } else {
+        return RegularFormColour;
+      }
+    }
 
     return GestureDetector(
       onTap: () {
@@ -63,13 +83,13 @@ class _SLexListItemState extends State<SLexListItem> {
           border: Border(
             bottom: BorderSide(width: 1.0, color: Colors.lightBlue.shade100),
           ),
-          color: DarkBlueGrey,//Colors.blueGrey.shade600,
+          color: widget.mark.contains("†") ? PoeticResultBGColour : RegularResultBGColour,
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             Expanded(
-              flex: 2,
+              flex: 3,
               child: Padding(
                 padding: const EdgeInsetsDirectional.fromSTEB(0, 0, 0, 0),
                 child: Text(
@@ -82,26 +102,26 @@ class _SLexListItemState extends State<SLexListItem> {
               ),
             ),
             Expanded(
-              flex: 1,
+              flex: 3,
               child: Padding(
                 padding: const EdgeInsetsDirectional.fromSTEB(0, 0, 4, 0),
                 child: Text(
-                  widget.mark,
+                  widget.mark.replaceAll("|", "").replaceAll("-", ""),
                   style: Theme.of(context).textTheme.bodyText1!.copyWith(
-                      color: BrightGreen,
+                      color: getFormColour(widget.mark, widget.isRoot),
                       fontSize: 14,
                       fontWeight: FontWeight.w500),
                 ),
               ),
             ),
             Expanded(
-              flex: 8,
+              flex: 16,
               child: Padding(
                 padding: const EdgeInsetsDirectional.fromSTEB(0, 0, 6, 0),
                 child: AutoSizeText(
                   widget.form,
                   style: Theme.of(context).textTheme.bodyText1!.copyWith(
-                      color: widget.isRoot? PinkAccent : LightBlueAccent ,
+                      color: getFormColour(widget.mark, widget.isRoot),
                       fontSize: 16,
                       fontWeight: FontWeight.w500),
                   minFontSize: 12,
@@ -112,7 +132,7 @@ class _SLexListItemState extends State<SLexListItem> {
               ),
             ),
             Expanded(
-              flex: 12,
+              flex: 24,
               child: AutoSizeText(
                 widget.gloss,
                 style: Theme.of(context).textTheme.bodyText1!.copyWith(

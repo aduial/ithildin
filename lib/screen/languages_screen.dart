@@ -22,7 +22,7 @@ class _LanguagesScreenState extends State<LanguagesScreen> {
 
   @override
   void dispose() {
-    EldamoDb.instance.close();
+    // EldamoDb.instance.close();
     super.dispose();
   }
 

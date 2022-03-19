@@ -4,6 +4,8 @@ import 'package:ithildin/model/lexicon_cognate.dart';
 import 'package:ithildin/model/lexicon_gloss.dart';
 import 'package:ithildin/model/lexicon_header.dart';
 import 'package:ithildin/model/lexicon_related.dart';
+import 'package:ithildin/model/lexicon_variation.dart';
+import 'package:ithildin/model/lexicon_inflection.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:ithildin/model/language.dart';
@@ -75,7 +77,7 @@ class EldamoDb {
   Future<List<Simplexicon>> loadSimplexicons() async {
     final db = await instance.database;
     const orderBy = "${SimplexiconFields.id} ASC";
-    final result = await db.rawQuery("SELECT * FROM $simplexiconTable "
+    final result = await db.rawQuery("SELECT * FROM $simplexiconView "
         "ORDER BY $orderBy "
         "LIMIT 30");
     return result.map((json) => Simplexicon.fromJson(json)).toList();
@@ -83,7 +85,7 @@ class EldamoDb {
 
   Future<List<Simplexicon>> loadSimplexicon(int entryId) async {
     final db = await instance.database;
-    final result = await db.rawQuery("SELECT * FROM $simplexiconTable "
+    final result = await db.rawQuery("SELECT * FROM $simplexiconView "
         "WHERE ID = $entryId");
     return result.map((json) => Simplexicon.fromJson(json)).toList();
   }
@@ -119,12 +121,54 @@ class EldamoDb {
     return result.map((json) => LexiconRelated.fromJson(json)).toList();
   }
 
+  Future<List<LexiconVariation>> loadLexiconVariation(int entryId) async {
+    final db = await instance.database;
+    final result = await db.rawQuery("SELECT * FROM $lexiconVariationView "
+        "WHERE ${LexiconVariationFields.entryId} = $entryId "
+        "LIMIT 30");
+    return result.map((json) => LexiconVariation.fromJson(json)).toList();
+  }
+
+  Future<List<LexiconInflection>> loadLexiconInflection(int entryId) async {
+    final db = await instance.database;
+    final result = await db.rawQuery("SELECT * FROM $lexiconInflectionView "
+        "WHERE ${LexiconInflectionFields.entryId} = $entryId "
+        "LIMIT 30");
+    return result.map((json) => LexiconInflection.fromJson(json)).toList();
+  }
+
   Future<List<EntryDoc>> loadEntryDocs(int entryId) async {
     final db = await instance.database;
     final result = await db.rawQuery("SELECT * FROM $entryDocView "
         "WHERE ${EntryDocFields.entryId} = $entryId "
         "LIMIT 30");
     return result.map((json) => EntryDoc.fromJson(json)).toList();
+  }
+
+  Future<List<Simplexicon>> findSimplexiconByLangForm(String langAbbr, String form) async {
+    final db = await instance.database;
+    final result = await db.rawQuery("SELECT * FROM $simplexiconView "
+        "WHERE ${SimplexiconFields.formLangAbbr} = '$langAbbr' "
+        "AND ${SimplexiconFields.form} = '$form' "
+        "LIMIT 1");
+    return result.map((json) => Simplexicon.fromJson(json)).toList();
+  }
+
+  Future<bool> existsSimplexiconById(int id) async {
+    final db = await instance.database;
+    final result = await db.rawQuery("SELECT * FROM $simplexiconView "
+        "WHERE ${SimplexiconFields.id} = $id "
+        "LIMIT 1");
+    return result.isNotEmpty;
+  }
+
+  Future<bool> existsSimplexiconByLangForm(String langAbbr, String form) async {
+    final db = await instance.database;
+    final result = await db.rawQuery("SELECT * FROM $simplexiconView "
+        "WHERE ${SimplexiconFields.formLangAbbr} = '$langAbbr' "
+        "AND ${SimplexiconFields.form} = '$form' "
+        "LIMIT 1");
+    return result.isNotEmpty;
   }
 
   String formLangWhereClause(int formLangId) {
@@ -153,12 +197,12 @@ class EldamoDb {
   Future<List<Simplexicon>> simplexiconFormFilter(
       String formFilter, int formLangId, int glossLangId) async {
     final db = await instance.database;
-    const orderBy = "${SimplexiconFields.id} ASC";
+    const orderBy = "${SimplexiconFields.nform} ASC";
     String glossLang = "= ${glossLangId.toString()}";
     String whereFormLangId = formLangWhereClause(formLangId);
     String whereGlossLangId = "${SimplexiconFields.glossLangId} $glossLang";
     String whereFormLike = "${SimplexiconFields.nform} LIKE '%$formFilter%'";
-    final result = await db.rawQuery("SELECT * from $simplexiconTable "
+    final result = await db.rawQuery("SELECT * from $simplexiconView "
         "WHERE $whereFormLangId "
         "AND $whereGlossLangId "
         "AND $whereFormLike "
@@ -174,7 +218,7 @@ class EldamoDb {
     String whereFormLangId = formLangWhereClause(formLangId);
     String whereGlossLangId = "${SimplexiconFields.glossLangId} $glossLang";
     String whereGlossLike = "${SimplexiconFields.gloss} LIKE '%$glossFilter%'";
-    final result = await db.rawQuery("SELECT * from $simplexiconTable "
+    final result = await db.rawQuery("SELECT * from $simplexiconView "
         "WHERE $whereFormLangId "
         "AND $whereGlossLangId "
         "AND $whereGlossLike "
@@ -182,8 +226,8 @@ class EldamoDb {
     return result.map((json) => Simplexicon.fromJson(json)).toList();
   }
 
-  Future close() async {
-    final db = await instance.database;
-    db.close();
-  }
+  // Future close() async {
+  //   final db = await instance.database;
+  //   db.close();
+  // }
 }

@@ -1,8 +1,10 @@
+import 'package:draggable_scrollbar/draggable_scrollbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:ithildin/db/eldamo_db.dart';
 import 'package:ithildin/model/language.dart';
 import 'package:ithildin/model/simplexicon.dart';
 import 'package:ithildin/screen/slex_list.dart';
+import 'dart:math' as math;
 
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +13,7 @@ import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 
 import '../config/config.dart';
 import '../config/colours.dart';
+import 'about_us.dart';
 
 class IthildinScreen extends StatefulWidget {
   const IthildinScreen({Key? key}) : super(key: key);
@@ -38,6 +41,8 @@ class _IthildinScreenState extends State<IthildinScreen> {
   late List<Simplexicon> simplexicons;
   final searchController = TextEditingController();
 
+  final ScrollController controller = ScrollController();
+
   int? _formLangId = 0;
   int? _glossLangId = 0;
   bool isLanguageLoading = false;
@@ -61,7 +66,7 @@ class _IthildinScreenState extends State<IthildinScreen> {
 
   @override
   void dispose() {
-    EldamoDb.instance.close();
+    //EldamoDb.instance.close();
     searchController.dispose();
     super.dispose();
   }
@@ -122,7 +127,7 @@ class _IthildinScreenState extends State<IthildinScreen> {
     return Scaffold(
       key: scaffoldKey,
       appBar: AppBar(
-        backgroundColor: DarkBlueGrey,
+        backgroundColor: RegularResultBGColour,
         automaticallyImplyLeading: true,
         leading: Builder(
           builder: (BuildContext context) {
@@ -157,6 +162,17 @@ class _IthildinScreenState extends State<IthildinScreen> {
           IconButton(
             icon: const Icon(CupertinoIcons.info_circle),
             color: BrightestBlue,
+            tooltip: 'about us',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const AboutUs()),
+              );
+            },
+          ),
+          IconButton(
+            icon: const Icon(CupertinoIcons.question_circle),
+            color: Telperion,
             tooltip: 'help',
             onPressed: () {
               showTutorial();
@@ -438,24 +454,48 @@ class _IthildinScreenState extends State<IthildinScreen> {
                               style:
                                   TextStyle(color: Colors.white, fontSize: 14),
                             )
-                          : ListView.builder(
-                              key: keyResultList,
-                              itemCount: simplexicons.length,
-                              padding: const EdgeInsets.all(4.0),
-                              shrinkWrap: true,
-                              itemExtent: 40.0,
-                              itemBuilder: (context, index) {
-                                return SLexListItem(
-                                  id: simplexicons[index].id,
-                                  formLangAbbr:
-                                      simplexicons[index].formLangAbbr,
-                                  mark: simplexicons[index].mark!,
-                                  form: simplexicons[index].form,
-                                  gloss: simplexicons[index].gloss,
-                                  isRoot:
-                                      simplexicons[index].entryClassId == 603,
+                          : DraggableScrollbar.semicircle(
+                              alwaysVisibleScrollThumb: false,
+                              backgroundColor: DarkerBlueGrey,
+                              padding: EdgeInsets.only(right: 4.0),
+                              labelTextBuilder: (offset) {
+                                final int currentItem = controller.hasClients
+                                    ? ((controller.offset /
+                                                controller
+                                                    .position.maxScrollExtent) *
+                                            (simplexicons.length - 1))
+                                        .floor()
+                                    : 0;
+                                return Text(
+                                  simplexicons[currentItem]
+                                      .form[0]
+                                      .toUpperCase(),
+                                  style: TextStyle(
+                                      color: BrightGreen, fontSize: 14),
                                 );
-                              })),
+                              },
+                              controller: controller,
+                              child: ListView.builder(
+                                  controller: controller,
+                                  key: keyResultList,
+                                  itemCount: simplexicons.length,
+                                  padding: const EdgeInsets.all(4.0),
+                                  // shrinkWrap: true,
+                                  itemExtent: 40.0,
+                                  itemBuilder: (context, index) {
+                                    return SLexListItem(
+                                      id: simplexicons[index].id,
+                                      formLangAbbr:
+                                          simplexicons[index].formLangAbbr,
+                                      mark: simplexicons[index].mark!,
+                                      form: simplexicons[index].form,
+                                      gloss: simplexicons[index].gloss,
+                                      isRoot:
+                                          simplexicons[index].entryClassId ==
+                                              603,
+                                    );
+                                  }),
+                            )),
             ],
           ),
         ),
@@ -472,18 +512,6 @@ class _IthildinScreenState extends State<IthildinScreen> {
       textSkip: "Cancel",
       paddingFocus: 10,
       opacityShadow: 0.9,
-      // onFinish: () {
-      //   print("finish");
-      // },
-      // onClickTarget: (target) {
-      //   print('onClickTarget: $target');
-      // },
-      // onClickOverlay: (target) {
-      //   print('onClickOverlay: $target');
-      // },
-      // onSkip: () {
-      //   print("skip");
-      // },
     )..show();
   }
 
@@ -826,9 +854,9 @@ class _IthildinScreenState extends State<IthildinScreen> {
       TargetFocus(
         identify: "keyResultList",
         targetPosition: TargetPosition(
-          Size(MediaQuery. of(context).size.width * 0.90,
-            MediaQuery. of(context).size.height * 0.3),
-          Offset(20.0, MediaQuery. of(context).size.height * 0.3),
+          Size(MediaQuery.of(context).size.width * 0.90,
+              MediaQuery.of(context).size.height * 0.15),
+          Offset(20.0, MediaQuery.of(context).size.height * 0.27),
         ),
         // keyTarget: keyResultList,
         alignSkip: Alignment.bottomRight,
@@ -843,27 +871,146 @@ class _IthildinScreenState extends State<IthildinScreen> {
                 mainAxisSize: MainAxisSize.max,
                 children: <Widget>[
                   Padding(
-                    padding: const EdgeInsetsDirectional.fromSTEB(0, 0, 0, 10),
+                    padding: const EdgeInsetsDirectional.fromSTEB(0, 0, 0, 5),
                     child: Text(
                       "result list",
-                      style: Theme.of(context)
-                          .textTheme
-                          .headline6!
-                          .copyWith(fontWeight: FontWeight.w200, color: Ithildin),
+                      style: Theme.of(context).textTheme.headline6!.copyWith(
+                          fontWeight: FontWeight.w200, color: Ithildin),
                       textAlign: TextAlign.center,
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsetsDirectional.fromSTEB(0, 10, 0, 20),
+                    padding: const EdgeInsetsDirectional.fromSTEB(0, 8, 0, 4),
                     child: Text(
-                      "Shows the list of entries matching the search string "
-                      "(word roots are shown in an alternate colour). "
-                          "Tap on a word to see available details.\n\n"
-                          "Author(s) of neo-entries are shown in the details "
-                          "screen insofar they were recorded in Eldamo.",
+                      "Shows matching entries. Meaning of marks & colours:",
                       style: Theme.of(context).textTheme.bodyText2!.copyWith(
                           fontWeight: FontWeight.w200,
-                          fontSize: 15,
+                          fontSize: 14,
+                          color: Ithildin),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsetsDirectional.fromSTEB(0, 0, 0, 0),
+                    child: Text(
+                      "blue: attested",
+                      style: Theme.of(context).textTheme.bodyText2!.copyWith(
+                          fontWeight: FontWeight.w200,
+                          fontSize: 14,
+                          color: RegularFormColour),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsetsDirectional.fromSTEB(0, 0, 0, 0),
+                    child: Text(
+                      "# - cyan: derived from attested",
+                      style: Theme.of(context).textTheme.bodyText2!.copyWith(
+                          fontWeight: FontWeight.w200,
+                          fontSize: 14,
+                          color: DerivedFormColour),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsetsDirectional.fromSTEB(0, 0, 0, 0),
+                    child: Text(
+                      "* - green: reconstructed",
+                      style: Theme.of(context).textTheme.bodyText2!.copyWith(
+                          fontWeight: FontWeight.w200,
+                          fontSize: 14,
+                          color: ReconstructedFormColour),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsetsDirectional.fromSTEB(0, 0, 0, 0),
+                    child: Text(
+                      "^ - yellow: reformulated",
+                      style: Theme.of(context).textTheme.bodyText2!.copyWith(
+                          fontWeight: FontWeight.w200,
+                          fontSize: 14,
+                          color: ReformulatedFormColour),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsetsDirectional.fromSTEB(0, 0, 0, 0),
+                    child: Text(
+                      "? - orange: speculative",
+                      style: Theme.of(context).textTheme.bodyText2!.copyWith(
+                          fontWeight: FontWeight.w200,
+                          fontSize: 14,
+                          color: SpeculativeFormColour),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsetsDirectional.fromSTEB(0, 0, 0, 0),
+                    child: Text(
+                      "‽ - red: questioned (by Tolkien)",
+                      style: Theme.of(context).textTheme.bodyText2!.copyWith(
+                          fontWeight: FontWeight.w200,
+                          fontSize: 14,
+                          color: QuestionedFormColour),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsetsDirectional.fromSTEB(0, 0, 0, 0),
+                    child: Text(
+                      "grey: deprecated",
+                      style: Theme.of(context).textTheme.bodyText2!.copyWith(
+                          fontWeight: FontWeight.w200,
+                          fontSize: 14,
+                          color: StruckOutFormColour),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsetsDirectional.fromSTEB(0, 0, 0, 0),
+                    child: Text(
+                      "! - violet: community-created (neo-)",
+                      style: Theme.of(context).textTheme.bodyText2!.copyWith(
+                          fontWeight: FontWeight.w200,
+                          fontSize: 14,
+                          color: NeoFormColour),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsetsDirectional.fromSTEB(0, 0, 0, 0),
+                    child: Text(
+                      "PINK: WORD ROOTS",
+                      style: Theme.of(context).textTheme.bodyText2!.copyWith(
+                          fontWeight: FontWeight.w200,
+                          fontSize: 14,
+                          color: RootColour),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsetsDirectional.fromSTEB(0, 0, 0, 8),
+                    child: Text(
+                      "🟫🟫🟫 (background): Poetic / Archaic word",
+                      style: Theme.of(context).textTheme.bodyText2!.copyWith(
+                          fontWeight: FontWeight.w200,
+                          fontSize: 14,
+                          color: RegularFormColour),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsetsDirectional.fromSTEB(0, 4, 0, 12),
+                    child: Text(
+                      "Tap on a word to see available details.\n"
+                      "Terms highlighted in blue in notes and detail rows link to "
+                      "further detail screens. "
+                      "Author(s) of neo-entries are shown insofar they were "
+                      "recorded in Eldamo.",
+                      style: Theme.of(context).textTheme.bodyText2!.copyWith(
+                          fontWeight: FontWeight.w200,
+                          fontSize: 14,
                           color: Ithildin),
                       textAlign: TextAlign.center,
                     ),

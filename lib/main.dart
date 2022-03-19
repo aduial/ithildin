@@ -26,7 +26,7 @@ class IthildinApp extends StatelessWidget {
         home: Minui(),
         themeMode: ThemeMode.system,
         theme: ThemeData.light().copyWith(
-            primaryColor: DarkBlueGrey,
+            primaryColor: RegularResultBGColour,
             elevatedButtonTheme: ElevatedButtonThemeData(
                 style: ElevatedButton.styleFrom(
                     padding:
