@@ -799,8 +799,6 @@ class NotesCard extends StatelessWidget {
                 ) {
               //setState(() {
               parentAction(url ?? '');
-
-              print(url);
             },
           ),
         );
