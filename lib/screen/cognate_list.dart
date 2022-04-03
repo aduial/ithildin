@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import '../config/colours.dart';
-import '../db/eldamo_db.dart';
-import '../model/simplexicon.dart';
 import 'entry_screen.dart';
 
 class CognateListItem extends StatefulWidget {
@@ -13,7 +11,7 @@ class CognateListItem extends StatefulWidget {
     required this.form,
     this.gloss,
     required this.sources,
-    required this.cognateId,
+    this.cognateId,
   }) : super(key: key);
 
   final int entryId;
@@ -21,7 +19,7 @@ class CognateListItem extends StatefulWidget {
   final String form;
   final String? gloss;
   final String sources;
-  final int cognateId;
+  final int? cognateId;
 
   @override
   State<CognateListItem> createState() => _CognateListItemState();
@@ -42,28 +40,19 @@ Route _cognateDetailRoute(int cognateId) {
 }
 
 class _CognateListItemState extends State<CognateListItem> {
-  late bool hasEntry = false;
-  late String htmlData = "";
-
-  late List<Simplexicon> otherEntries;
+  String htmlData = "";
 
   void initState() {
-    checkForLinks();
+    formatHtml();
     super.initState();
   }
 
-  Future checkForLinks() async {
-    hasEntry = await EldamoDb.instance
-        .existsSimplexiconById(widget.cognateId);
-    htmlData = await formatHtml();
-  }
-
-  Future<String> formatHtml() async {
+  formatHtml() {
     htmlData += CSSBolder +
         widget.language.toUpperCase() +
         CloseSpan +
         "&nbsp;&nbsp;";
-    htmlData += (hasEntry ? CSSBoldVeryBlue : CSSBoldBlueGrey) +
+    htmlData += (widget.cognateId != null ? CSSBoldVeryBlue : CSSBoldBlueGrey) +
         widget.form +
         CloseSpan +
         "&nbsp;&nbsp;";
@@ -76,22 +65,22 @@ class _CognateListItemState extends State<CognateListItem> {
           "&nbsp;&nbsp;";
     }
     htmlData += CSSText + widget.sources.replaceAll('.', '') + CloseSpan;
-    return htmlData;
   }
 
   @override
   Widget build(BuildContext context) {
+    //print(htmlData);
     return GestureDetector(
       onTap: () {
-        if (hasEntry) {
+        if (widget.cognateId != null) {
           setState(() {
-            Navigator.of(context).push(_cognateDetailRoute(widget.cognateId));
+            Navigator.of(context).push(_cognateDetailRoute(widget.cognateId!));
           });
         }
       },
       child: Container(
         padding: const EdgeInsets.fromLTRB(5.0, 0.0, 5.0, 0.0),
-        color: hasEntry ? NotepaperLinked : NotepaperWhite,
+        color: widget.cognateId != null ? NotepaperLinked : NotepaperWhite,
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[

@@ -50,22 +50,14 @@ Route _relatedDetailRoute(int relatedId) {
 }
 
 class _RelatedListItemState extends State<RelatedListItem> {
-  late bool hasEntry = false;
-  late String htmlData = "";
-
-  late List<Simplexicon> otherEntries;
+  String htmlData = "";
 
   void initState() {
-    checkForLinks();
+    formatHtml();
     super.initState();
   }
 
-  Future checkForLinks() async {
-    hasEntry = await EldamoDb.instance.existsSimplexiconById(widget.relatedId);
-    htmlData = await formatHtml();
-  }
-
-  Future<String> formatHtml() async {
+  formatHtml() async {
     if (widget.languageFrom.isNotEmpty) {
       htmlData += CSSBolder +
           widget.languageFrom.toUpperCase() +
@@ -73,7 +65,7 @@ class _RelatedListItemState extends State<RelatedListItem> {
           "&nbsp;&nbsp;";
     }
 
-    htmlData += (hasEntry && widget.formFrom.startsWith("@") ? CSSBoldVeryBlue : CSSBoldBlueGrey) +
+    htmlData += (widget.relatedId != null && widget.formFrom.startsWith("@") ? CSSBoldVeryBlue : CSSBoldBlueGrey) +
         widget.formFrom.substring(1) +
         CloseSpan +
         "&nbsp;&nbsp;";
@@ -101,7 +93,7 @@ class _RelatedListItemState extends State<RelatedListItem> {
           "&nbsp;&nbsp;";
     }
 
-    htmlData += (hasEntry && widget.formTo.startsWith("@") ? CSSBoldVeryBlue : CSSBoldBlueGrey) +
+    htmlData += (widget.relatedId != null && widget.formTo.startsWith("@") ? CSSBoldVeryBlue : CSSBoldBlueGrey) +
         widget.formTo.substring(1) +
         CloseSpan +
         "&nbsp;&nbsp;";
@@ -114,18 +106,14 @@ class _RelatedListItemState extends State<RelatedListItem> {
           CloseSpan +
           "&nbsp;&nbsp;";
     }
-
-    if (widget.refSources.isNotEmpty) {
-      htmlData += CSSBoldGreen + widget.glossTo + CloseSpan;
-    }
-    return htmlData;
   }
 
   @override
   Widget build(BuildContext context) {
+    //print(htmlData);
     return GestureDetector(
       onTap: () {
-        if (hasEntry) {
+        if (widget.relatedId != null) {
           setState(() {
             Navigator.of(context).push(_relatedDetailRoute(widget.relatedId));
           });
@@ -134,7 +122,7 @@ class _RelatedListItemState extends State<RelatedListItem> {
       child: Container(
         padding: const EdgeInsets.fromLTRB(5.0, 0.0, 5.0, 0.0),
 
-        color: hasEntry ? NotepaperLinked : NotepaperWhite,
+        color: widget.relatedId != null ? NotepaperLinked : NotepaperWhite,
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[

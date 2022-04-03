@@ -14,13 +14,15 @@ import 'package:ithildin/config/config.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io' as io;
 
+import '../model/nothrim.dart';
+
 class EldamoDb {
   static final EldamoDb instance = EldamoDb._init();
   static Database? _database;
 
   String langCatWhere = "< 2";
 
-  void setLangCatWhere(String whereClause){
+  void setLangCatWhere(String whereClause) {
     langCatWhere = whereClause;
     loadEldarinLanguages();
   }
@@ -51,8 +53,6 @@ class EldamoDb {
     }
     return await openDatabase(dbPath, version: 1);
   }
-
-
 
   // ID = 1 = All Eldarin languages
   Future<List<Language>> loadEldarinLanguages() async {
@@ -101,7 +101,7 @@ class EldamoDb {
     final db = await instance.database;
     final result = await db.rawQuery("SELECT * FROM $lexiconGlossView "
         "WHERE ${LexiconGlossFields.entryId} = $entryId "
-        "LIMIT 30");
+        "LIMIT 100");
     return result.map((json) => LexiconGloss.fromJson(json)).toList();
   }
 
@@ -109,7 +109,7 @@ class EldamoDb {
     final db = await instance.database;
     final result = await db.rawQuery("SELECT * FROM $lexiconCognateView "
         "WHERE ${LexiconCognateFields.entryId} = $entryId "
-        "LIMIT 30");
+        "LIMIT 100");
     return result.map((json) => LexiconCognate.fromJson(json)).toList();
   }
 
@@ -117,7 +117,7 @@ class EldamoDb {
     final db = await instance.database;
     final result = await db.rawQuery("SELECT * FROM $lexiconRelatedView "
         "WHERE ${LexiconRelatedFields.entryId} = $entryId "
-        "LIMIT 30");
+        "LIMIT 100");
     return result.map((json) => LexiconRelated.fromJson(json)).toList();
   }
 
@@ -125,7 +125,7 @@ class EldamoDb {
     final db = await instance.database;
     final result = await db.rawQuery("SELECT * FROM $lexiconVariationView "
         "WHERE ${LexiconVariationFields.entryId} = $entryId "
-        "LIMIT 30");
+        "LIMIT 100");
     return result.map((json) => LexiconVariation.fromJson(json)).toList();
   }
 
@@ -133,7 +133,7 @@ class EldamoDb {
     final db = await instance.database;
     final result = await db.rawQuery("SELECT * FROM $lexiconInflectionView "
         "WHERE ${LexiconInflectionFields.entryId} = $entryId "
-        "LIMIT 30");
+        "LIMIT 1000");
     return result.map((json) => LexiconInflection.fromJson(json)).toList();
   }
 
@@ -141,11 +141,12 @@ class EldamoDb {
     final db = await instance.database;
     final result = await db.rawQuery("SELECT * FROM $entryDocView "
         "WHERE ${EntryDocFields.entryId} = $entryId "
-        "LIMIT 30");
+        "LIMIT 100");
     return result.map((json) => EntryDoc.fromJson(json)).toList();
   }
 
-  Future<List<Simplexicon>> findSimplexiconByLangForm(String langAbbr, String form) async {
+  Future<List<Simplexicon>> findSimplexiconByLangForm(
+      String langAbbr, String form) async {
     final db = await instance.database;
     final result = await db.rawQuery("SELECT * FROM $simplexiconView "
         "WHERE ${SimplexiconFields.formLangAbbr} = '$langAbbr' "
@@ -175,20 +176,35 @@ class EldamoDb {
     if (formLangId == allLanguages) {
       return SimplexiconFields.formLangId + " LIKE '%'";
     } else if (formLangId == quenyaInclNeo) {
-      return "(" + SimplexiconFields.formLangId + " = " +
-          neoQuenya.toString() + " OR " +
-          SimplexiconFields.formLangId + " = " +
-          quenya.toString() + ")";
+      return "(" +
+          SimplexiconFields.formLangId +
+          " = " +
+          neoQuenya.toString() +
+          " OR " +
+          SimplexiconFields.formLangId +
+          " = " +
+          quenya.toString() +
+          ")";
     } else if (formLangId == sindarinIncNeo) {
-      return "(" + SimplexiconFields.formLangId + " = " +
-          neoSindarin.toString() + " OR " +
-          SimplexiconFields.formLangId + " = " +
-          sindarin.toString() + ")";
+      return "(" +
+          SimplexiconFields.formLangId +
+          " = " +
+          neoSindarin.toString() +
+          " OR " +
+          SimplexiconFields.formLangId +
+          " = " +
+          sindarin.toString() +
+          ")";
     } else if (formLangId == pElvishInclNeo) {
-      return "(" + SimplexiconFields.formLangId + " = " +
-          neoPElvish.toString() + " OR " +
-          SimplexiconFields.formLangId + " = " +
-          pElvish.toString() + ")";
+      return "(" +
+          SimplexiconFields.formLangId +
+          " = " +
+          neoPElvish.toString() +
+          " OR " +
+          SimplexiconFields.formLangId +
+          " = " +
+          pElvish.toString() +
+          ")";
     } else {
       return SimplexiconFields.formLangId + " = " + formLangId.toString();
     }
@@ -226,8 +242,47 @@ class EldamoDb {
     return result.map((json) => Simplexicon.fromJson(json)).toList();
   }
 
-  // Future close() async {
-  //   final db = await instance.database;
-  //   db.close();
-  // }
+  // returns a list of all Entry and Word entries in a root Entry,
+  // given any of its child ID's
+  Future<List<Nothrim>> nothrim(int entryId) async {
+    final db = await instance.database;
+    final result = await db.rawQuery("WITH RECURSIVE nothrim(m) AS ( "
+        "SELECT $entryId "
+        "UNION "
+        "SELECT e1.ID FROM ENTRY e1 "
+        "JOIN nothrim ON e1.PARENT_ID = m "
+        "UNION "
+        "SELECT e2.PARENT_ID FROM ENTRY e2 "
+        "JOIN nothrim ON e2.ID = m "
+        ") "
+        "SELECT n.m FROM nothrim n "
+        "JOIN ENTRY e ON n.m = e.ID "
+        "WHERE n.m IS NOT NULL "
+        "AND e.ENTRY_TYPE_ID IN (100, 120) "
+        "ORDER BY n.m ASC "
+        "LIMIT 100;");
+    return result.map((json) => Nothrim.fromJson(json)).toList();
+  }
+
+  // returns all Entry and Word entries in a root Entry,
+  // given any of its child ID's
+  Future<List<Simplexicon>> nothrimLexicon(int entryId) async {
+    final db = await instance.database;
+    final result = await db.rawQuery("WITH RECURSIVE nothrim(m) AS ( "
+        "SELECT $entryId "
+        "UNION "
+        "SELECT e1.ID FROM ENTRY e1 "
+        "JOIN nothrim ON e1.PARENT_ID = m "
+        "UNION "
+        "SELECT e2.PARENT_ID FROM ENTRY e2 "
+        "JOIN nothrim ON e2.ID = m "
+        ") "
+        "SELECT s.* FROM nothrim n "
+        "JOIN simplexicon s ON n.m = s.ID "
+        "WHERE n.m IS NOT NULL "
+        "ORDER BY n.m ASC "
+        "LIMIT 100;");
+    return result.map((json) => Simplexicon.fromJson(json)).toList();
+  }
+
 }
