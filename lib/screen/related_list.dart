@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import '../config/colours.dart';
-import '../db/eldamo_db.dart';
-import '../model/simplexicon.dart';
 import 'entry_screen.dart';
 
 class RelatedListItem extends StatefulWidget {
@@ -94,7 +92,7 @@ class _RelatedListItemState extends State<RelatedListItem> {
     }
 
     htmlData += (widget.relatedId != null && widget.formTo.startsWith("@") ? CSSBoldVeryBlue : CSSBoldBlueGrey) +
-        widget.formTo.substring(1) +
+        widget.formTo +
         CloseSpan +
         "&nbsp;&nbsp;";
 
@@ -103,8 +101,7 @@ class _RelatedListItemState extends State<RelatedListItem> {
           '"' +
           widget.glossTo +
           '"' +
-          CloseSpan +
-          "&nbsp;&nbsp;";
+          CloseSpan;
     }
   }
 
@@ -113,11 +110,9 @@ class _RelatedListItemState extends State<RelatedListItem> {
     //print(htmlData);
     return GestureDetector(
       onTap: () {
-        if (widget.relatedId != null) {
-          setState(() {
-            Navigator.of(context).push(_relatedDetailRoute(widget.relatedId));
-          });
-        }
+        setState(() {
+          Navigator.of(context).push(_relatedDetailRoute(widget.relatedId));
+        });
       },
       child: Container(
         padding: const EdgeInsets.fromLTRB(5.0, 0.0, 5.0, 0.0),

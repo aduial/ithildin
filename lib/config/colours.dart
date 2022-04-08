@@ -78,7 +78,6 @@ const String CSSBlueGreyItalic = StartSpan + CSSColBlueGrey + '; ' + FontItalic 
 const String CSSBoldItalic = StartSpan + CSSColText + '; ' + FontBold + ';' + FontItalic + EndSpan;
 
 
-
 const String StartSpan = '<span style="';
 const String FontLight = "font-weight:300";
 const String FontNormal = "font-weight:400";
@@ -87,6 +86,10 @@ const String FontBolder = "font-weight:800";
 const String FontItalic = "font-style:italic";
 const String CSSColText = "color:#444444";
 const String CSSBlueText = "color:#4444FF";
+const String CSSRedText = "color:#442324";
+const String CSSYellowText = "color:#443E23";
+const String CSSTealText = "color:#23443D";
+const String CSSPurpleText = "color:#442341";
 const String CSSColGreen = "color:#267F54";
 const String CSSColBlueGrey = "color:#264F7F";
 const String CSSColMountainBlue = "color:#27466F";

@@ -3,36 +3,36 @@ const String lexiconGlossView = 'lexicon_glosses';
 class LexiconGlossFields {
   static final List<String> values = [
     /// Add all fields
-    entryId, gloss, reference
+    entryId, gloss, sources
   ];
 
   static const String entryId = 'entry_id';
   static const String gloss = 'gloss';
-  static const String reference = 'reference';
+  static const String sources = 'sources';
 }
 
 class LexiconGloss {
 
   final int entryId;
   final String gloss;
-  final String reference;
+  final String sources;
 
 
   const LexiconGloss({
     required this.entryId,
     required this.gloss,
-    required this.reference,
+    required this.sources,
   });
 
   LexiconGloss copy({
     int? entryId,
     String? gloss,
-    String? reference,
+    String? sources,
   }) {
     return LexiconGloss(
       entryId: entryId ?? this.entryId,
       gloss: gloss ?? this.gloss,
-      reference: reference ?? this.reference,
+      sources: sources ?? this.sources,
     );
   }
 
@@ -40,13 +40,13 @@ class LexiconGloss {
   static LexiconGloss fromJson(Map<String, Object?> json) => LexiconGloss(
     entryId: json[LexiconGlossFields.entryId] as int,
     gloss: json[LexiconGlossFields.gloss] as String,
-    reference: json[LexiconGlossFields.reference] as String,
+    sources: json[LexiconGlossFields.sources] as String,
   );
 
   Map<String, Object?> toJson() => {
     LexiconGlossFields.entryId: entryId,
     LexiconGlossFields.gloss: gloss,
-    LexiconGlossFields.reference: reference,
+    LexiconGlossFields.sources: sources,
   };
 
 
@@ -57,20 +57,20 @@ class LexiconGloss {
           runtimeType == other.runtimeType &&
           entryId == other.entryId &&
           gloss == other.gloss &&
-          reference == other.reference);
+          sources == other.sources);
 
   @override
   int get hashCode =>
       entryId.hashCode ^
       gloss.hashCode ^
-      reference.hashCode;
+      sources.hashCode;
 
   @override
   String toString() {
     return 'LexiconGloss{' +
         ' entryId: $entryId,' +
         ' gloss: $gloss,' +
-        ' reference: $reference,' +
+        ' sources: $sources,' +
         '}';
   }
 
@@ -78,7 +78,7 @@ class LexiconGloss {
     return {
       'entryId': this.entryId,
       'gloss': this.gloss,
-      'reference': this.reference,
+      'sources': this.sources,
     };
   }
 
@@ -86,7 +86,7 @@ class LexiconGloss {
     return LexiconGloss(
       entryId: map['entryId'] as int,
       gloss: map['gloss'] as String,
-      reference: map['reference'] as String,
+      sources: map['sources'] as String,
     );
   }
 }

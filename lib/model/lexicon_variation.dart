@@ -3,13 +3,12 @@ const String lexiconVariationView = 'lexicon_variations';
 class LexiconVariationFields {
   static final List<String> values = [
     /// Add all fields
-    entryId, mark, lform, typeId, varsource
+    entryId, mark, form, varsource
   ];
 
   static const String entryId = 'entry_id';
   static const String mark = 'mark';
-  static const String lform = 'lform';
-  static const String typeId = 'type_id';
+  static const String form = 'form';
   static const String varsource = 'varsource';
 }
 
@@ -17,31 +16,27 @@ class LexiconVariation {
 
   final int entryId;
   final String mark;
-  final String lform;
-  final int typeId;
+  final String form;
   final String varsource;
 
 
   const LexiconVariation({
     required this.entryId,
     required this.mark,
-    required this.lform,
-    required this.typeId,
+    required this.form,
     required this.varsource,
   });
 
   LexiconVariation copy({
     int? entryId,
     String? mark,
-    String? lform,
-    int? typeId,
+    String? form,
     String? varsource,
   }) {
     return LexiconVariation(
       entryId: entryId ?? this.entryId,
       mark: mark ?? this.mark,
-      lform: lform ?? this.lform,
-      typeId: typeId ?? this.typeId,
+      form: form ?? this.form,
       varsource: varsource ?? this.varsource,
     );
   }
@@ -49,16 +44,14 @@ class LexiconVariation {
   static LexiconVariation fromJson(Map<String, Object?> json) => LexiconVariation(
     entryId: json[LexiconVariationFields.entryId] as int,
     mark: json[LexiconVariationFields.mark] as String,
-    lform: json[LexiconVariationFields.lform] as String,
-    typeId: json[LexiconVariationFields.typeId] as int,
+    form: json[LexiconVariationFields.form] as String,
     varsource: json[LexiconVariationFields.varsource] as String,
   );
 
   Map<String, Object?> toJson() => {
     LexiconVariationFields.entryId: entryId,
     LexiconVariationFields.mark: mark,
-    LexiconVariationFields.lform: lform,
-    LexiconVariationFields.typeId: typeId,
+    LexiconVariationFields.form: form,
     LexiconVariationFields.varsource: varsource,
   };
 
@@ -69,16 +62,14 @@ class LexiconVariation {
           runtimeType == other.runtimeType &&
           entryId == other.entryId &&
           mark == other.mark &&
-          lform == other.lform &&
-          typeId == other.typeId &&
+          form == other.form &&
           varsource == other.varsource);
 
   @override
   int get hashCode =>
       entryId.hashCode ^
       mark.hashCode ^
-      lform.hashCode ^
-      typeId.hashCode ^
+      form.hashCode ^
       varsource.hashCode;
 
   @override
@@ -86,8 +77,7 @@ class LexiconVariation {
     return 'lexiconVariation{' +
         ' entryId: $entryId,' +
         ' mark: $mark,' +
-        ' lform: $lform,' +
-        ' typeId: $typeId,' +
+        ' form: $form,' +
         ' varsource: $varsource,' +
         '}';
   }
@@ -96,8 +86,7 @@ class LexiconVariation {
     return {
       'entryId': this.entryId,
       'mark': this.mark,
-      'lform': this.lform,
-      'typeId': this.typeId,
+      'form': this.form,
       'varsource': this.varsource,
     };
   }
@@ -106,8 +95,7 @@ class LexiconVariation {
     return LexiconVariation(
       entryId: map['entryId'] as int,
       mark: map['mark'] as String,
-      lform: map['lform'] as String,
-      typeId: map['typeId'] as int,
+      form: map['form'] as String,
       varsource: map['varsource'] as String,
     );
   }

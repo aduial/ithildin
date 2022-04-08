@@ -1,11 +1,13 @@
 import 'package:flutter/services.dart';
 import 'package:ithildin/model/entry_doc.dart';
+import 'package:ithildin/model/lexicon_change.dart';
 import 'package:ithildin/model/lexicon_cognate.dart';
 import 'package:ithildin/model/lexicon_gloss.dart';
 import 'package:ithildin/model/lexicon_header.dart';
 import 'package:ithildin/model/lexicon_related.dart';
 import 'package:ithildin/model/lexicon_variation.dart';
 import 'package:ithildin/model/lexicon_inflection.dart';
+import 'package:ithildin/model/lexicon_change.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:ithildin/model/language.dart';
@@ -14,6 +16,10 @@ import 'package:ithildin/config/config.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io' as io;
 
+import '../model/lexicon_combine.dart';
+import '../model/lexicon_element.dart';
+import '../model/lexicon_example.dart';
+import '../model/lexicon_see.dart';
 import '../model/nothrim.dart';
 
 class EldamoDb {
@@ -113,7 +119,7 @@ class EldamoDb {
     return result.map((json) => LexiconCognate.fromJson(json)).toList();
   }
 
-  Future<List<LexiconRelated>> loadLexiconRelated(int entryId) async {
+  Future<List<LexiconRelated>> loadLexiconRelations(int entryId) async {
     final db = await instance.database;
     final result = await db.rawQuery("SELECT * FROM $lexiconRelatedView "
         "WHERE ${LexiconRelatedFields.entryId} = $entryId "
@@ -121,7 +127,7 @@ class EldamoDb {
     return result.map((json) => LexiconRelated.fromJson(json)).toList();
   }
 
-  Future<List<LexiconVariation>> loadLexiconVariation(int entryId) async {
+  Future<List<LexiconVariation>> loadLexiconVariations(int entryId) async {
     final db = await instance.database;
     final result = await db.rawQuery("SELECT * FROM $lexiconVariationView "
         "WHERE ${LexiconVariationFields.entryId} = $entryId "
@@ -129,12 +135,52 @@ class EldamoDb {
     return result.map((json) => LexiconVariation.fromJson(json)).toList();
   }
 
-  Future<List<LexiconInflection>> loadLexiconInflection(int entryId) async {
+  Future<List<LexiconInflection>> loadLexiconInflections(int entryId) async {
     final db = await instance.database;
     final result = await db.rawQuery("SELECT * FROM $lexiconInflectionView "
         "WHERE ${LexiconInflectionFields.entryId} = $entryId "
         "LIMIT 1000");
     return result.map((json) => LexiconInflection.fromJson(json)).toList();
+  }
+
+  Future<List<LexiconChange>> loadLexiconChanges(int entryId) async {
+    final db = await instance.database;
+    final result = await db.rawQuery("SELECT * FROM $lexiconChangeView "
+        "WHERE ${LexiconChangeFields.entryId} = $entryId "
+        "LIMIT 1000");
+    return result.map((json) => LexiconChange.fromJson(json)).toList();
+  }
+
+  Future<List<LexiconCombine>> loadLexiconCombinations(int entryId) async {
+    final db = await instance.database;
+    final result = await db.rawQuery("SELECT * FROM $lexiconCombineView "
+        "WHERE ${LexiconCombineFields.entryId} = $entryId "
+        "LIMIT 1000");
+    return result.map((json) => LexiconCombine.fromJson(json)).toList();
+  }
+
+  Future<List<LexiconElement>> loadLexiconElements(int entryId) async {
+    final db = await instance.database;
+    final result = await db.rawQuery("SELECT * FROM $lexiconElementView "
+        "WHERE ${LexiconElementFields.entryId} = $entryId "
+        "LIMIT 1000");
+    return result.map((json) => LexiconElement.fromJson(json)).toList();
+  }
+
+  Future<List<LexiconExample>> loadLexiconExamples(int entryId) async {
+    final db = await instance.database;
+    final result = await db.rawQuery("SELECT * FROM $lexiconExampleView "
+        "WHERE ${LexiconExampleFields.entryId} = $entryId "
+        "LIMIT 1000");
+    return result.map((json) => LexiconExample.fromJson(json)).toList();
+  }
+
+  Future<List<LexiconSee>> loadLexiconSights(int entryId) async {
+    final db = await instance.database;
+    final result = await db.rawQuery("SELECT * FROM $lexiconSeeView "
+        "WHERE ${LexiconSeeFields.entryId} = $entryId "
+        "LIMIT 1000");
+    return result.map((json) => LexiconSee.fromJson(json)).toList();
   }
 
   Future<List<EntryDoc>> loadEntryDocs(int entryId) async {

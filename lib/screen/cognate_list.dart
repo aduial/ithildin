@@ -61,8 +61,7 @@ class _CognateListItemState extends State<CognateListItem> {
           '"' +
           (widget.gloss ?? "") +
           '"' +
-          CloseSpan +
-          "&nbsp;&nbsp;";
+          CloseSpan;
     }
     htmlData += CSSText + widget.sources.replaceAll('.', '') + CloseSpan;
   }
