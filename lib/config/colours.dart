@@ -28,7 +28,8 @@ const EarthGrey = const Color(0xff7F7B5E);
 const BrightGreen = const Color(0xFF96FDCB);
 
 const DisabledButtons = const Color(0xFFD09090);
-const Disabled = const Color(0xFFFB9294);
+const Pink = const Color(0xFFFB9294);
+const LightPink = const Color(0xFFFFA2B4);
 const BrightBlue = const Color(0xFFACE5EE);
 const BrightestBlue = const Color(0xFFC2F5FF);
 const Laurelin = const Color(0xFFC0FEE8);
@@ -36,12 +37,21 @@ const Telperion = const Color(0xFFFFF7BC);
 
 const LimeAccent = const Color(0xFFEEFF41);
 
+const IndigoColour = const Color(0xFF8080FF); // indigo
+
 const RegularFormColour = const Color (0xFF40C4FF); // blauw
 const DerivedFormColour = const Color (0xFF40EFC4); // zeegroen
 const ReconstructedFormColour = const Color (0xFF90FF40); // heldergroen
 const ReformulatedFormColour = const Color (0xFFFFEF40); // knurriegeel
 const SpeculativeFormColour = const Color (0xFFFF9030); // oranje
 const QuestionedFormColour = const Color (0xFFFF5050); // rood
+
+
+const MinimalSetColour = const Color (0xFFFF9090); // rood
+const BasicSetColour = const Color (0xFFFFB070); // oranje
+const MediumSetColour = const Color (0xFFFFFF90); // knarriegeel
+const LargeSetColour = const Color (0xFF80FFA0); // groen
+const CompleteSetColour = const Color (0xFF70FFFF); // blâh
 
 const NeoFormColour = const Color (0xFFC084FF);
 const StruckOutFormColour = const Color (0xFFB0B0B0);
@@ -96,3 +106,22 @@ const String CSSColMountainBlue = "color:#27466F";
 const String CSSOchre = "color:#C0B090";
 const String EndSpan = '">';
 const String CloseSpan = "</span>";
+
+Color getColourByNumber(int colnr){
+  switch(colnr) {
+    case 0: {  return MinimalSetColour; }
+    break;
+
+    case 1: {  return BasicSetColour; }
+    break;
+
+    case 2: {  return MediumSetColour; }
+    break;
+
+    case 3: {  return LargeSetColour; }
+    break;
+
+    default: { return CompleteSetColour; }
+    break;
+  }
+}

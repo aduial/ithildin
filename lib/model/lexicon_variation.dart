@@ -3,13 +3,13 @@ const String lexiconVariationView = 'lexicon_variations';
 class LexiconVariationFields {
   static final List<String> values = [
     /// Add all fields
-    entryId, mark, form, varsource
+    entryId, mark, form, sources
   ];
 
   static const String entryId = 'entry_id';
   static const String mark = 'mark';
   static const String form = 'form';
-  static const String varsource = 'varsource';
+  static const String sources = 'sources';
 }
 
 class LexiconVariation {
@@ -17,27 +17,27 @@ class LexiconVariation {
   final int entryId;
   final String mark;
   final String form;
-  final String varsource;
+  final String sources;
 
 
   const LexiconVariation({
     required this.entryId,
     required this.mark,
     required this.form,
-    required this.varsource,
+    required this.sources,
   });
 
   LexiconVariation copy({
     int? entryId,
     String? mark,
     String? form,
-    String? varsource,
+    String? sources,
   }) {
     return LexiconVariation(
       entryId: entryId ?? this.entryId,
       mark: mark ?? this.mark,
       form: form ?? this.form,
-      varsource: varsource ?? this.varsource,
+      sources: sources ?? this.sources,
     );
   }
 
@@ -45,14 +45,14 @@ class LexiconVariation {
     entryId: json[LexiconVariationFields.entryId] as int,
     mark: json[LexiconVariationFields.mark] as String,
     form: json[LexiconVariationFields.form] as String,
-    varsource: json[LexiconVariationFields.varsource] as String,
+    sources: json[LexiconVariationFields.sources] as String,
   );
 
   Map<String, Object?> toJson() => {
     LexiconVariationFields.entryId: entryId,
     LexiconVariationFields.mark: mark,
     LexiconVariationFields.form: form,
-    LexiconVariationFields.varsource: varsource,
+    LexiconVariationFields.sources: sources,
   };
 
   @override
@@ -63,14 +63,14 @@ class LexiconVariation {
           entryId == other.entryId &&
           mark == other.mark &&
           form == other.form &&
-          varsource == other.varsource);
+          sources == other.sources);
 
   @override
   int get hashCode =>
       entryId.hashCode ^
       mark.hashCode ^
       form.hashCode ^
-      varsource.hashCode;
+      sources.hashCode;
 
   @override
   String toString() {
@@ -78,7 +78,7 @@ class LexiconVariation {
         ' entryId: $entryId,' +
         ' mark: $mark,' +
         ' form: $form,' +
-        ' varsource: $varsource,' +
+        ' sources: $sources,' +
         '}';
   }
 
@@ -87,7 +87,7 @@ class LexiconVariation {
       'entryId': this.entryId,
       'mark': this.mark,
       'form': this.form,
-      'varsource': this.varsource,
+      'sources': this.sources,
     };
   }
 
@@ -96,7 +96,7 @@ class LexiconVariation {
       entryId: map['entryId'] as int,
       mark: map['mark'] as String,
       form: map['form'] as String,
-      varsource: map['varsource'] as String,
+      sources: map['sources'] as String,
     );
   }
 }

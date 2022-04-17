@@ -27,7 +27,7 @@ class VariationCard extends StatelessWidget {
                   entryId: lexiconVariations[index].entryId,
                   mark: lexiconVariations[index].mark,
                   form: lexiconVariations[index].form,
-                  varsource: lexiconVariations[index].varsource,
+                  sources: lexiconVariations[index].sources,
                 );
               }));
     }

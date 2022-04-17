@@ -7,7 +7,6 @@ import 'package:ithildin/model/lexicon_header.dart';
 import 'package:ithildin/model/lexicon_related.dart';
 import 'package:ithildin/model/lexicon_variation.dart';
 import 'package:ithildin/model/lexicon_inflection.dart';
-import 'package:ithildin/model/lexicon_change.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:ithildin/model/language.dart';
@@ -16,6 +15,7 @@ import 'package:ithildin/config/config.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io' as io;
 
+import '../config/user_preferences.dart';
 import '../model/lexicon_combine.dart';
 import '../model/lexicon_element.dart';
 import '../model/lexicon_example.dart';
@@ -25,13 +25,6 @@ import '../model/nothrim.dart';
 class EldamoDb {
   static final EldamoDb instance = EldamoDb._init();
   static Database? _database;
-
-  String langCatWhere = "< 2";
-
-  void setLangCatWhere(String whereClause) {
-    langCatWhere = whereClause;
-    loadEldarinLanguages();
-  }
 
   EldamoDb._init();
 
@@ -60,8 +53,18 @@ class EldamoDb {
     return await openDatabase(dbPath, version: 1);
   }
 
-  // ID = 1 = All Eldarin languages
-  Future<List<Language>> loadEldarinLanguages() async {
+  // get single language
+  Future<Language> loadLanguage(int languageId) async {
+    final db = await instance.database;
+    final result = await db.rawQuery(
+        "SELECT * FROM $languageTable WHERE ID = $languageId");
+    return result.map((json) => Language.fromJson(json)).first;
+  }
+
+  // filtered language sets
+  Future<List<Language>> loadEldarinLanguageSet() async {
+    int langCat = (UserPreferences.getLanguageSet() ?? defaultLanguageSetIndex) + 1;
+    String langCatWhere = '< $langCat';
     final db = await instance.database;
     // const orderBy = "${LanguageFields.id} ASC";
     const orderBy = "${LanguageFields.listOrder} ASC";
@@ -70,8 +73,8 @@ class EldamoDb {
     return result.map((json) => Language.fromJson(json)).toList();
   }
 
-  // Active modern language have parent_id = 10 (inactive have 11)
-  Future<List<Language>> loadModernLanguages() async {
+  // Active glosslanguages have parent_id = 10 (inactive have 11)
+  Future<List<Language>> loadGlossLanguageSet() async {
     final db = await instance.database;
     const orderBy = "${LanguageFields.id} ASC";
     final result = await db.rawQuery("select * from $languageTable "

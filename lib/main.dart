@@ -4,6 +4,7 @@ import 'package:ithildin/screen/minui.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'config/colours.dart';
+import 'config/user_preferences.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -11,6 +12,7 @@ Future main() async {
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
+  await UserPreferences.init();
   runApp(const IthildinApp());
 }
 

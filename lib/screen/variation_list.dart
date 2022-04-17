@@ -8,13 +8,13 @@ class VariationListItem extends StatefulWidget {
     required this.entryId,
     required this.mark,
     required this.form,
-    required this.varsource,
+    required this.sources,
   }) : super(key: key);
 
   final int entryId;
   final String mark;
   final String form;
-  final String varsource;
+  final String sources;
 
   @override
   State<VariationListItem> createState() => _VariationListItemState();
@@ -28,7 +28,7 @@ class _VariationListItemState extends State<VariationListItem> {
 
     htmlData += (widget.mark.contains('-') ? CSSBoldDisabled : CSSBoldBlueGrey) +
         widget.form + CloseSpan + "&nbsp;&nbsp;";
-    htmlData += CSSText + widget.varsource + CloseSpan;
+    htmlData += CSSText + widget.sources + CloseSpan;
 
     super.initState();
   }
