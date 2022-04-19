@@ -6,6 +6,7 @@ import 'package:ithildin/config/user_preferences.dart';
 import 'package:ithildin/db/eldamo_db.dart';
 import 'package:ithildin/model/language.dart';
 import 'package:ithildin/model/simplexicon.dart';
+import 'package:ithildin/screen/search_match.dart';
 import 'package:ithildin/screen/slex_list.dart';
 import 'dart:math' as math;
 
@@ -53,6 +54,8 @@ class _IthildinScreenState extends State<IthildinScreen> {
 
   bool isLanguageDataLoading = false;
   bool isSimplexiconLoading = true;
+
+  bool usedRegex = false;
 
   int _formOrGloss = 0;
 
@@ -104,15 +107,27 @@ class _IthildinScreenState extends State<IthildinScreen> {
 
   Future simplexiconFormFilter(String formFilter) async {
     setState(() => isSimplexiconLoading = true);
-    simplexicons = await EldamoDb.instance.simplexiconFormFilter(
-        formFilter, _activeEldarinLanguage!.id, _activeGlossLanguage!.id);
+    if ((UserPreferences.getMatchMethod() ?? defaultMatchingMethodIndex) < 4){
+      simplexicons = await EldamoDb.instance.simplexiconFormFilter(
+          formFilter, _activeEldarinLanguage!.id, _activeGlossLanguage!.id);
+    } else {
+      usedRegex = true;
+      simplexicons = await EldamoDb.instance.simplexiconFormRegexFilter(
+          formFilter, _activeEldarinLanguage!.id, _activeGlossLanguage!.id);
+    }
     setState(() => isSimplexiconLoading = false);
   }
 
   Future simplexiconGlossFilter(String glossFilter) async {
     setState(() => isSimplexiconLoading = true);
-    simplexicons = await EldamoDb.instance.simplexiconGlossFilter(
-        glossFilter, _activeEldarinLanguage!.id, _activeGlossLanguage!.id);
+    if ((UserPreferences.getMatchMethod() ?? defaultMatchingMethodIndex) < 4) {
+      simplexicons = await EldamoDb.instance.simplexiconGlossFilter(
+          glossFilter, _activeEldarinLanguage!.id, _activeGlossLanguage!.id);
+    } else {
+      usedRegex = true;
+      simplexicons = await EldamoDb.instance.simplexiconGlossRegexFilter(
+          glossFilter, _activeEldarinLanguage!.id, _activeGlossLanguage!.id);
+    }
     setState(() => isSimplexiconLoading = false);
   }
 
@@ -142,6 +157,10 @@ class _IthildinScreenState extends State<IthildinScreen> {
     } else {
       simplexiconGlossFilter(searchController.text);
     }
+  }
+
+  void clearSearch(){
+    searchController.clear();
   }
 
   @override
@@ -254,43 +273,47 @@ class _IthildinScreenState extends State<IthildinScreen> {
                                               id: 0, name: "no languages found")
                                         ]
                                       : eldarinLanguageSet,
-
-                              /// pre-select Sindarin at startup
                               selectedItem: isLanguageDataLoading
                                   ? null
                                   : _activeEldarinLanguage,
-
-                              dropdownSearchDecoration: const InputDecoration(
+                              dropdownBuilder: _dropDownBuilder,
+                              dropdownSearchDecoration: InputDecoration(
                                 filled: true,
-                                fillColor: BrightGreen,
+                                fillColor: getLangSetColour(true),
+
                                 hintText: "tap to change",
-                                prefixIconColor: DarkGreen,
+                                prefixIconColor: getLangSetColour(false),
                                 contentPadding:
                                     EdgeInsets.fromLTRB(12, 8, 0, 0),
-                                border: OutlineInputBorder(
+                                enabledBorder: const OutlineInputBorder(
+                                    borderSide:
+                                        BorderSide(width: 1, color: TanteRia),
+                                    borderRadius: BorderRadius.all(
+                                        Radius.circular(15.0))),
+                                border: const OutlineInputBorder(
                                     borderRadius: BorderRadius.all(
                                         Radius.circular(15.0))),
                               ),
-
                               showSearchBox: true,
                               searchFieldProps: TextFieldProps(
-                                decoration: const InputDecoration(
+                                decoration: InputDecoration(
                                   labelText: "filter on",
                                   filled: true,
-                                  fillColor: Laurelin,
+                                  fillColor: getLangSetColour(true),
                                   contentPadding:
-                                      EdgeInsets.fromLTRB(12, 12, 8, 0),
-                                  border: OutlineInputBorder(
+                                      const EdgeInsets.fromLTRB(12, 12, 8, 0),
+                                  border: const OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          width: 1, color: LightBlueGrey),
                                       borderRadius: BorderRadius.all(
-                                          Radius.circular(25.0))),
+                                          Radius.circular(20.0))),
                                 ),
                               ),
-
                               popupTitle: Container(
                                 height: 50,
-                                decoration: const BoxDecoration(
-                                  color: DarkerGreen,
-                                  borderRadius: BorderRadius.only(
+                                decoration: BoxDecoration(
+                                  color: getLangSetColour(false),
+                                  borderRadius: const BorderRadius.only(
                                     topLeft: Radius.circular(20),
                                     topRight: Radius.circular(20),
                                   ),
@@ -322,7 +345,6 @@ class _IthildinScreenState extends State<IthildinScreen> {
                       ),
 
                       /// dropdown list for gloss languages
-                      /// (BottomSheet Mode with searchBox)
                       Container(
                         width: MediaQuery.of(context).size.width * 0.4,
                         height: 50,
@@ -342,13 +364,18 @@ class _IthildinScreenState extends State<IthildinScreen> {
                           selectedItem: isLanguageDataLoading
                               ? null
                               : _activeGlossLanguage,
-
+                          dropdownBuilder: _dropDownBuilder,
                           dropdownSearchDecoration: const InputDecoration(
                             filled: true,
                             fillColor: Telperion,
                             hintText: "tap to change",
                             prefixIconColor: DarkBrown,
                             contentPadding: EdgeInsets.fromLTRB(12, 8, 0, 0),
+                            enabledBorder: OutlineInputBorder(
+                                borderSide:
+                                    BorderSide(width: 1, color: TanteRia),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(15.0))),
                             border: OutlineInputBorder(
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(15.0))),
@@ -418,11 +445,11 @@ class _IthildinScreenState extends State<IthildinScreen> {
                         minWidth: 70.0,
                         cornerRadius: 15.0,
                         borderWidth: 1,
-                        borderColor: const [Colors.white],
+                        borderColor: const [White],
                         dividerColor: BlueGrey,
-                        activeBgColors: const [
-                          [BrightGreen],
-                          [Telperion]
+                        activeBgColors: [
+                          [getLangSetColour(true)],
+                          const [Telperion]
                         ],
                         activeFgColor: VeryVeryDark,
                         inactiveBgColor: BlueGrey,
@@ -458,14 +485,20 @@ class _IthildinScreenState extends State<IthildinScreen> {
                             alignment: const AlignmentDirectional(0, 0),
                             child: TextField(
                               key: keySearchField,
-                              // cursorHeight: ,
+                              style: Theme.of(context)
+                                .textTheme
+                                .bodyText1!
+                                .copyWith(color: TanteRiaSAvonds, fontWeight: FontWeight.w300, fontSize: 18),
                               controller: searchController,
-                              decoration: const InputDecoration(
+                              decoration: InputDecoration(
                                   filled: true,
                                   fillColor: BrightBlue,
                                   hintText: "Search",
-                                  prefixIcon: Icon(Icons.search),
-                                  border: OutlineInputBorder(
+                                  prefixIcon: Icon(
+                                    getMatchMethodIcon(),
+                                    color: TanteRiaSAvonds,
+                                  ),
+                                  border: const OutlineInputBorder(
                                       borderRadius: BorderRadius.all(
                                           Radius.circular(15.0)))),
                             ),
@@ -559,7 +592,6 @@ class _IthildinScreenState extends State<IthildinScreen> {
                     ),
                   ),
                 ),
-
                 OpenContainer<bool>(
                   transitionType: ContainerTransitionType.fadeThrough,
                   transitionDuration: const Duration(milliseconds: 500),
@@ -592,36 +624,23 @@ class _IthildinScreenState extends State<IthildinScreen> {
                   openColor: RegularResultBGColour,
                   closedColor: RegularResultBGColour,
                   openBuilder: (BuildContext _, VoidCallback openContainer) {
-                    return const LanguageSets();
+                    return const SearchMatch();
                   },
-                  onClosed: langSetPreferenceClosed,
+                  onClosed: searchMatchPreferenceClosed,
                   tappable: false,
                   closedShape: const RoundedRectangleBorder(),
                   closedElevation: 0.0,
                   closedBuilder: (BuildContext _, VoidCallback openContainer) {
                     return ListTile(
                       tileColor: TanteRiaSAvonds,
-                      leading: const Icon(CupertinoIcons.search_circle,
+                      leading: const Icon(Icons.manage_search,
                           color: LightPink),
                       onTap: openContainer,
-                      title: Text('Search preferences'),
+                      title: Text('Search matching'),
                       textColor: Ithildin,
                     );
                   },
                 ),
-                // Spacer(),
-                // DefaultTextStyle(
-                //   style: const TextStyle(
-                //     fontSize: 12,
-                //     color: Ithildin,
-                //   ),
-                //   child: Container(
-                //     margin: const EdgeInsets.symmetric(
-                //       vertical: 16.0,
-                //     ),
-                //     child: Text('Terms of Service | Privacy Policy'),
-                //   ),
-                // ),
               ],
             ),
           ),
@@ -633,10 +652,15 @@ class _IthildinScreenState extends State<IthildinScreen> {
   void langSetPreferenceClosed(bool? langSetChanged) {
     if (langSetChanged ?? false) {
       reloadEldarinLanguageSet();
-
+      String setName = langCategories[
+          UserPreferences.getLanguageSet() ?? defaultLanguageSetIndex];
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: const Text('preference saved'),
-        backgroundColor: PastelIndigo,
+        content: Text(
+          '$setName set active',
+          textAlign: TextAlign.center,
+          style: const TextStyle(color: DarkerBlueGrey, fontSize: 16),
+        ),
+        backgroundColor: getLangSetColour(true),
         behavior: SnackBarBehavior.floating,
         width: 250,
         elevation: 30,
@@ -645,12 +669,59 @@ class _IthildinScreenState extends State<IthildinScreen> {
           borderRadius: BorderRadius.circular(24),
         ),
       ));
-      Timer(Duration(seconds: 1), () {
+      Timer(const Duration(seconds: 1), () {
         setState(() {
           drawerController.toggleDrawer();
         });
       });
     }
+  }
+
+  void searchMatchPreferenceClosed(bool? searchMatchChanged) {
+    if (searchMatchChanged ?? false) {
+      String matchMethod = matchingMethods[
+      UserPreferences.getMatchMethod() ?? defaultMatchingMethodIndex];
+      if ((UserPreferences.getMatchMethod() ?? defaultMatchingMethodIndex) < 4){
+        EldamoDb.instance.clearRegexBufferList();
+        if (usedRegex){
+          clearSearch();
+          usedRegex = false;
+        }
+      }
+      _doSearch();
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(
+          '$matchMethod search matching',
+          textAlign: TextAlign.center,
+          style: const TextStyle(color: DarkerBlueGrey, fontSize: 16),
+        ),
+        backgroundColor: Ithildin,
+        behavior: SnackBarBehavior.floating,
+        width: 250,
+        elevation: 30,
+        padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(24),
+        ),
+      ));
+      Timer(const Duration(seconds: 1), () {
+        setState(() {
+          drawerController.toggleDrawer();
+        });
+      });
+    }
+  }
+
+  Widget _dropDownBuilder(BuildContext context, Language? activeLanguage) {
+    return Container(
+      child: Text(
+        activeLanguage?.name ?? '',
+        style: Theme.of(context)
+            .textTheme
+            .bodyText1!
+            .copyWith(color: TanteRiaSAvonds, fontWeight: FontWeight.w300, fontSize: 18),
+      ),
+    );
   }
 
   void showTutorial() {

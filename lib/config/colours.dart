@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:ithildin/config/user_preferences.dart';
+
+import 'config.dart';
 
 const White = Colors.white;
 
@@ -47,11 +50,42 @@ const SpeculativeFormColour = const Color (0xFFFF9030); // oranje
 const QuestionedFormColour = const Color (0xFFFF5050); // rood
 
 
-const MinimalSetColour = const Color (0xFFFF9090); // rood
-const BasicSetColour = const Color (0xFFFFB070); // oranje
-const MediumSetColour = const Color (0xFFFFFF90); // knarriegeel
-const LargeSetColour = const Color (0xFF80FFA0); // groen
-const CompleteSetColour = const Color (0xFF70FFFF); // blâh
+const ActiveMinimalSetColour = const Color (0xFFFFC0E0);
+const ActiveBasicSetColour = const Color (0xFFFFDFC0);
+const ActiveMediumSetColour = const Color (0xFF99FFCC);
+const ActiveLargeSetColour = const Color (0xFFBFDFFF);
+const ActiveCompleteSetColour = const Color (0xFFDFBFFF);
+
+
+const InActiveMinimalSetColour = const Color (0xFF7F5F6F);
+const InActiveBasicSetColour = const Color (0xFF7F6953);
+const InActiveMediumSetColour = const Color (0xFF597F6C);
+const InActiveLargeSetColour = const Color (0xFF606F7F);
+const InActiveCompleteSetColour = const Color (0xFF6F5F7F);
+
+// const ActiveMinimalSetColour = const Color (0xFFFFA0A0); // rood
+// const ActiveBasicSetColour = const Color (0xFFFFD090); // oranje
+// const ActiveMediumSetColour = const Color (0xFF96FDCB); // groen
+// const ActiveLargeSetColour = const Color (0xFF70FFFF); // blâh
+// const ActiveCompleteSetColour = const Color (0xFF80C0FF); // blâh
+//
+// const InActiveMinimalSetColour = const Color (0xFF906060); // rood
+// const InActiveBasicSetColour = const Color (0xFF907040); // oranje
+// const InActiveMediumSetColour = const Color (0xFF4C7F66); // knarriegeel
+// const InActiveLargeSetColour = const Color (0xFF308585); // groen
+// const InActiveCompleteSetColour = const Color (0xFF40607F); // blâh
+
+const LightAnyMatchColour = const Color (0xFFFF3639); // rood
+const LightStartMatchColour = const Color (0xFFFF8F21); // oranje
+const LightEndMatchColour = const Color (0xFFFFEB19); // groen
+const LightVerbatimMatchColour = const Color (0xFF1AFF4F); // blâh
+const LightRegexMatchColour = const Color (0xFF1A92FF); // blâh
+
+const DarkAnyMatchColour = const Color (0xFFCB282B); // rood
+const DarkStartMatchColour = const Color (0xFFCD7A2A); // oranje
+const DarkEndMatchColour = const Color (0xFFCDBE29); // groen
+const DarkVerbatimMatchColour = const Color (0xFF28CB4E); // blâh
+const DarkRegexMatchColour = const Color (0xFF2A7FCD); // blâh
 
 const NeoFormColour = const Color (0xFFC084FF);
 const StruckOutFormColour = const Color (0xFFB0B0B0);
@@ -109,19 +143,47 @@ const String CloseSpan = "</span>";
 
 Color getColourByNumber(int colnr){
   switch(colnr) {
-    case 0: {  return MinimalSetColour; }
+    case 0: {  return isCurrentLangSet(colnr) ? ActiveMinimalSetColour : InActiveMinimalSetColour; }
     break;
 
-    case 1: {  return BasicSetColour; }
+    case 1: {  return isCurrentLangSet(colnr) ? ActiveBasicSetColour : InActiveBasicSetColour; }
     break;
 
-    case 2: {  return MediumSetColour; }
+    case 2: {  return isCurrentLangSet(colnr) ? ActiveMediumSetColour : InActiveMediumSetColour; }
     break;
 
-    case 3: {  return LargeSetColour; }
+    case 3: {  return isCurrentLangSet(colnr) ? ActiveLargeSetColour : InActiveLargeSetColour; }
     break;
 
-    default: { return CompleteSetColour; }
+    default: { return isCurrentLangSet(colnr) ? ActiveCompleteSetColour : InActiveCompleteSetColour; }
     break;
   }
+}
+
+Color getLangSetColour(bool light){
+  switch(UserPreferences.getLanguageSet() ?? defaultLanguageSetIndex) {
+    case 0: {  return light ? ActiveMinimalSetColour : InActiveMinimalSetColour; }
+    break;
+
+    case 1: {  return light ? ActiveBasicSetColour : InActiveBasicSetColour; }
+    break;
+
+    case 2: {  return light ? ActiveMediumSetColour : InActiveMediumSetColour; }
+    break;
+
+    case 3: {  return light ? ActiveLargeSetColour : InActiveLargeSetColour; }
+    break;
+
+    default: { return light ? ActiveCompleteSetColour : InActiveCompleteSetColour; }
+    break;
+  }
+}
+
+
+Color getTextColourByNumber(int colnr){
+  return isCurrentLangSet(colnr) ? DarkerBlueGrey : NotepaperWhite;
+}
+
+bool isCurrentLangSet(int index){
+  return (index - (UserPreferences.getLanguageSet() ?? defaultLanguageSetIndex) == 0);
 }

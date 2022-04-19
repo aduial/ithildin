@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:ithildin/config/user_preferences.dart';
@@ -12,7 +14,6 @@ class LanguageSets extends StatefulWidget {
 }
 
 class _LanguageSetsState extends State<LanguageSets> {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,19 +22,18 @@ class _LanguageSetsState extends State<LanguageSets> {
         backgroundColor: RegularResultBGColour,
         title: Text("choose language set"),
         actions: <Widget>[
-            IconButton(
-              icon: const Icon(
-                  CupertinoIcons.arrowtriangle_down_square,
-                  color: BrightGreen),
-              onPressed: () => Navigator.pop(context, false),
-              tooltip: 'cancel',
-            )
+          IconButton(
+            icon: const Icon(CupertinoIcons.arrowtriangle_down_square,
+                color: BrightGreen),
+            onPressed: () => Navigator.pop(context, false),
+            tooltip: 'cancel',
+          )
         ],
       ),
       backgroundColor: BlueGrey,
       body: SafeArea(
         child: Padding(
-        padding: const EdgeInsetsDirectional.fromSTEB(10, 10, 10, 10),
+          padding: const EdgeInsetsDirectional.fromSTEB(10, 10, 10, 10),
           child: Column(
             mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.start,
@@ -44,8 +44,8 @@ class _LanguageSetsState extends State<LanguageSets> {
                 child: Container(
                   alignment: Alignment.bottomCenter,
                   child: Padding(
-                    padding: const EdgeInsetsDirectional.fromSTEB(10, 20, 10, 20),
-
+                    padding:
+                    const EdgeInsetsDirectional.fromSTEB(10, 20, 10, 20),
                     child: ListView.builder(
                       itemCount: langCategories.length,
                       itemBuilder: (context, index) {
@@ -57,18 +57,26 @@ class _LanguageSetsState extends State<LanguageSets> {
                               child: Text(
                                 langCategories[index],
                                 textAlign: TextAlign.center,
-                                style: Theme.of(context)
+                                style: Theme
+                                    .of(context)
                                     .textTheme
                                     .bodyText1!
-                                    .copyWith(color: DarkerBlueGrey,
+                                    .copyWith(
+                                    color: getTextColourByNumber(index),
                                     fontWeight: FontWeight.w300,
                                     fontSize: 16),
                               ),
                             ),
                           ),
                           onTap: () {
-                            UserPreferences.setLanguageSet(index);
-                            Navigator.pop(context, true);
+                            setState(() {
+                              UserPreferences.setLanguageSet(index);
+                            });
+                            Timer(const Duration(milliseconds: 500), () {
+                              setState(() {
+                                Navigator.pop(context, true);
+                              });
+                            });
                           },
                         );
                       },
@@ -81,16 +89,30 @@ class _LanguageSetsState extends State<LanguageSets> {
                 child: Container(
                   width: double.infinity,
                   child: Padding(
-                    padding: const EdgeInsetsDirectional.fromSTEB(10, 10, 10, 10),
+                    padding:
+                    const EdgeInsetsDirectional.fromSTEB(10, 10, 10, 10),
                     child: Text(
-                      "Usage: tap the (?) icon top right in the next screen",
+                      "To reduce interface clutter, you can choose to limit the "
+                          "set of languages you want available in the language "
+                          "selector. \n\n'Minimal' has only Quenya and Sindarin; "
+                          "'basic' has the languages with the largest known "
+                          "vocabularies; 'medium' and 'large' contain lesser-known "
+                          "language, and 'complete' contains everything from "
+                          "Eldamo.org.\n\n"
+                          "The active language set is indicated with the same "
+                          "colour as above, in the Eldarin language field and the "
+                          "'form-gloss' switch in the search screen.\n\n"
+                          "The choice is remembered by the app until you change it. "
+                          "The down arrow (top right) cancels this screen.",
                       textAlign: TextAlign.center,
-                      style: Theme.of(context)
+                      style: Theme
+                          .of(context)
                           .textTheme
                           .bodyText1!
-                          .copyWith(color: Ithildin,
+                          .copyWith(
+                          color: Ithildin,
                           fontWeight: FontWeight.w300,
-                          fontSize: 14),
+                          fontSize: 15),
                     ),
                   ),
                 ),

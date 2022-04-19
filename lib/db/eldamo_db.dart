@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:async';
+
 import 'package:flutter/services.dart';
 import 'package:ithildin/model/entry_doc.dart';
 import 'package:ithildin/model/lexicon_change.dart';
@@ -23,6 +26,9 @@ import '../model/lexicon_see.dart';
 import '../model/nothrim.dart';
 
 class EldamoDb {
+
+  List<Simplexicon> regexBufferList = <Simplexicon>[];
+
   static final EldamoDb instance = EldamoDb._init();
   static Database? _database;
 
@@ -33,6 +39,11 @@ class EldamoDb {
     _database = await _initDB('eldamo.sqlite');
     return _database!;
   }
+
+  void clearRegexBufferList(){
+    regexBufferList.clear();
+  }
+
 
   // return database if already available in App directory
   // else, copy from assets folder to app directory
@@ -266,7 +277,9 @@ class EldamoDb {
     String glossLang = "= ${glossLangId.toString()}";
     String whereFormLangId = formLangWhereClause(formLangId);
     String whereGlossLangId = "${SimplexiconFields.glossLangId} $glossLang";
-    String whereFormLike = "${SimplexiconFields.nform} LIKE '%$formFilter%'";
+    String matchFormFilter = applyMatchMethod(formFilter);
+    String whereFormLike = "${SimplexiconFields.nform} LIKE '$matchFormFilter'";
+    print (whereFormLike);
     final result = await db.rawQuery("SELECT * from $simplexiconView "
         "WHERE $whereFormLangId "
         "AND $whereGlossLangId "
@@ -275,20 +288,75 @@ class EldamoDb {
     return result.map((json) => Simplexicon.fromJson(json)).toList();
   }
 
+  Future<List<Simplexicon>> simplexiconFormRegexFilter(
+      String regex, int formLangId, int glossLangId) async {
+    if (regexBufferList.isEmpty || (regexBufferList[0].formLangId != (UserPreferences.getActiveEldarinLangId() ?? defaultEldarinLangId))) {
+      print("refresh buffer");
+      await refreshRegexBufferList(formLangId, glossLangId);
+    }
+    List<Simplexicon> regexFilteredList = List.from(regexBufferList);
+    RegExp regExp = RegExp(r'(' + regex.toLowerCase() + ')');
+    //RegExp regExp = RegExp(r"(ad.+d$)");
+    regexFilteredList.retainWhere((slex) => regExp.hasMatch(slex.nform));
+    return regexFilteredList;
+  }
+
   Future<List<Simplexicon>> simplexiconGlossFilter(
       String glossFilter, int formLangId, int glossLangId) async {
     final db = await instance.database;
-    const orderBy = "${SimplexiconFields.id} ASC";
+    const orderBy = "${SimplexiconFields.nform} ASC";
     String glossLang = "= ${glossLangId.toString()}";
     String whereFormLangId = formLangWhereClause(formLangId);
     String whereGlossLangId = "${SimplexiconFields.glossLangId} $glossLang";
-    String whereGlossLike = "${SimplexiconFields.gloss} LIKE '%$glossFilter%'";
+    String matchGlossFilter = applyMatchMethod(glossFilter);
+    String whereGlossLike = "${SimplexiconFields.gloss} LIKE '$matchGlossFilter'";
     final result = await db.rawQuery("SELECT * from $simplexiconView "
         "WHERE $whereFormLangId "
         "AND $whereGlossLangId "
         "AND $whereGlossLike "
         "ORDER BY $orderBy");
     return result.map((json) => Simplexicon.fromJson(json)).toList();
+  }
+
+  Future<List<Simplexicon>> simplexiconGlossRegexFilter(
+      String regex, int formLangId, int glossLangId) async {
+    if (regexBufferList.isEmpty || (regexBufferList[0].glossLangId != (UserPreferences.getActiveGlossLangId() ?? defaultGlossLangId))) {
+      print("refresh buffer");
+      await refreshRegexBufferList(formLangId, glossLangId);
+    }
+    List<Simplexicon> regexFilteredList = List.from(regexBufferList);
+    RegExp regExp = RegExp("r" + regex);
+    regexFilteredList.retainWhere((slex) => regExp.hasMatch(slex.gloss));
+    return regexFilteredList;
+  }
+
+  Future<void> refreshRegexBufferList(int formLangId, int glossLangId) async {
+    final db = await instance.database;
+    const orderBy = "${SimplexiconFields.nform} ASC";
+    String glossLang = "= ${glossLangId.toString()}";
+    String whereFormLangId = formLangWhereClause(formLangId);
+    String whereGlossLangId = "${SimplexiconFields.glossLangId} $glossLang";
+    final result = await db.rawQuery("SELECT * from $simplexiconView "
+        "WHERE $whereFormLangId "
+        "AND $whereGlossLangId "
+        "ORDER BY $orderBy");
+    regexBufferList = result.map((json) => Simplexicon.fromJson(json)).toList();
+  }
+
+  String applyMatchMethod(String likeClause){
+    switch(UserPreferences.getMatchMethod() ?? defaultMatchingMethodIndex) {
+      case 1: {  return '$likeClause%'; }
+      break;
+
+      case 2: {  return '%$likeClause'; }
+      break;
+
+      case 3: {  return '$likeClause'; }
+      break;
+
+      default: { return '%$likeClause%'; }
+      break;
+    }
   }
 
   // returns a list of all Entry and Word entries in a root Entry,
