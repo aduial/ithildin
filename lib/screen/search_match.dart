@@ -17,8 +17,13 @@ class SearchMatch extends StatefulWidget {
 
 class _SearchMatchState extends State<SearchMatch> {
 
+  // width iPhone 11 Pro max = 414
+  final double refWidth = 448;
+
   @override
   Widget build(BuildContext context) {
+    double toScale = MediaQuery.of(context).size.width / refWidth ;
+
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -36,7 +41,7 @@ class _SearchMatchState extends State<SearchMatch> {
       backgroundColor: BlueGrey,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsetsDirectional.fromSTEB(10, 10, 10, 10),
+          padding: const EdgeInsetsDirectional.fromSTEB(10, 6, 10, 6),
           child: Column(
             mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.start,
@@ -44,14 +49,13 @@ class _SearchMatchState extends State<SearchMatch> {
             children: <Widget>[
               Padding(
                 padding:
-                const EdgeInsetsDirectional.fromSTEB(10, 20, 10, 10),
+                const EdgeInsetsDirectional.fromSTEB(10, 10, 10, 10),
                 child: Text(
                 "how should search terms match?",
                 style: Theme.of(context)
                     .textTheme
-                    .headline4!
-                    .copyWith(color: Ithildin,
-                    fontSize: 18),
+                    .headline6!
+                    .copyWith(color: Ithildin, fontSize: 18 * toScale)
                 ),
               ),
               Expanded(
@@ -60,62 +64,62 @@ class _SearchMatchState extends State<SearchMatch> {
                   alignment: Alignment.topCenter,
                   child: Padding(
                     padding:
-                    const EdgeInsetsDirectional.fromSTEB(10, 20, 10, 20),
+                    const EdgeInsetsDirectional.fromSTEB(10, 1, 10, 1),
 
                     child: ToggleSwitch(
                       activeBorders: [
                         Border.all(
                           color: LightAnyMatchColour,
-                          width: 3.0,
+                          width: 2.0 * toScale,
                         ),
                         Border.all(
                           color: LightStartMatchColour,
-                          width: 3.0,
+                          width: 2.0 * toScale,
                         ),
                         Border.all(
                           color: LightEndMatchColour,
-                          width: 3.0,
+                          width: 2.0 * toScale,
                         ),
                         Border.all(
                           color: LightVerbatimMatchColour,
-                          width: 3.0,
+                          width: 2.0 * toScale,
                         ),
                         Border.all(
                           color: LightRegexMatchColour,
-                          width: 3.0,
+                          width: 2.0 * toScale,
                         ),
                       ],
                       activeFgColor: Laurelin,
                       inactiveFgColor: LightBlueGrey,
                       isVertical: true,
-                      minWidth: 250.0,
+                      minWidth: 250.0 * toScale,
                       radiusStyle: true,
-                      cornerRadius: 20.0,
-                      customIcons: const [
+                      cornerRadius: 20.0 * toScale,
+                      customIcons: [
                         Icon(
                           CupertinoIcons.search,
                           color: Laurelin,
-                          size: 22.0,
+                          size: 20.0 * toScale,
                         ),
                         Icon(
                           CupertinoIcons.arrow_left_to_line,
                           color: Laurelin,
-                          size: 22.0,
+                          size: 20.0 * toScale,
                         ),
                         Icon(
                           CupertinoIcons.arrow_right_to_line,
                           color: Laurelin,
-                          size: 22.0,
+                          size: 20.0 * toScale,
                         ),
                         Icon(
                           CupertinoIcons.equal,
                           color: Laurelin,
-                          size: 22.0,
+                          size: 20.0 * toScale,
                         ),
                         Icon(
                           CupertinoIcons.ellipsis,
                           color: Laurelin,
-                          size: 22.0,
+                          size: 20.0 * toScale,
                         )
                       ],
                       initialLabelIndex: UserPreferences.getMatchMethod() ?? defaultMatchingMethodIndex,
@@ -127,8 +131,8 @@ class _SearchMatchState extends State<SearchMatch> {
                         [DarkRegexMatchColour]
                       ],
                       labels: matchingMethods,
-                      fontSize: 18,
-                      iconSize: 22.0,
+                      fontSize: 20 * toScale,
+                      iconSize: 20.0 * toScale,
                       onToggle: (index) {
                         setState(() {
                           UserPreferences.setMatchMethod(index!);
@@ -149,7 +153,7 @@ class _SearchMatchState extends State<SearchMatch> {
                   width: double.infinity,
                   child: Padding(
                     padding:
-                    const EdgeInsetsDirectional.fromSTEB(10, 10, 10, 10),
+                    const EdgeInsetsDirectional.fromSTEB(10, 6, 10, 10),
                     child: Text(
                       "(all examples with language set to Sindarin)\n\n"
                           "Anywhere: 'ui' matches 'uial', 'aduial', 'ui' and 'tollui'\n\n"
@@ -171,7 +175,7 @@ class _SearchMatchState extends State<SearchMatch> {
                           .copyWith(
                           color: Ithildin,
                           fontWeight: FontWeight.w300,
-                          fontSize: 15),
+                          fontSize: 15 * toScale),
                     ),
                   ),
                 ),

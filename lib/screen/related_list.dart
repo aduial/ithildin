@@ -15,7 +15,7 @@ class RelatedListItem extends StatefulWidget {
     required this.formTo,
     required this.glossTo,
     required this.refSources,
-    required this.relatedId,
+    this.relatedId,
   }) : super(key: key);
 
   final int entryId;
@@ -27,7 +27,7 @@ class RelatedListItem extends StatefulWidget {
   final String formTo;
   final String glossTo;
   final String refSources;
-  final int relatedId;
+  final int? relatedId;
 
   @override
   State<RelatedListItem> createState() => _RelatedListItemState();
@@ -110,9 +110,11 @@ class _RelatedListItemState extends State<RelatedListItem> {
     //print(htmlData);
     return GestureDetector(
       onTap: () {
-        setState(() {
-          Navigator.of(context).push(_relatedDetailRoute(widget.relatedId));
-        });
+        if (widget.relatedId != null) {
+          setState(() {
+            Navigator.of(context).push(_relatedDetailRoute(widget.relatedId!));
+          });
+        }
       },
       child: Container(
         padding: const EdgeInsets.fromLTRB(5.0, 0.0, 5.0, 0.0),

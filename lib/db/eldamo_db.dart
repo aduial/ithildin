@@ -279,7 +279,6 @@ class EldamoDb {
     String whereGlossLangId = "${SimplexiconFields.glossLangId} $glossLang";
     String matchFormFilter = applyMatchMethod(formFilter);
     String whereFormLike = "${SimplexiconFields.nform} LIKE '$matchFormFilter'";
-    print (whereFormLike);
     final result = await db.rawQuery("SELECT * from $simplexiconView "
         "WHERE $whereFormLangId "
         "AND $whereGlossLangId "
@@ -291,7 +290,6 @@ class EldamoDb {
   Future<List<Simplexicon>> simplexiconFormRegexFilter(
       String regex, int formLangId, int glossLangId) async {
     if (regexBufferList.isEmpty || (regexBufferList[0].formLangId != (UserPreferences.getActiveEldarinLangId() ?? defaultEldarinLangId))) {
-      print("refresh buffer");
       await refreshRegexBufferList(formLangId, glossLangId);
     }
     List<Simplexicon> regexFilteredList = List.from(regexBufferList);
@@ -321,11 +319,11 @@ class EldamoDb {
   Future<List<Simplexicon>> simplexiconGlossRegexFilter(
       String regex, int formLangId, int glossLangId) async {
     if (regexBufferList.isEmpty || (regexBufferList[0].glossLangId != (UserPreferences.getActiveGlossLangId() ?? defaultGlossLangId))) {
-      print("refresh buffer");
       await refreshRegexBufferList(formLangId, glossLangId);
     }
     List<Simplexicon> regexFilteredList = List.from(regexBufferList);
-    RegExp regExp = RegExp("r" + regex);
+    RegExp regExp = RegExp(r'(' + regex.toLowerCase() + ')');
+    print(regex);
     regexFilteredList.retainWhere((slex) => regExp.hasMatch(slex.gloss));
     return regexFilteredList;
   }

@@ -29,7 +29,7 @@ class LexiconRelated {
   final String formTo;
   final String glossTo;
   final String refSources;
-  final int relatedId;
+  final int? relatedId;
 
 
   const LexiconRelated({
@@ -42,7 +42,7 @@ class LexiconRelated {
     required this.formTo,
     required this.glossTo,
     required this.refSources,
-    required this.relatedId,
+    this.relatedId,
   });
 
   LexiconRelated copy({
@@ -82,7 +82,7 @@ class LexiconRelated {
     formTo: json[LexiconRelatedFields.formTo] as String,
     glossTo: json[LexiconRelatedFields.glossTo] as String,
     refSources: json[LexiconRelatedFields.refSources] as String,
-    relatedId: json[LexiconRelatedFields.relatedId] as int,
+    relatedId: json[LexiconRelatedFields.relatedId] as int?,
   );
 
   Map<String, Object?> toJson() => {

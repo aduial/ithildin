@@ -69,7 +69,7 @@ class _MinuiState extends State<Minui> {
                   .headline2!
                   .copyWith(color: Ithildin,
                 fontWeight: FontWeight.w300,
-                fontStyle: FontStyle.italic,
+                // fontStyle: FontStyle.italic,
                 fontSize: 24),
             ),
             const SizedBox(

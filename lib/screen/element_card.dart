@@ -27,12 +27,12 @@ class ElementCard extends StatelessWidget {
               itemBuilder: (context, index) {
                 return ElementListItem(
                   entryId: lexiconElement[index].entryId,
-                  formFrom: lexiconElement[index].formFrom,
-                  glossFrom: lexiconElement[index].glossFrom,
-                  inflection: lexiconElement[index].inflection,
-                  idTo: lexiconElement[index].idTo,
-                  formTo: lexiconElement[index].formTo,
-                  glossTo: lexiconElement[index].glossTo,
+                  language: lexiconElement[index].language,
+                  form: lexiconElement[index].form,
+                  gloss: lexiconElement[index].gloss,
+                  inflections: lexiconElement[index].inflections,
+                  sources: lexiconElement[index].sources,
+                  elementId: lexiconElement[index].elementId,
                 );
               }));
     }

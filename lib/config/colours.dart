@@ -63,18 +63,6 @@ const InActiveMediumSetColour = const Color (0xFF597F6C);
 const InActiveLargeSetColour = const Color (0xFF606F7F);
 const InActiveCompleteSetColour = const Color (0xFF6F5F7F);
 
-// const ActiveMinimalSetColour = const Color (0xFFFFA0A0); // rood
-// const ActiveBasicSetColour = const Color (0xFFFFD090); // oranje
-// const ActiveMediumSetColour = const Color (0xFF96FDCB); // groen
-// const ActiveLargeSetColour = const Color (0xFF70FFFF); // blâh
-// const ActiveCompleteSetColour = const Color (0xFF80C0FF); // blâh
-//
-// const InActiveMinimalSetColour = const Color (0xFF906060); // rood
-// const InActiveBasicSetColour = const Color (0xFF907040); // oranje
-// const InActiveMediumSetColour = const Color (0xFF4C7F66); // knarriegeel
-// const InActiveLargeSetColour = const Color (0xFF308585); // groen
-// const InActiveCompleteSetColour = const Color (0xFF40607F); // blâh
-
 const LightAnyMatchColour = const Color (0xFFFF3639); // rood
 const LightStartMatchColour = const Color (0xFFFF8F21); // oranje
 const LightEndMatchColour = const Color (0xFFFFEB19); // groen
@@ -143,19 +131,19 @@ const String CloseSpan = "</span>";
 
 Color getColourByNumber(int colnr){
   switch(colnr) {
-    case 0: {  return isCurrentLangSet(colnr) ? ActiveMinimalSetColour : InActiveMinimalSetColour; }
+    case 0: {  return isCurrentLangSet(colnr) ? ActiveMinimalSetColour : InActiveLargeSetColour; }
     break;
 
-    case 1: {  return isCurrentLangSet(colnr) ? ActiveBasicSetColour : InActiveBasicSetColour; }
+    case 1: {  return isCurrentLangSet(colnr) ? ActiveBasicSetColour : InActiveLargeSetColour; }
     break;
 
-    case 2: {  return isCurrentLangSet(colnr) ? ActiveMediumSetColour : InActiveMediumSetColour; }
+    case 2: {  return isCurrentLangSet(colnr) ? ActiveMediumSetColour : InActiveLargeSetColour; }
     break;
 
     case 3: {  return isCurrentLangSet(colnr) ? ActiveLargeSetColour : InActiveLargeSetColour; }
     break;
 
-    default: { return isCurrentLangSet(colnr) ? ActiveCompleteSetColour : InActiveCompleteSetColour; }
+    default: { return isCurrentLangSet(colnr) ? ActiveCompleteSetColour : InActiveLargeSetColour; }
     break;
   }
 }

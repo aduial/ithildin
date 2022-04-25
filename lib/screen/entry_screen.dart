@@ -241,60 +241,96 @@ class _EntryScreenState extends State<EntryScreen> {
           physics: const BouncingScrollPhysics(),
           children: <Widget>[
             isHeaderLoading
-                ? const CircularProgressIndicator.adaptive()
+                ? const LinearProgressIndicator(
+                minHeight: 1,
+                color: NotepaperWhite,
+                valueColor: AlwaysStoppedAnimation(BlueGrey))
                 : HeaderCard(header, entry.form, entry.createdBy),
             areGlossesLoading
-                ? const CircularProgressIndicator.adaptive()
+                ? const LinearProgressIndicator(
+                    minHeight: 1,
+                    color: NotepaperWhite,
+                valueColor: AlwaysStoppedAnimation(BlueGrey))
                 : lexiconGlosses.isNotEmpty
                     ? GlossCard(lexiconGlosses)
                     : Container(),
             areVariationsLoading
-                ? const CircularProgressIndicator.adaptive()
+                ? const LinearProgressIndicator(
+                minHeight: 1,
+                color: NotepaperWhite,
+                valueColor: AlwaysStoppedAnimation(Ithildin))
                 : lexiconVariations.isNotEmpty
                     ? VariationCard(lexiconVariations)
                     : Container(),
             areInflectionsLoading
-                ? const CircularProgressIndicator.adaptive()
+                ? const LinearProgressIndicator(
+                minHeight: 1,
+                color: NotepaperWhite,
+                valueColor: AlwaysStoppedAnimation(BlueGrey))
                 : lexiconInflections.isNotEmpty
                     ? InflectionCard(lexiconInflections)
                     : Container(),
             areCognatesLoading
-                ? const CircularProgressIndicator.adaptive()
+                ? const LinearProgressIndicator(
+                minHeight: 1,
+                color: NotepaperWhite,
+                valueColor: AlwaysStoppedAnimation(Ithildin))
                 : lexiconCognates.isNotEmpty
                     ? CognateCard(lexiconCognates)
                     : Container(),
             areRelationsLoading
-                ? const CircularProgressIndicator.adaptive()
+                ? const LinearProgressIndicator(
+                minHeight: 1,
+                color: NotepaperWhite,
+                valueColor: AlwaysStoppedAnimation(BlueGrey))
                 : lexiconRelated.isNotEmpty
                     ? RelatedCard(lexiconRelated)
                     : Container(),
             areChangesLoading
-                ? const CircularProgressIndicator.adaptive()
+                ? const LinearProgressIndicator(
+                minHeight: 1,
+                color: NotepaperWhite,
+                valueColor: AlwaysStoppedAnimation(Ithildin))
                 : lexiconChanges.isNotEmpty
                     ? ChangeCard(lexiconChanges)
                     : Container(),
             areCombinationsLoading
-                ? const CircularProgressIndicator.adaptive()
+                ? const LinearProgressIndicator(
+                minHeight: 1,
+                color: NotepaperWhite,
+                valueColor: AlwaysStoppedAnimation(BlueGrey))
                 : lexiconCombinations.isNotEmpty
                     ? CombinationCard(lexiconCombinations)
                     : Container(),
             areElementsLoading
-                ? const CircularProgressIndicator.adaptive()
+                ? const LinearProgressIndicator(
+                minHeight: 1,
+                color: NotepaperWhite,
+                valueColor: AlwaysStoppedAnimation(Ithildin))
                 : lexiconElements.isNotEmpty
                     ? ElementCard(lexiconElements)
                     : Container(),
             areExamplesLoading
-                ? const CircularProgressIndicator.adaptive()
+                ? const LinearProgressIndicator(
+                minHeight: 1,
+                color: NotepaperWhite,
+                valueColor: AlwaysStoppedAnimation(BlueGrey))
                 : lexiconExamples.isNotEmpty
                     ? ExampleCard(lexiconExamples)
                     : Container(),
             areSightsLoading
-                ? const CircularProgressIndicator.adaptive()
+                ? const LinearProgressIndicator(
+                minHeight: 1,
+                color: NotepaperWhite,
+                valueColor: AlwaysStoppedAnimation(Ithildin))
                 : lexiconSights.isNotEmpty
                     ? SeeCard(lexiconSights)
                     : Container(),
             areDocsLoading
-                ? const CircularProgressIndicator.adaptive()
+                ? const LinearProgressIndicator(
+                minHeight: 1,
+                color: NotepaperWhite,
+                valueColor: AlwaysStoppedAnimation(BlueGrey))
                 : entryDocs.isNotEmpty
                     ? NoteCard(entryDocs, _openLinkedEntry)
                     : Container(),

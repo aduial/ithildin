@@ -9,22 +9,21 @@ class ElementListItem extends StatefulWidget {
   const ElementListItem({
     Key? key,
     required this.entryId,
-    required this.formFrom,
-    this.glossFrom,
-    required this.inflection,
-    required this.idTo,
-    required this.formTo,
-    this.glossTo,
+    required this.language,
+    required this.form,
+    this.gloss,
+    this.inflections,
+    this.sources,
+    required this.elementId,
   }) : super(key: key);
 
-
   final int entryId;
-  final String formFrom;
-  final String? glossFrom;
-  final String inflection;
-  final int idTo;
-  final String formTo;
-  final String? glossTo;
+  final String language;
+  final String form;
+  final String? gloss;
+  final String? inflections;
+  final String? sources;
+  final int elementId;
 
   @override
   State<ElementListItem> createState() => _ElementListItemState();
@@ -53,38 +52,39 @@ class _ElementListItemState extends State<ElementListItem> {
   }
 
   formatHtml() async {
-
-    htmlData += CSSBoldVeryBlue +
-        widget.formFrom +
-        CloseSpan +
-        "&nbsp;&nbsp;";
-
-    if (widget.glossFrom != null && widget.glossFrom!.isNotEmpty) {
-      htmlData += CSSGreenItalic +
+    if (widget.language != "") {
+      htmlData += CSSBolder +
           '"' +
-          (widget.glossFrom ?? "") +
+          widget.language.toUpperCase() +
           '"' +
           CloseSpan +
           "&nbsp;&nbsp;";
     }
 
-    if (widget.inflection.isNotEmpty) {
+    htmlData += CSSBoldBlueGrey +
+          widget.form +
+          CloseSpan +
+          "&nbsp;&nbsp;";
+
+    if (widget.gloss != null && widget.gloss!.isNotEmpty) {
+      htmlData += CSSGreenItalic +
+          '"' +
+          (widget.gloss ?? "") +
+          '"' +
+          CloseSpan +
+          "&nbsp;&nbsp;";
+    }
+
+    if (widget.inflections != null && widget.inflections!.isNotEmpty) {
+      htmlData += CSSBolder +
+          (widget.inflections ?? "") +
+          CloseSpan +
+          "&nbsp;&nbsp;";
+    }
+
+    if (widget.sources != null && widget.sources!.isNotEmpty) {
       htmlData += CSSText +
-          widget.inflection +
-          CloseSpan +
-          "&nbsp;&nbsp;";
-    }
-
-    htmlData += CSSBoldVeryBlue +
-        widget.formTo +
-        CloseSpan +
-        "&nbsp;&nbsp;";
-
-    if (widget.glossTo != null && widget.glossTo!.isNotEmpty) {
-      htmlData += CSSGreenItalic +
-          '"' +
-          (widget.glossTo ?? "") +
-          '"' +
+          (widget.sources ?? "") +
           CloseSpan;
     }
   }
@@ -94,15 +94,12 @@ class _ElementListItemState extends State<ElementListItem> {
     //print(htmlData);
     return GestureDetector(
       onTap: () {
-        if (widget.idTo != null) {
-          setState(() {
-            Navigator.of(context).push(_relatedDetailRoute(widget.idTo));
-          });
-        }
+        setState(() {
+          Navigator.of(context).push(_relatedDetailRoute(widget.elementId));
+        });
       },
       child: Container(
         padding: const EdgeInsets.fromLTRB(5.0, 0.0, 5.0, 0.0),
-
         color: NotepaperLinked,
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,

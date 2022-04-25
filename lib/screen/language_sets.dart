@@ -14,8 +14,13 @@ class LanguageSets extends StatefulWidget {
 }
 
 class _LanguageSetsState extends State<LanguageSets> {
+
+  final double refWidth = 448;
+
   @override
   Widget build(BuildContext context) {
+    double toScale = MediaQuery.of(context).size.width / refWidth ;
+
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -33,7 +38,7 @@ class _LanguageSetsState extends State<LanguageSets> {
       backgroundColor: BlueGrey,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsetsDirectional.fromSTEB(10, 10, 10, 10),
+          padding: EdgeInsetsDirectional.fromSTEB(10 * toScale, 10 * toScale, 10 * toScale, 10 * toScale),
           child: Column(
             mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.start,
@@ -45,7 +50,7 @@ class _LanguageSetsState extends State<LanguageSets> {
                   alignment: Alignment.bottomCenter,
                   child: Padding(
                     padding:
-                    const EdgeInsetsDirectional.fromSTEB(10, 20, 10, 20),
+                    EdgeInsetsDirectional.fromSTEB(10 * toScale, 20 * toScale, 10 * toScale, 20 * toScale),
                     child: ListView.builder(
                       itemCount: langCategories.length,
                       itemBuilder: (context, index) {
@@ -53,7 +58,7 @@ class _LanguageSetsState extends State<LanguageSets> {
                           child: Card(
                             color: getColourByNumber(index),
                             child: Padding(
-                              padding: const EdgeInsets.all(10.0),
+                              padding: EdgeInsets.all(10.0 * toScale),
                               child: Text(
                                 langCategories[index],
                                 textAlign: TextAlign.center,
@@ -64,7 +69,7 @@ class _LanguageSetsState extends State<LanguageSets> {
                                     .copyWith(
                                     color: getTextColourByNumber(index),
                                     fontWeight: FontWeight.w300,
-                                    fontSize: 16),
+                                    fontSize: 16 * toScale),
                               ),
                             ),
                           ),
@@ -90,7 +95,7 @@ class _LanguageSetsState extends State<LanguageSets> {
                   width: double.infinity,
                   child: Padding(
                     padding:
-                    const EdgeInsetsDirectional.fromSTEB(10, 10, 10, 10),
+                    EdgeInsetsDirectional.fromSTEB(10 * toScale, 10 * toScale, 10 * toScale, 10 * toScale),
                     child: Text(
                       "To reduce interface clutter, you can choose to limit the "
                           "set of languages you want available in the language "
@@ -112,7 +117,7 @@ class _LanguageSetsState extends State<LanguageSets> {
                           .copyWith(
                           color: Ithildin,
                           fontWeight: FontWeight.w300,
-                          fontSize: 15),
+                          fontSize: 15 * toScale),
                     ),
                   ),
                 ),
