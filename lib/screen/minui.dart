@@ -1,11 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../config/colours.dart';
 import 'ithildin_screen.dart';
 
 class Minui extends StatefulWidget {
+  const Minui({Key? key}) : super(key: key);
   @override
   State<StatefulWidget> createState() => _MinuiState();
 }
@@ -69,7 +69,7 @@ class _MinuiState extends State<Minui> {
                   .headline2!
                   .copyWith(color: Ithildin,
                 fontWeight: FontWeight.w300,
-                fontStyle: FontStyle.italic,
+                // fontStyle: FontStyle.italic,
                 fontSize: 24),
             ),
             const SizedBox(
@@ -157,7 +157,7 @@ class _MinuiState extends State<Minui> {
                 child: Padding(
                   padding: const EdgeInsetsDirectional.fromSTEB(30, 30, 30, 10),
                   child: Text(
-                    "Usage: tap the [i] icon top right in the next screen",
+                    "Usage: tap the (?) icon top right in the next screen",
                     textAlign: TextAlign.center,
                     style: Theme.of(context)
                         .textTheme

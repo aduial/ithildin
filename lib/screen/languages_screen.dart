@@ -22,13 +22,13 @@ class _LanguagesScreenState extends State<LanguagesScreen> {
 
   @override
   void dispose() {
-    EldamoDb.instance.close();
+    // EldamoDb.instance.close();
     super.dispose();
   }
 
   Future loadLanguages() async {
     setState(() => isLoading = true);
-    languages = await EldamoDb.instance.loadEldarinLanguages();
+    languages = await EldamoDb.instance.loadEldarinLanguageSet();
     allLanguages.addAll(languages);
     setState(() => isLoading = false);
   }
@@ -95,7 +95,7 @@ class _LanguagesScreenState extends State<LanguagesScreen> {
                             return ListTile(
                               dense: true,
                               leading: Icon(Icons.list),
-                              trailing: Text(
+                              trailing: const Text(
                                 "GFG",
                                 style: TextStyle(
                                     color: Colors.green, fontSize: 15),

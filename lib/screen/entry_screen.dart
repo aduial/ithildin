@@ -1,20 +1,51 @@
+import 'dart:core';
+
 import 'package:flutter/material.dart';
-import 'package:flutter_html/flutter_html.dart';
-import 'package:ithildin/model/lexicon_cognate.dart';
-import 'package:ithildin/model/lexicon_header.dart';
-import 'package:ithildin/screen/related_list.dart';
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:ithildin/screen/related_card.dart';
+import 'package:ithildin/screen/see_card.dart';
+import 'package:ithildin/screen/variation_card.dart';
 
 import '../config/colours.dart';
 import '../db/eldamo_db.dart';
 import '../model/entry_doc.dart';
+import '../model/lexicon_change.dart';
+import '../model/lexicon_cognate.dart';
+import '../model/lexicon_combine.dart';
+import '../model/lexicon_element.dart';
+import '../model/lexicon_example.dart';
+import '../model/lexicon_header.dart';
 import '../model/lexicon_gloss.dart';
+import '../model/lexicon_inflection.dart';
+import '../model/lexicon_see.dart';
+import '../model/lexicon_variation.dart';
 import '../model/lexicon_related.dart';
 import '../model/simplexicon.dart';
-import 'cognate_list.dart';
-import 'gloss_list.dart';
+import 'change_card.dart';
+import 'cognate_card.dart';
+import 'combination_card.dart';
+import 'element_card.dart';
+import 'example_card.dart';
+import 'gloss_card.dart';
 import 'package:expandable/expandable.dart';
-import 'dart:math' as math;
+
+import 'header_card.dart';
+import 'inflection_card.dart';
+import 'note_card.dart';
+
+Route _anotherDetailRoute(int entryId) {
+  return PageRouteBuilder(
+    pageBuilder: (context, animation, secondaryAnimation) =>
+        EntryScreen(entryId),
+    transitionDuration: const Duration(milliseconds: 350),
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      return FadeTransition(
+        opacity: animation,
+        child: child,
+      );
+    },
+  );
+}
 
 class EntryScreen extends StatefulWidget {
   const EntryScreen(this.entryId, {Key? key}) : super(key: key);
@@ -26,7 +57,20 @@ class EntryScreen extends StatefulWidget {
 
 class _EntryScreenState extends State<EntryScreen> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
-  bool isDataLoading = true;
+  bool isEntryLoading = true;
+  bool isHeaderLoading = true;
+  bool areGlossesLoading = true;
+  bool areVariationsLoading = true;
+  bool areCognatesLoading = true;
+  bool areRelationsLoading = true;
+  bool areInflectionsLoading = true;
+  bool areChangesLoading = true;
+  bool areCombinationsLoading = true;
+  bool areElementsLoading = true;
+  bool areExamplesLoading = true;
+  bool areSightsLoading = true;
+  bool areDocsLoading = true;
+
   bool cognatesVisible = false;
 
   late Simplexicon entry;
@@ -34,7 +78,15 @@ class _EntryScreenState extends State<EntryScreen> {
   late List<LexiconGloss> lexiconGlosses;
   late List<LexiconCognate> lexiconCognates;
   late List<LexiconRelated> lexiconRelated;
+  late List<LexiconVariation> lexiconVariations;
+  late List<LexiconInflection> lexiconInflections;
+  late List<LexiconChange> lexiconChanges;
+  late List<LexiconCombine> lexiconCombinations;
+  late List<LexiconElement> lexiconElements;
+  late List<LexiconExample> lexiconExamples;
+  late List<LexiconSee> lexiconSights;
   late List<EntryDoc> entryDocs;
+  late List<Simplexicon> otherEntries;
 
   void initState() {
     super.initState();
@@ -47,51 +99,115 @@ class _EntryScreenState extends State<EntryScreen> {
     await loadHeader();
     await loadLexiconGlosses();
     await loadLexiconCognates();
-    await loadLexiconRelated();
+    await loadLexiconRelations();
+    await loadLexiconVariations();
+    await loadLexiconInflections();
+    await loadLexiconChanges();
+    await loadLexiconCombinations();
+    await loadLexiconElements();
+    await loadLexiconExamples();
+    await loadLexiconSights();
     await loadEntryDocs();
   }
 
   Future loadEntry() async {
-    setState(() => isDataLoading = true);
+    setState(() => isEntryLoading = true);
     List<Simplexicon> entryList =
         await EldamoDb.instance.loadSimplexicon(widget.entryId);
     entry = entryList[0];
-    setState(() => isDataLoading = false);
+    setState(() => isEntryLoading = false);
   }
 
   Future loadHeader() async {
-    setState(() => isDataLoading = true);
+    setState(() => isHeaderLoading = true);
     List<LexiconHeader> headerList =
         await EldamoDb.instance.loadLexiconHeader(widget.entryId);
     if (headerList.isNotEmpty) {
       header = headerList[0];
     }
-    setState(() => isDataLoading = false);
+    setState(() => isHeaderLoading = false);
   }
 
   Future loadLexiconGlosses() async {
-    setState(() => isDataLoading = true);
+    setState(() => areGlossesLoading = true);
     lexiconGlosses = await EldamoDb.instance.loadLexiconGlosses(widget.entryId);
-    setState(() => isDataLoading = false);
+    setState(() => areGlossesLoading = false);
   }
 
   Future loadLexiconCognates() async {
-    setState(() => isDataLoading = true);
+    setState(() => areCognatesLoading = true);
     lexiconCognates =
         await EldamoDb.instance.loadLexiconCognates(widget.entryId);
-    setState(() => isDataLoading = false);
+    setState(() => areCognatesLoading = false);
   }
 
-  Future loadLexiconRelated() async {
-    setState(() => isDataLoading = true);
-    lexiconRelated = await EldamoDb.instance.loadLexiconRelated(widget.entryId);
-    setState(() => isDataLoading = false);
+  Future loadLexiconRelations() async {
+    setState(() => areRelationsLoading = true);
+    lexiconRelated =
+        await EldamoDb.instance.loadLexiconRelations(widget.entryId);
+    setState(() => areRelationsLoading = false);
+  }
+
+  Future loadLexiconVariations() async {
+    setState(() => areVariationsLoading = true);
+    lexiconVariations =
+        await EldamoDb.instance.loadLexiconVariations(widget.entryId);
+    setState(() => areVariationsLoading = false);
+  }
+
+  Future loadLexiconInflections() async {
+    setState(() => areInflectionsLoading = true);
+    lexiconInflections =
+        await EldamoDb.instance.loadLexiconInflections(widget.entryId);
+    setState(() => areInflectionsLoading = false);
+  }
+
+  Future loadLexiconChanges() async {
+    setState(() => areChangesLoading = true);
+    lexiconChanges = await EldamoDb.instance.loadLexiconChanges(widget.entryId);
+    setState(() => areChangesLoading = false);
+  }
+
+  Future loadLexiconCombinations() async {
+    setState(() => areCombinationsLoading = true);
+    lexiconCombinations =
+        await EldamoDb.instance.loadLexiconCombinations(widget.entryId);
+    setState(() => areCombinationsLoading = false);
+  }
+
+  Future loadLexiconElements() async {
+    setState(() => areElementsLoading = true);
+    lexiconElements =
+        await EldamoDb.instance.loadLexiconElements(widget.entryId);
+    setState(() => areElementsLoading = false);
+  }
+
+  Future loadLexiconExamples() async {
+    setState(() => areExamplesLoading = true);
+    lexiconExamples =
+        await EldamoDb.instance.loadLexiconExamples(widget.entryId);
+    setState(() => areExamplesLoading = false);
+  }
+
+  Future loadLexiconSights() async {
+    setState(() => areSightsLoading = true);
+    lexiconSights = await EldamoDb.instance.loadLexiconSights(widget.entryId);
+    setState(() => areSightsLoading = false);
   }
 
   Future loadEntryDocs() async {
-    setState(() => isDataLoading = true);
+    setState(() => areDocsLoading = true);
     entryDocs = await EldamoDb.instance.loadEntryDocs(widget.entryId);
-    setState(() => isDataLoading = false);
+    setState(() => areDocsLoading = false);
+  }
+
+  _openLinkedEntry(String link) async {
+    final langForm = link.split('@');
+    otherEntries = await EldamoDb.instance
+        .findSimplexiconByLangForm(langForm[0], langForm[1]);
+    setState(() {
+      Navigator.of(context).push(_anotherDetailRoute(otherEntries[0].id));
+    });
   }
 
   @override
@@ -102,7 +218,7 @@ class _EntryScreenState extends State<EntryScreen> {
       appBar: AppBar(
         backgroundColor: BlueGrey,
         title: AutoSizeText(
-          isDataLoading ? "Loading..." : entry.form,
+          isEntryLoading ? "Loading..." : entry.form,
           style: Theme.of(context)
               .textTheme
               .headline5!
@@ -113,481 +229,114 @@ class _EntryScreenState extends State<EntryScreen> {
           overflow: TextOverflow.ellipsis,
         ),
       ),
-      body: isDataLoading
-          ? Text("loading ...")
-          : ExpandableTheme(
-              data: const ExpandableThemeData(
-                iconColor: Colors.yellow,
-                useInkWell: true,
-              ),
-              child: ListView(
-                physics: const BouncingScrollPhysics(),
-                children: <Widget>[
-                  headerCard(
-                      header, entry.form, entry.createdBy, isDataLoading),
-                  GlossCard(lexiconGlosses, isDataLoading),
-                  CognateCard(lexiconCognates, isDataLoading),
-                  RelatedCard(lexiconRelated, isDataLoading),
-                  NotesCard(entryDocs, isDataLoading),
-                ],
-              ),
-            ),
+      body: //isDataLoading
+          //? Text("loading ...")
+          //:
+          ExpandableTheme(
+        data: const ExpandableThemeData(
+          iconColor: Colors.yellow,
+          useInkWell: true,
+        ),
+        child: ListView(
+          physics: const BouncingScrollPhysics(),
+          children: <Widget>[
+            isHeaderLoading
+                ? const LinearProgressIndicator(
+                minHeight: 1,
+                color: NotepaperWhite,
+                valueColor: AlwaysStoppedAnimation(BlueGrey))
+                : HeaderCard(header, entry.form, entry.createdBy),
+            areGlossesLoading
+                ? const LinearProgressIndicator(
+                    minHeight: 1,
+                    color: NotepaperWhite,
+                valueColor: AlwaysStoppedAnimation(BlueGrey))
+                : lexiconGlosses.isNotEmpty
+                    ? GlossCard(lexiconGlosses)
+                    : Container(),
+            areVariationsLoading
+                ? const LinearProgressIndicator(
+                minHeight: 1,
+                color: NotepaperWhite,
+                valueColor: AlwaysStoppedAnimation(Ithildin))
+                : lexiconVariations.isNotEmpty
+                    ? VariationCard(lexiconVariations)
+                    : Container(),
+            areInflectionsLoading
+                ? const LinearProgressIndicator(
+                minHeight: 1,
+                color: NotepaperWhite,
+                valueColor: AlwaysStoppedAnimation(BlueGrey))
+                : lexiconInflections.isNotEmpty
+                    ? InflectionCard(lexiconInflections)
+                    : Container(),
+            areCognatesLoading
+                ? const LinearProgressIndicator(
+                minHeight: 1,
+                color: NotepaperWhite,
+                valueColor: AlwaysStoppedAnimation(Ithildin))
+                : lexiconCognates.isNotEmpty
+                    ? CognateCard(lexiconCognates)
+                    : Container(),
+            areRelationsLoading
+                ? const LinearProgressIndicator(
+                minHeight: 1,
+                color: NotepaperWhite,
+                valueColor: AlwaysStoppedAnimation(BlueGrey))
+                : lexiconRelated.isNotEmpty
+                    ? RelatedCard(lexiconRelated)
+                    : Container(),
+            areChangesLoading
+                ? const LinearProgressIndicator(
+                minHeight: 1,
+                color: NotepaperWhite,
+                valueColor: AlwaysStoppedAnimation(Ithildin))
+                : lexiconChanges.isNotEmpty
+                    ? ChangeCard(lexiconChanges)
+                    : Container(),
+            areCombinationsLoading
+                ? const LinearProgressIndicator(
+                minHeight: 1,
+                color: NotepaperWhite,
+                valueColor: AlwaysStoppedAnimation(BlueGrey))
+                : lexiconCombinations.isNotEmpty
+                    ? CombinationCard(lexiconCombinations)
+                    : Container(),
+            areElementsLoading
+                ? const LinearProgressIndicator(
+                minHeight: 1,
+                color: NotepaperWhite,
+                valueColor: AlwaysStoppedAnimation(Ithildin))
+                : lexiconElements.isNotEmpty
+                    ? ElementCard(lexiconElements)
+                    : Container(),
+            areExamplesLoading
+                ? const LinearProgressIndicator(
+                minHeight: 1,
+                color: NotepaperWhite,
+                valueColor: AlwaysStoppedAnimation(BlueGrey))
+                : lexiconExamples.isNotEmpty
+                    ? ExampleCard(lexiconExamples)
+                    : Container(),
+            areSightsLoading
+                ? const LinearProgressIndicator(
+                minHeight: 1,
+                color: NotepaperWhite,
+                valueColor: AlwaysStoppedAnimation(Ithildin))
+                : lexiconSights.isNotEmpty
+                    ? SeeCard(lexiconSights)
+                    : Container(),
+            areDocsLoading
+                ? const LinearProgressIndicator(
+                minHeight: 1,
+                color: NotepaperWhite,
+                valueColor: AlwaysStoppedAnimation(BlueGrey))
+                : entryDocs.isNotEmpty
+                    ? NoteCard(entryDocs, _openLinkedEntry)
+                    : Container(),
+          ],
+        ),
+      ),
     );
-  }
-}
-
-class headerCard extends StatelessWidget {
-  LexiconHeader header;
-  String entryForm;
-  String? createdBy;
-  bool isDataLoading;
-
-  headerCard(this.header, this.entryForm, this.createdBy, this.isDataLoading);
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-        mainAxisSize: MainAxisSize.max,
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsetsDirectional.fromSTEB(16, 24, 16, 4),
-            child: isDataLoading
-                ? Text("loading ...")
-                : Text(entryForm,
-                    textAlign: TextAlign.left,
-                    style: Theme.of(context)
-                        .textTheme
-                        .headline5!
-                        .copyWith(color: MountainBlue)),
-          ),
-          (createdBy?.isEmpty ?? true)
-              ? Container(height: 0, width: 0)
-              : Padding(
-                  padding: const EdgeInsetsDirectional.fromSTEB(16, 4, 16, 4),
-                  child: isDataLoading
-                      ? Text("loading ...")
-                      : Text('created by: ' + (createdBy?? ''),
-                          textAlign: TextAlign.left,
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyText2!
-                              .copyWith(color: BlueGrey,
-                          fontWeight: FontWeight.w300,
-                          fontStyle: FontStyle.italic)),
-                ),
-          Padding(
-              padding: const EdgeInsetsDirectional.fromSTEB(16, 8, 16, 10),
-              child: isDataLoading
-                  ? Text("loading ...")
-                  : AutoSizeText.rich(
-                      TextSpan(
-                        children: [
-                          TextSpan(
-                            text: header.language!.toUpperCase() + '.  ',
-                            style: const TextStyle(
-                                color: ThemeTextColour2,
-                                fontWeight: FontWeight.w700),
-                          ),
-                          TextSpan(
-                            text: (header.type ?? '') + '  ',
-                            style: const TextStyle(
-                                color: MountainBlue,
-                                fontWeight: FontWeight.w400,
-                                fontStyle: FontStyle.italic),
-                          ),
-                          TextSpan(
-                            text: ' "' + header.gloss! + '"',
-                            style: const TextStyle(
-                                color: MiddleGreen,
-                                fontWeight: FontWeight.w300),
-                          ),
-                        ],
-                      ),
-                      style: const TextStyle(fontSize: 20),
-                      minFontSize: 12,
-                      stepGranularity: 2,
-                      maxLines: 2,
-                    )),
-        ]);
-  }
-}
-
-class GlossCard extends StatelessWidget {
-  List<LexiconGloss> lexiconGlosses;
-  bool isDataLoading;
-
-  GlossCard(this.lexiconGlosses, this.isDataLoading);
-
-  @override
-  Widget build(BuildContext context) {
-    buildList() {
-      return Container(
-          color: NotepaperWhite,
-          child: ListView.separated(
-              separatorBuilder: (BuildContext context, int index) =>
-                  const Divider(height: 3, color: BlueBottom),
-              primary: false,
-              itemCount: lexiconGlosses.length,
-              padding: const EdgeInsetsDirectional.fromSTEB(4, 4, 4, 4),
-              shrinkWrap: true,
-              itemBuilder: (context, index) {
-                return GlossListItem(
-                  entryId: lexiconGlosses[index].entryId,
-                  gloss: lexiconGlosses[index].gloss,
-                  reference: lexiconGlosses[index].reference,
-                );
-              }));
-    }
-
-    return ExpandableNotifier(
-        child: Padding(
-      padding: const EdgeInsets.all(10),
-      child: ScrollOnExpand(
-        child: Card(
-          clipBehavior: Clip.antiAlias,
-          child: Column(
-            children: <Widget>[
-              ExpandablePanel(
-                theme: const ExpandableThemeData(
-                  headerAlignment: ExpandablePanelHeaderAlignment.center,
-                  tapBodyToExpand: true,
-                  tapBodyToCollapse: true,
-                  hasIcon: false,
-                ),
-                header: Container(
-                  color: BlueGrey,
-                  child: Padding(
-                    padding: const EdgeInsets.all(2.0),
-                    child: Row(
-                      children: [
-                        ExpandableIcon(
-                          theme: const ExpandableThemeData(
-                            // fadeCurve: Curves.decelerate,
-                            // animationDuration: const Duration(milliseconds: 400),
-                            // scrollAnimationDuration: const Duration(milliseconds: 400),
-                            expandIcon: Icons.arrow_right,
-                            collapseIcon: Icons.arrow_drop_down,
-                            iconColor: Colors.white,
-                            iconSize: 28.0,
-                            iconRotationAngle: math.pi / 2,
-                            iconPadding: EdgeInsets.only(right: 5),
-                            hasIcon: false,
-                          ),
-                        ),
-                        Expanded(
-                          child: lexiconGlosses.isEmpty
-                              ? Text("no glosses found",
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyText1!
-                                      .copyWith(color: LightBlueGrey))
-                              : Text(
-                                  "gloss" +
-                                      (lexiconGlosses.length > 1 ? "es" : ""),
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyText1!
-                                      .copyWith(color: Laurelin),
-                                ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                collapsed: Container(),
-                expanded: buildList(),
-              ),
-            ],
-          ),
-        ),
-      ),
-    ));
-  }
-}
-
-class CognateCard extends StatelessWidget {
-  List<LexiconCognate> lexiconCognates;
-  bool isDataLoading;
-
-  CognateCard(this.lexiconCognates, this.isDataLoading);
-
-  @override
-  Widget build(BuildContext context) {
-    buildList() {
-      return Container(
-          color: NotepaperWhite,
-          child: ListView.separated(
-              separatorBuilder: (BuildContext context, int index) =>
-                  const Divider(height: 3, color: BlueBottom),
-              primary: false,
-              itemCount: lexiconCognates.length,
-              padding: const EdgeInsetsDirectional.fromSTEB(4, 4, 4, 4),
-              shrinkWrap: true,
-              itemBuilder: (context, index) {
-                return CognateListItem(
-                  entryId: lexiconCognates[index].entryId,
-                  language: lexiconCognates[index].language,
-                  form: lexiconCognates[index].form,
-                  gloss: lexiconCognates[index].gloss!,
-                  sources: lexiconCognates[index].sources,
-                );
-              }));
-    }
-
-    return ExpandableNotifier(
-        child: Padding(
-      padding: const EdgeInsets.all(10),
-      child: ScrollOnExpand(
-        child: Card(
-          clipBehavior: Clip.antiAlias,
-          child: Column(
-            children: <Widget>[
-              ExpandablePanel(
-                theme: const ExpandableThemeData(
-                  headerAlignment: ExpandablePanelHeaderAlignment.center,
-                  tapBodyToExpand: true,
-                  tapBodyToCollapse: true,
-                  hasIcon: false,
-                ),
-                header: Container(
-                  color: BlueGrey,
-                  child: Padding(
-                    padding: const EdgeInsets.all(2.0),
-                    child: Row(
-                      children: [
-                        ExpandableIcon(
-                          theme: const ExpandableThemeData(
-                            // fadeCurve: Curves.decelerate,
-                            // animationDuration: const Duration(milliseconds: 400),
-                            // scrollAnimationDuration: const Duration(milliseconds: 400),
-                            expandIcon: Icons.arrow_right,
-                            collapseIcon: Icons.arrow_drop_down,
-                            iconColor: White,
-                            iconSize: 28.0,
-                            iconRotationAngle: math.pi / 2,
-                            iconPadding: EdgeInsets.only(right: 5),
-                            hasIcon: false,
-                          ),
-                        ),
-                        Expanded(
-                          child: lexiconCognates.isEmpty
-                              ? Text("no cognates found",
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyText1!
-                                      .copyWith(color: LightBlueGrey))
-                              : Text(
-                                  "cognate" +
-                                      (lexiconCognates.length > 1 ? "s" : ""),
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyText1!
-                                      .copyWith(color: Laurelin),
-                                ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                collapsed: Container(),
-                expanded: buildList(),
-              ),
-            ],
-          ),
-        ),
-      ),
-    ));
-  }
-}
-
-class RelatedCard extends StatelessWidget {
-  List<LexiconRelated> lexiconRelated;
-  bool isDataLoading;
-
-  RelatedCard(this.lexiconRelated, this.isDataLoading);
-
-  @override
-  Widget build(BuildContext context) {
-    buildList() {
-      return Container(
-          color: NotepaperWhite,
-          child: ListView.separated(
-              separatorBuilder: (BuildContext context, int index) =>
-                  const Divider(height: 3, color: BlueBottom),
-              primary: false,
-              itemCount: lexiconRelated.length,
-              padding: const EdgeInsetsDirectional.fromSTEB(4, 4, 4, 4),
-              shrinkWrap: true,
-              itemBuilder: (context, index) {
-                return RelatedListItem(
-                  entryId: lexiconRelated[index].entryId,
-                  formFrom: lexiconRelated[index].formFrom!,
-                  glossFrom: lexiconRelated[index].glossFrom!,
-                  relation: lexiconRelated[index].relation,
-                  formTo: lexiconRelated[index].formTo!,
-                  glossTo: lexiconRelated[index].glossTo,
-                );
-              }));
-    }
-
-    return ExpandableNotifier(
-        child: Padding(
-      padding: const EdgeInsets.all(10),
-      child: ScrollOnExpand(
-        child: Card(
-          clipBehavior: Clip.antiAlias,
-          child: Column(
-            children: <Widget>[
-              ExpandablePanel(
-                theme: const ExpandableThemeData(
-                  headerAlignment: ExpandablePanelHeaderAlignment.center,
-                  tapBodyToExpand: true,
-                  tapBodyToCollapse: true,
-                  hasIcon: false,
-                ),
-                header: Container(
-                  color: BlueGrey,
-                  child: Padding(
-                    padding: const EdgeInsets.all(2.0),
-                    child: Row(
-                      children: [
-                        ExpandableIcon(
-                          theme: const ExpandableThemeData(
-                            // fadeCurve: Curves.decelerate,
-                            // animationDuration: const Duration(milliseconds: 400),
-                            // scrollAnimationDuration: const Duration(milliseconds: 400),
-                            expandIcon: Icons.arrow_right,
-                            collapseIcon: Icons.arrow_drop_down,
-                            iconColor: Colors.white,
-                            iconSize: 28.0,
-                            iconRotationAngle: math.pi / 2,
-                            iconPadding: EdgeInsets.only(right: 5),
-                            hasIcon: false,
-                          ),
-                        ),
-                        Expanded(
-                          child: lexiconRelated.isEmpty
-                              ? Text("no related words found",
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyText1!
-                                      .copyWith(color: LightBlueGrey))
-                              : Text(
-                                  "related word" +
-                                      (lexiconRelated.length > 1 ? "s" : ""),
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyText1!
-                                      .copyWith(color: Laurelin)),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                collapsed: Container(),
-                expanded: buildList(),
-              ),
-            ],
-          ),
-        ),
-      ),
-    ));
-  }
-}
-
-class NotesCard extends StatelessWidget {
-  List<EntryDoc> entryDoc;
-  bool isDataLoading;
-
-  NotesCard(this.entryDoc, this.isDataLoading);
-
-  @override
-  Widget build(BuildContext context) {
-    buildNote() {
-      if (entryDoc.isEmpty) {
-        return Container();
-      } else {
-        return Container(
-          padding: const EdgeInsets.fromLTRB(5.0, 0.0, 5.0, 0.0),
-          color: NotepaperWhite,
-          child: Html(
-            data: entryDoc[0].doc ?? '',
-            style: {
-              "body": Style(
-                fontSize: FontSize(15.0),
-                color: ThemeTextColour,
-              ),
-            },
-          ),
-        );
-      }
-    }
-
-    return ExpandableNotifier(
-        child: Padding(
-      padding: const EdgeInsets.all(10),
-      child: ScrollOnExpand(
-        child: Card(
-          clipBehavior: Clip.antiAlias,
-          child: Column(
-            children: <Widget>[
-              ExpandablePanel(
-                theme: const ExpandableThemeData(
-                  headerAlignment: ExpandablePanelHeaderAlignment.center,
-                  tapBodyToExpand: true,
-                  tapBodyToCollapse: true,
-                  hasIcon: false,
-                ),
-                header: Container(
-                  color: BlueGrey,
-                  child: Padding(
-                    padding: const EdgeInsets.all(2.0),
-                    child: Row(
-                      children: [
-                        ExpandableIcon(
-                          theme: const ExpandableThemeData(
-                            // fadeCurve: Curves.decelerate,
-                            // animationDuration: const Duration(milliseconds: 400),
-                            // scrollAnimationDuration: const Duration(milliseconds: 400),
-                            expandIcon: Icons.arrow_right,
-                            collapseIcon: Icons.arrow_drop_down,
-                            iconColor: Colors.white,
-                            iconSize: 28.0,
-                            iconRotationAngle: math.pi / 2,
-                            iconPadding: EdgeInsets.only(right: 5),
-                            hasIcon: false,
-                          ),
-                        ),
-                        Expanded(
-                          child: entryDoc.isEmpty
-                              ? Text(
-                                  "no notes found",
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyText1!
-                                      .copyWith(color: LightBlueGrey),
-                                )
-                              : Text(
-                                  "notes",
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyText1!
-                                      .copyWith(color: Laurelin),
-                                ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                collapsed: Container(),
-                expanded: buildNote(),
-              ),
-            ],
-          ),
-        ),
-      ),
-    ));
   }
 }

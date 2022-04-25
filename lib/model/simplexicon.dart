@@ -1,4 +1,4 @@
-const String simplexiconTable = 'simplexicon';
+const String simplexiconView = 'simplexicon';
 
 class SimplexiconFields {
   static final List<String> values = [
@@ -45,7 +45,7 @@ class Simplexicon {
   final int formLangId;
   final String formLangAbbr;
   final String gloss;
-  final int glossLangId;
+  final int? glossLangId;
   final String? cat;
   final String? stem;
   final String? createdBy;
@@ -62,7 +62,7 @@ class Simplexicon {
     required this.formLangId,
     required this.formLangAbbr,
     required this.gloss,
-    required this.glossLangId,
+    this.glossLangId,
     this.cat,
     this.stem,
     this.createdBy,
@@ -115,7 +115,7 @@ class Simplexicon {
         formLangId: json[SimplexiconFields.formLangId] as int,
         formLangAbbr: json[SimplexiconFields.formLangAbbr] as String,
         gloss: json[SimplexiconFields.gloss] as String,
-        glossLangId: json[SimplexiconFields.glossLangId] as int,
+        glossLangId: json[SimplexiconFields.glossLangId] as int?,
         cat: json[SimplexiconFields.cat] as String?,
         stem: json[SimplexiconFields.stem] as String?,
         createdBy: json[SimplexiconFields.createdBy] as String?,
@@ -136,7 +136,7 @@ class Simplexicon {
         SimplexiconFields.formLangAbbr: formLangAbbr,
         SimplexiconFields.cat: cat,
         SimplexiconFields.stem: stem,
-        SimplexiconFields.stem: createdBy,
+        SimplexiconFields.createdBy: createdBy,
         SimplexiconFields.entryClassId: entryClassId,
         SimplexiconFields.entryClass: entryClass,
         SimplexiconFields.entryTypeId: entryTypeId,

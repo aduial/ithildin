@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import '../config/colours.dart';
+import 'entry_screen.dart';
 
 class CognateListItem extends StatefulWidget {
   const CognateListItem({
@@ -10,6 +11,7 @@ class CognateListItem extends StatefulWidget {
     required this.form,
     this.gloss,
     required this.sources,
+    this.cognateId,
   }) : super(key: key);
 
   final int entryId;
@@ -17,88 +19,78 @@ class CognateListItem extends StatefulWidget {
   final String form;
   final String? gloss;
   final String sources;
+  final int? cognateId;
 
   @override
   State<CognateListItem> createState() => _CognateListItemState();
 }
 
-class _CognateListItemState extends State<CognateListItem> {
+Route _cognateDetailRoute(int cognateId) {
+  return PageRouteBuilder(
+    pageBuilder: (context, animation, secondaryAnimation) =>
+        EntryScreen(cognateId),
+    transitionDuration: const Duration(milliseconds: 350),
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      return FadeTransition(
+        opacity: animation,
+        child: child,
+      );
+    },
+  );
+}
 
+class _CognateListItemState extends State<CognateListItem> {
   String htmlData = "";
+
   void initState() {
-    htmlData += CSSBolder + widget.language.toUpperCase() + CloseSpan + "&nbsp;&nbsp;";
-    htmlData += CSSBoldBlueGrey +  widget.form + CloseSpan + "&nbsp;&nbsp;";
-    if (widget.gloss != null && widget.gloss!.isNotEmpty){
-      htmlData += CSSGreenItalic + '"' + (widget.gloss?? "") + '"' + CloseSpan + "&nbsp;&nbsp;";
+    formatHtml();
+    super.initState();
+  }
+
+  formatHtml() {
+    htmlData += CSSBolder +
+        widget.language.toUpperCase() +
+        CloseSpan +
+        "&nbsp;&nbsp;";
+    htmlData += (widget.cognateId != null ? CSSBoldVeryBlue : CSSBoldBlueGrey) +
+        widget.form +
+        CloseSpan +
+        "&nbsp;&nbsp;";
+    if (widget.gloss != null && widget.gloss!.isNotEmpty) {
+      htmlData += CSSGreenItalic +
+          '"' +
+          (widget.gloss ?? "") +
+          '"' +
+          CloseSpan;
     }
     htmlData += CSSText + widget.sources.replaceAll('.', '') + CloseSpan;
-    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-
-      padding: const EdgeInsets.fromLTRB(5.0, 0.0, 5.0, 0.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Flexible(
-            fit: FlexFit.loose,
-            flex: 1,
-            child: Html(data: htmlData),
-          ),
-        ],
+    //print(htmlData);
+    return GestureDetector(
+      onTap: () {
+        if (widget.cognateId != null) {
+          setState(() {
+            Navigator.of(context).push(_cognateDetailRoute(widget.cognateId!));
+          });
+        }
+      },
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(5.0, 0.0, 5.0, 0.0),
+        color: widget.cognateId != null ? NotepaperLinked : NotepaperWhite,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Flexible(
+              fit: FlexFit.loose,
+              flex: 1,
+              child: Html(data: htmlData),
+            ),
+          ],
+        ),
       ),
     );
   }
-
-
-  // @override
-  // Widget build(BuildContext context) {
-  //
-  //   return Container(
-  //     padding: const EdgeInsets.fromLTRB(5.0, 0.0, 5.0, 0.0),
-  //     child: Row(
-  //       crossAxisAlignment: CrossAxisAlignment.start,
-  //       children: <Widget>[
-  //         Flexible(
-  //             fit: FlexFit.tight,
-  //             flex: 1,
-  //             child: RichText(
-  //               text: TextSpan(
-  //                 text: widget.language.toUpperCase(),
-  //                 style: Theme.of(context)
-  //                     .textTheme
-  //                     .bodyText2!
-  //                     .copyWith(fontWeight: FontWeight.w700),
-  //                 children: <TextSpan>[
-  //                   TextSpan(
-  //                     text: widget.form,
-  //                     style: Theme.of(context).textTheme.bodyText2!.copyWith(
-  //                         fontWeight: FontWeight.w800,
-  //                         fontSize: 12,
-  //                         color: BluerGrey),
-  //                   ),
-  //                   TextSpan(
-  //                     text: widget.gloss,
-  //                     style: Theme.of(context).textTheme.bodyText2!.copyWith(
-  //                         fontWeight: FontWeight.w300,
-  //                         fontSize: 12,
-  //                         color: BluerGrey),
-  //                   ),
-  //                   TextSpan(
-  //                     text: widget.sources,
-  //                     style: Theme.of(context).textTheme.bodyText2!.copyWith(
-  //                         fontWeight: FontWeight.w300,
-  //                         fontSize: 12,
-  //                         color: DarkGreen),
-  //                   ),
-  //                 ],
-  //               ),
-  //             )),
-  //       ],
-  //     ),
-  //   );
-  // }
 }

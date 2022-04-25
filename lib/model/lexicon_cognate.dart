@@ -3,7 +3,7 @@ const String lexiconCognateView = 'lexicon_cognates';
 class LexiconCognateFields {
   static final List<String> values = [
     /// Add all fields
-    entryId, language, form, gloss, sources
+    entryId, language, form, gloss, sources, cognateId
   ];
 
   static const String entryId = 'entry_id';
@@ -11,6 +11,7 @@ class LexiconCognateFields {
   static const String form = 'form';
   static const String gloss = 'gloss';
   static const String sources = 'sources';
+  static const String cognateId = 'cognate_id';
 }
 
 class LexiconCognate {
@@ -20,6 +21,7 @@ class LexiconCognate {
   final String form;
   final String? gloss;
   final String sources;
+  final int cognateId;
 
 
   const LexiconCognate({
@@ -28,6 +30,7 @@ class LexiconCognate {
     required this.form,
     this.gloss,
     required this.sources,
+    required this.cognateId,
   });
 
   LexiconCognate copy({
@@ -36,6 +39,7 @@ class LexiconCognate {
     String? form,
     String? gloss,
     String? sources,
+    int? cognateId,
   }) {
     return LexiconCognate(
       entryId: entryId ?? this.entryId,
@@ -43,6 +47,7 @@ class LexiconCognate {
       form: form ?? this.form,
       gloss: gloss ?? this.gloss,
       sources: sources ?? this.sources,
+      cognateId: cognateId ?? this.cognateId,
     );
   }
 
@@ -52,6 +57,7 @@ class LexiconCognate {
     form: json[LexiconCognateFields.form] as String,
     gloss: json[LexiconCognateFields.gloss] as String?,
     sources: json[LexiconCognateFields.sources] as String,
+    cognateId: json[LexiconCognateFields.cognateId] as int,
   );
 
   Map<String, Object?> toJson() => {
@@ -60,6 +66,7 @@ class LexiconCognate {
     LexiconCognateFields.form: form,
     LexiconCognateFields.gloss: gloss,
     LexiconCognateFields.sources: sources,
+    LexiconCognateFields.cognateId: cognateId,
   };
 
   @override
@@ -71,7 +78,8 @@ class LexiconCognate {
           language == other.language &&
           form == other.form &&
           gloss == other.gloss &&
-          sources == other.sources);
+          sources == other.sources&&
+          cognateId == other.cognateId);
 
   @override
   int get hashCode =>
@@ -79,7 +87,8 @@ class LexiconCognate {
       language.hashCode ^
       form.hashCode ^
       gloss.hashCode ^
-      sources.hashCode;
+      sources.hashCode ^
+      cognateId.hashCode;
 
   @override
   String toString() {
@@ -89,6 +98,7 @@ class LexiconCognate {
         ' form: $form,' +
         ' gloss: $gloss,' +
         ' sources: $sources,' +
+        ' cognateId: $cognateId,' +
         '}';
   }
 
@@ -99,6 +109,7 @@ class LexiconCognate {
       'form': this.form,
       'gloss': this.gloss,
       'sources': this.sources,
+      'cognateId': this.cognateId,
     };
   }
 
@@ -109,6 +120,7 @@ class LexiconCognate {
       form: map['form'] as String,
       gloss: map['gloss'] as String,
       sources: map['sources'] as String,
+      cognateId: map['cognateId'] as int,
     );
   }
 }

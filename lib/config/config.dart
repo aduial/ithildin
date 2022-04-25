@@ -1,3 +1,6 @@
+import 'package:ithildin/config/user_preferences.dart';
+import 'package:flutter/cupertino.dart';
+
 // ID values from LANGUAGE table
 const int allLanguages = 1;
 const int pElvish = 30;
@@ -11,9 +14,10 @@ const int quenyaInclNeo = 8;
 const int sindarinIncNeo = 9;
 
 // start indexes for ithildin_screen
-const int eldarinStartIndex = 1;
-const int modernStartIndex = 0;
-
+const int defaultEldarinLangId = 30120; // ID of Sindarin
+const int defaultGlossLangId = 100; // ID of English
+const int defaultLanguageSetIndex = 2;
+const int defaultMatchingMethodIndex = 0;
 
 var langCategories = <String>[
   'minimal',
@@ -23,10 +27,29 @@ var langCategories = <String>[
   'complete',
 ];
 
-Map<String, String> catMap = {
-  'minimal': '< 1',
-  'basic': '< 2',
-  'medium': '< 3',
-  'large': '< 4',
-  'complete': '< 5',
-};
+var matchingMethods = <String>[
+  'anywhere',
+  'start',
+  'end',
+  'verbatim',
+  'regex',
+];
+
+List<IconData> matchIcons = [
+  CupertinoIcons.search,
+  CupertinoIcons.arrow_left_to_line,
+  CupertinoIcons.arrow_right_to_line,
+  CupertinoIcons.equal,
+  CupertinoIcons.ellipsis,
+];
+
+IconData getMatchMethodIcon(){
+  return matchIcons[(UserPreferences.getMatchMethod() ?? defaultMatchingMethodIndex)];
+}
+
+//
+// CupertinoIcons.search_circle
+// CupertinoIcons.arrow_left_circle
+// CupertinoIcons.arrow_right_circle
+// CupertinoIcons.equal_circle
+// CupertinoIcons.ellipsis_circle
