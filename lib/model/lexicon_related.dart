@@ -146,16 +146,16 @@ class LexiconRelated {
 
   Map<String, dynamic> toMap() {
     return {
-      'entryId': this.entryId,
-      'languageFrom': this.languageFrom,
-      'formFrom': this.formFrom,
-      'glossFrom': this.glossFrom,
-      'relation': this.relation,
-      'languageTo': this.languageTo,
-      'formTo': this.formTo,
-      'glossTo': this.glossTo,
-      'refSources': this.refSources,
-      'relatedId': this.relatedId,
+      'entryId': entryId,
+      'languageFrom': languageFrom,
+      'formFrom': formFrom,
+      'glossFrom': glossFrom,
+      'relation': relation,
+      'languageTo': languageTo,
+      'formTo': formTo,
+      'glossTo': glossTo,
+      'refSources': refSources,
+      'relatedId': relatedId,
     };
   }
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:ithildin/screen/ithildin_screen.dart';
 import 'package:ithildin/screen/minui.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -26,7 +27,9 @@ class IthildinApp extends StatelessWidget {
     return MaterialApp(
         debugShowCheckedModeBanner: false,
         title: title,
-        home: Minui(),
+        home: UserPreferences.getShowMinuiNotNull()
+        ? Minui()
+        : IthildinScreen(),
         themeMode: ThemeMode.system,
         theme: ThemeData.light().copyWith(
             primaryColor: RegularResultBGColour,
@@ -48,18 +51,18 @@ class IthildinApp extends StatelessWidget {
                 fontSize: 101,
                 fontWeight: FontWeight.w200,
                 letterSpacing: -1.5,
-                color: Ithildin,
+                color: ithildin,
               ),
               headline2: GoogleFonts.notoSerifDisplay(
                 fontSize: 63,
                 fontWeight: FontWeight.w200,
                 letterSpacing: -0.5,
-                color: Ithildin,
+                color: ithildin,
               ),
               headline3: GoogleFonts.notoSerifDisplay(
                 fontSize: 50,
                 fontWeight: FontWeight.w200,
-                color: Ithildin,
+                color: ithildin,
               ),
               headline4: GoogleFonts.lato(
                 fontSize: 36,

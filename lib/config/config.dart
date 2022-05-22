@@ -19,6 +19,11 @@ const int defaultGlossLangId = 100; // ID of English
 const int defaultLanguageSetIndex = 2;
 const int defaultMatchingMethodIndex = 0;
 
+// reference screen width (iPhone 11 pro max)
+// const double refWidth = 448;
+const double refWidth = 414.0;
+const double refHeight = 896.0;
+
 var langCategories = <String>[
   'minimal',
   'basic',
@@ -29,6 +34,7 @@ var langCategories = <String>[
 
 var matchingMethods = <String>[
   'anywhere',
+  'strict',
   'start',
   'end',
   'verbatim',
@@ -37,6 +43,7 @@ var matchingMethods = <String>[
 
 List<IconData> matchIcons = [
   CupertinoIcons.search,
+  CupertinoIcons.search_circle,
   CupertinoIcons.arrow_left_to_line,
   CupertinoIcons.arrow_right_to_line,
   CupertinoIcons.equal,
@@ -46,10 +53,3 @@ List<IconData> matchIcons = [
 IconData getMatchMethodIcon(){
   return matchIcons[(UserPreferences.getMatchMethod() ?? defaultMatchingMethodIndex)];
 }
-
-//
-// CupertinoIcons.search_circle
-// CupertinoIcons.arrow_left_circle
-// CupertinoIcons.arrow_right_circle
-// CupertinoIcons.equal_circle
-// CupertinoIcons.ellipsis_circle

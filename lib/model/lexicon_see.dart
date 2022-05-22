@@ -94,11 +94,11 @@ class LexiconSee {
 
   Map<String, dynamic> toMap() {
     return {
-      'entryId': this.entryId,
-      'language': this.language,
-      'form': this.form,
-      'see': this.see,
-      'seeId': this.seeId,
+      'entryId': entryId,
+      'language': language,
+      'form': form,
+      'see': see,
+      'seeId': seeId,
     };
   }
 

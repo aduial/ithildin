@@ -104,12 +104,12 @@ class LexiconCognate {
 
   Map<String, dynamic> toMap() {
     return {
-      'entryId': this.entryId,
-      'language': this.language,
-      'form': this.form,
-      'gloss': this.gloss,
-      'sources': this.sources,
-      'cognateId': this.cognateId,
+      'entryId': entryId,
+      'language': language,
+      'form': form,
+      'gloss': gloss,
+      'sources': sources,
+      'cognateId': cognateId,
     };
   }
 

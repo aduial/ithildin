@@ -26,7 +26,6 @@ import '../model/lexicon_see.dart';
 import '../model/nothrim.dart';
 
 class EldamoDb {
-
   List<Simplexicon> regexBufferList = <Simplexicon>[];
 
   static final EldamoDb instance = EldamoDb._init();
@@ -40,10 +39,9 @@ class EldamoDb {
     return _database!;
   }
 
-  void clearRegexBufferList(){
+  void clearRegexBufferList() {
     regexBufferList.clear();
   }
-
 
   // return database if already available in App directory
   // else, copy from assets folder to app directory
@@ -67,14 +65,15 @@ class EldamoDb {
   // get single language
   Future<Language> loadLanguage(int languageId) async {
     final db = await instance.database;
-    final result = await db.rawQuery(
-        "SELECT * FROM $languageTable WHERE ID = $languageId");
+    final result = await db
+        .rawQuery("SELECT * FROM $languageTable WHERE ID = $languageId");
     return result.map((json) => Language.fromJson(json)).first;
   }
 
   // filtered language sets
   Future<List<Language>> loadEldarinLanguageSet() async {
-    int langCat = (UserPreferences.getLanguageSet() ?? defaultLanguageSetIndex) + 1;
+    int langCat =
+        (UserPreferences.getLanguageSet() ?? defaultLanguageSetIndex) + 1;
     String langCatWhere = '< $langCat';
     final db = await instance.database;
     // const orderBy = "${LanguageFields.id} ASC";
@@ -234,39 +233,15 @@ class EldamoDb {
 
   String formLangWhereClause(int formLangId) {
     if (formLangId == allLanguages) {
-      return SimplexiconFields.formLangId + " LIKE '%'";
+      return "${SimplexiconFields.formLangId} LIKE '%'";
     } else if (formLangId == quenyaInclNeo) {
-      return "(" +
-          SimplexiconFields.formLangId +
-          " = " +
-          neoQuenya.toString() +
-          " OR " +
-          SimplexiconFields.formLangId +
-          " = " +
-          quenya.toString() +
-          ")";
+      return "(${SimplexiconFields.formLangId} = $neoQuenya OR ${SimplexiconFields.formLangId} = $quenya)";
     } else if (formLangId == sindarinIncNeo) {
-      return "(" +
-          SimplexiconFields.formLangId +
-          " = " +
-          neoSindarin.toString() +
-          " OR " +
-          SimplexiconFields.formLangId +
-          " = " +
-          sindarin.toString() +
-          ")";
+      return "(${SimplexiconFields.formLangId} = $neoSindarin OR ${SimplexiconFields.formLangId} = $sindarin)";
     } else if (formLangId == pElvishInclNeo) {
-      return "(" +
-          SimplexiconFields.formLangId +
-          " = " +
-          neoPElvish.toString() +
-          " OR " +
-          SimplexiconFields.formLangId +
-          " = " +
-          pElvish.toString() +
-          ")";
+      return "(${SimplexiconFields.formLangId} = $neoPElvish OR ${SimplexiconFields.formLangId} = $pElvish)";
     } else {
-      return SimplexiconFields.formLangId + " = " + formLangId.toString();
+      return "${SimplexiconFields.formLangId} = $formLangId";
     }
   }
 
@@ -279,9 +254,13 @@ class EldamoDb {
     String whereGlossLangId = "${SimplexiconFields.glossLangId} $glossLang";
     String matchFormFilter = applyMatchMethod(formFilter);
     String whereFormLike = "${SimplexiconFields.nform} LIKE '$matchFormFilter'";
+    // for verbatim search, match on form instead of nform
+    if ((UserPreferences.getMatchMethod() ?? defaultMatchingMethodIndex) == 1){
+      whereFormLike = "${SimplexiconFields.form} LIKE '$matchFormFilter'";
+    }
     final result = await db.rawQuery("SELECT * from $simplexiconView "
         "WHERE $whereFormLangId "
-        "AND $whereGlossLangId "
+        "AND ($whereGlossLangId OR gloss = '[unglossed]') "
         "AND $whereFormLike "
         "ORDER BY $orderBy");
     return result.map((json) => Simplexicon.fromJson(json)).toList();
@@ -289,11 +268,14 @@ class EldamoDb {
 
   Future<List<Simplexicon>> simplexiconFormRegexFilter(
       String regex, int formLangId, int glossLangId) async {
-    if (regexBufferList.isEmpty || (regexBufferList[0].formLangId != (UserPreferences.getActiveEldarinLangId() ?? defaultEldarinLangId))) {
-      await refreshRegexBufferList(formLangId, glossLangId);
+    if (regexBufferList.isEmpty ||
+        (regexBufferList[0].formLangId !=
+            (UserPreferences.getActiveEldarinLangId() ??
+                defaultEldarinLangId))) {
+      await refreshRegexBufferList(formLangId, glossLangId, true);
     }
     List<Simplexicon> regexFilteredList = List.from(regexBufferList);
-    RegExp regExp = RegExp(r'(' + regex.toLowerCase() + ')');
+    RegExp regExp = RegExp(r'(' + regex + ')');
     //RegExp regExp = RegExp(r"(ad.+d$)");
     regexFilteredList.retainWhere((slex) => regExp.hasMatch(slex.nform));
     return regexFilteredList;
@@ -302,15 +284,16 @@ class EldamoDb {
   Future<List<Simplexicon>> simplexiconGlossFilter(
       String glossFilter, int formLangId, int glossLangId) async {
     final db = await instance.database;
-    const orderBy = "${SimplexiconFields.nform} ASC";
+    const orderBy = "${SimplexiconFields.ngloss} ASC";
     String glossLang = "= ${glossLangId.toString()}";
     String whereFormLangId = formLangWhereClause(formLangId);
     String whereGlossLangId = "${SimplexiconFields.glossLangId} $glossLang";
     String matchGlossFilter = applyMatchMethod(glossFilter);
-    String whereGlossLike = "${SimplexiconFields.gloss} LIKE '$matchGlossFilter'";
+    String whereGlossLike =
+        "${SimplexiconFields.ngloss} LIKE '$matchGlossFilter'";
     final result = await db.rawQuery("SELECT * from $simplexiconView "
         "WHERE $whereFormLangId "
-        "AND $whereGlossLangId "
+        "AND $whereGlossLangId  OR gloss = '[unglossed]') "
         "AND $whereGlossLike "
         "ORDER BY $orderBy");
     return result.map((json) => Simplexicon.fromJson(json)).toList();
@@ -318,19 +301,23 @@ class EldamoDb {
 
   Future<List<Simplexicon>> simplexiconGlossRegexFilter(
       String regex, int formLangId, int glossLangId) async {
-    if (regexBufferList.isEmpty || (regexBufferList[0].glossLangId != (UserPreferences.getActiveGlossLangId() ?? defaultGlossLangId))) {
-      await refreshRegexBufferList(formLangId, glossLangId);
+    if (regexBufferList.isEmpty ||
+        (regexBufferList[0].glossLangId !=
+            (UserPreferences.getActiveGlossLangId() ?? defaultGlossLangId))) {
+      await refreshRegexBufferList(formLangId, glossLangId, false);
     }
     List<Simplexicon> regexFilteredList = List.from(regexBufferList);
-    RegExp regExp = RegExp(r'(' + regex.toLowerCase() + ')');
-    print(regex);
+    RegExp regExp = RegExp(r'(' + regex + ')');
     regexFilteredList.retainWhere((slex) => regExp.hasMatch(slex.gloss));
     return regexFilteredList;
   }
 
-  Future<void> refreshRegexBufferList(int formLangId, int glossLangId) async {
+  Future<void> refreshRegexBufferList(
+      int formLangId, int glossLangId, bool isFormSearch) async {
     final db = await instance.database;
-    const orderBy = "${SimplexiconFields.nform} ASC";
+    String orderBy = isFormSearch
+        ? "${SimplexiconFields.nform} ASC"
+        : "${SimplexiconFields.ngloss} ASC";
     String glossLang = "= ${glossLangId.toString()}";
     String whereFormLangId = formLangWhereClause(formLangId);
     String whereGlossLangId = "${SimplexiconFields.glossLangId} $glossLang";
@@ -341,19 +328,32 @@ class EldamoDb {
     regexBufferList = result.map((json) => Simplexicon.fromJson(json)).toList();
   }
 
-  String applyMatchMethod(String likeClause){
-    switch(UserPreferences.getMatchMethod() ?? defaultMatchingMethodIndex) {
-      case 1: {  return '$likeClause%'; }
-      break;
+  String applyMatchMethod(String likeClause) {
+    switch (UserPreferences.getMatchMethod() ?? defaultMatchingMethodIndex) {
+      case 1:
+        {
+          return '%$likeClause%';
+        }
 
-      case 2: {  return '%$likeClause'; }
-      break;
+      case 2:
+        {
+          return '$likeClause%';
+        }
 
-      case 3: {  return '$likeClause'; }
-      break;
+      case 3:
+        {
+          return '%$likeClause';
+        }
 
-      default: { return '%$likeClause%'; }
-      break;
+      case 4:
+        {
+          return '$likeClause';
+        }
+
+      default:
+        {
+          return '%$likeClause%';
+        }
     }
   }
 
@@ -399,5 +399,4 @@ class EldamoDb {
         "LIMIT 100;");
     return result.map((json) => Simplexicon.fromJson(json)).toList();
   }
-
 }

@@ -1,4 +1,4 @@
-package com.example.ithildin
+package org.aduial.Ithildin
 
 import io.flutter.embedding.android.FlutterActivity
 

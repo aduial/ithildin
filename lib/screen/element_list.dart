@@ -61,10 +61,7 @@ class _ElementListItemState extends State<ElementListItem> {
           "&nbsp;&nbsp;";
     }
 
-    htmlData += CSSBoldBlueGrey +
-          widget.form +
-          CloseSpan +
-          "&nbsp;&nbsp;";
+    htmlData += "$cssBoldBlueGrey${widget.form}$CloseSpan&nbsp;&nbsp;";
 
     if (widget.gloss != null && widget.gloss!.isNotEmpty) {
       htmlData += CSSGreenItalic +
@@ -76,14 +73,11 @@ class _ElementListItemState extends State<ElementListItem> {
     }
 
     if (widget.inflections != null && widget.inflections!.isNotEmpty) {
-      htmlData += CSSBolder +
-          (widget.inflections ?? "") +
-          CloseSpan +
-          "&nbsp;&nbsp;";
+      htmlData += "$CSSBolder${widget.inflections ?? ""}$CloseSpan&nbsp;&nbsp;";
     }
 
     if (widget.sources != null && widget.sources!.isNotEmpty) {
-      htmlData += CSSText +
+      htmlData += cssText +
           (widget.sources ?? "") +
           CloseSpan;
     }

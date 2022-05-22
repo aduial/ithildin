@@ -2,10 +2,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../config/colours.dart';
+import '../config/config.dart';
+import '../config/user_preferences.dart';
 import 'ithildin_screen.dart';
 
 class Minui extends StatefulWidget {
   const Minui({Key? key}) : super(key: key);
+
   @override
   State<StatefulWidget> createState() => _MinuiState();
 }
@@ -21,8 +24,10 @@ class _MinuiState extends State<Minui> {
 
   @override
   Widget build(BuildContext context) {
+    double toScale = MediaQuery.of(context).size.width / refWidth ;
+
     return Scaffold(
-      backgroundColor: BlueTop,
+      backgroundColor: blueTop,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -33,21 +38,21 @@ class _MinuiState extends State<Minui> {
               child: Container(
                 alignment: Alignment.bottomCenter,
                 child: Padding(
-                  padding: const EdgeInsetsDirectional.fromSTEB(30, 40, 30, 0),
+                  padding: EdgeInsetsDirectional.fromSTEB(30 * toScale, 40 * toScale, 30 * toScale, 0),
                   child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
-                        const SizedBox(
-                          width: 130.0,
-                          height: 50.0,
+                         SizedBox(
+                          width: 130.0 * toScale,
+                          height: 50.0 * toScale,
                         ),
                         Transform.rotate(
                           angle: 180,
-                          child: const Icon(
+                          child: Icon(
                             Icons.star,
-                            color: Ithildin,
-                            size: 50,
+                            color: ithildin,
+                            size: 50 * toScale,
                           ),
                         )
                       ]),
@@ -59,45 +64,43 @@ class _MinuiState extends State<Minui> {
               style: GoogleFonts.notoSerifDisplay(
                 textStyle: Theme.of(context).textTheme.headline1,
                 fontWeight: FontWeight.w200,
-                fontSize: 70,
+                fontSize: 70 * toScale,
               ),
             ),
             Text(
               "an Elvish dictionary",
-              style: Theme.of(context)
-                  .textTheme
-                  .headline2!
-                  .copyWith(color: Ithildin,
-                fontWeight: FontWeight.w300,
-                // fontStyle: FontStyle.italic,
-                fontSize: 24),
+              style: Theme.of(context).textTheme.headline2!.copyWith(
+                  color: ithildin,
+                  fontWeight: FontWeight.w300,
+                  // fontStyle: FontStyle.italic,
+                  fontSize: 24 * toScale),
             ),
-            const SizedBox(
+             SizedBox(
               width: double.infinity,
-              height: 30.0,
+              height: 30.0 * toScale,
             ),
-            const SizedBox(
+             SizedBox(
               width: double.infinity,
-              height: 50.0,
-              child: DecoratedBox(
+              height: 50.0 * toScale,
+              child: const DecoratedBox(
                 decoration: BoxDecoration(
-                  color: YellowGrey,
+                  color: yellowGrey,
                 ),
               ),
             ),
-            const SizedBox(
+             SizedBox(
               width: double.infinity,
-              height: 20.0,
-              child: DecoratedBox(
+              height: 20.0 * toScale,
+              child: const DecoratedBox(
                 decoration: BoxDecoration(
                   color: SortOfRed,
                 ),
               ),
             ),
-            const SizedBox(
+             SizedBox(
               width: double.infinity,
-              height: 35.0,
-              child: DecoratedBox(
+              height: 35.0 * toScale,
+              child: const DecoratedBox(
                 decoration: BoxDecoration(
                   color: IceBlue,
                 ),
@@ -110,23 +113,21 @@ class _MinuiState extends State<Minui> {
                 alignment: Alignment.center,
                 color: MountainBlue,
                 child: Padding(
-                  padding: const EdgeInsetsDirectional.fromSTEB(30, 30, 30, 10),
+                  padding: EdgeInsetsDirectional.fromSTEB(30 * toScale, 30 * toScale, 30 * toScale, 10 * toScale),
                   child: Text(
                     "A dictionary of Tolkienian languages based on the Eldamo Lexicon by Paul Strack.",
                     textAlign: TextAlign.center,
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyText1!
-                        .copyWith(color: Ithildin,
+                    style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                        color: ithildin,
                         fontWeight: FontWeight.w300,
                         fontStyle: FontStyle.italic,
-                        fontSize: 15),
+                        fontSize: 15 * toScale),
                   ),
                 ),
               ),
             ),
             Container(
-              height: 50.0,
+              height: 50.0 * toScale,
               color: MountainBlue,
               child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -141,8 +142,8 @@ class _MinuiState extends State<Minui> {
                         style: GoogleFonts.lato(
                           textStyle: Theme.of(context).textTheme.bodyText1,
                           fontWeight: FontWeight.w600,
-                          fontSize: 16,
-                          color: Ithildin,
+                          fontSize: 16 * toScale,
+                          color: ithildin,
                         ),
                       ),
                       color: SortOfRed,
@@ -150,22 +151,57 @@ class _MinuiState extends State<Minui> {
                   ]),
             ),
             Expanded(
-              flex: 4,
+              flex: 2,
               child: Container(
                 width: double.infinity,
                 color: MountainBlue,
                 child: Padding(
-                  padding: const EdgeInsetsDirectional.fromSTEB(30, 30, 30, 10),
+                  padding: EdgeInsetsDirectional.fromSTEB(30 * toScale, 20 * toScale, 30 * toScale, 0),
                   child: Text(
                     "Usage: tap the (?) icon top right in the next screen",
                     textAlign: TextAlign.center,
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyText1!
-                        .copyWith(color: Ithildin,
+                    style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                        color: ithildin,
                         fontWeight: FontWeight.w300,
-                        fontSize: 14),
+                        fontSize: 12 * toScale),
                   ),
+                ),
+              ),
+            ),
+            Expanded(
+              flex: 3,
+              child: Container(
+                width: double.infinity,
+                color: MountainBlue,
+                child: Padding(
+                  padding: EdgeInsetsDirectional.fromSTEB(30 * toScale, 0, 30 * toScale, 0),
+                  child: CheckboxListTile(
+                    enableFeedback: true,
+                      activeColor: ithildin,
+                      contentPadding: EdgeInsetsDirectional.fromSTEB(20 * toScale, 0, 60 * toScale, 0),
+                      visualDensity: VisualDensity.compact,
+                      checkColor: blueTop,
+                      side: const BorderSide(
+                        color: ithildin,
+                        width: 1.0,
+                        style: BorderStyle.solid
+                      ),
+                      title: Text(
+                        "Show this screen next time",
+                        textAlign: TextAlign.right,
+                        style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                            color: ithildin,
+                            fontWeight: FontWeight.w300,
+                            fontSize: 14 * toScale),
+                      ),
+                      value: UserPreferences.getShowMinuiNotNull(),
+                      onChanged: (bool? isChecked) {
+                        setState(() {
+                          UserPreferences.setShowMinui(isChecked!);
+                        });
+                      }
+
+                      ),
                 ),
               ),
             ),

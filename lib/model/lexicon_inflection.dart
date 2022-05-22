@@ -92,24 +92,23 @@ class LexiconInflection {
 
   @override
   String toString() {
-    return 'LexiconInflection{' +
-        ' entryId: $entryId,' +
-        ' mark: $mark,' +
-        ' form: $form,' +
-        ' inflections: $inflections,' +
-        ' gloss: $gloss,' +
-        ' references: $references,' +
-        '}';
+    return 'LexiconInflection{ '
+        'entryId: $entryId, '
+        'mark: $mark, '
+        'form: $form, '
+        'inflections: $inflections, '
+        'gloss: $gloss, '
+        'references: $references}';
   }
 
   Map<String, dynamic> toMap() {
     return {
-      'entryId': this.entryId,
-      'mark': this.mark,
-      'form': this.form,
-      'inflections': this.inflections,
-      'gloss': this.gloss,
-      'references': this.references,
+      'entryId': entryId,
+      'mark': mark,
+      'form': form,
+      'inflections': inflections,
+      'gloss': gloss,
+      'references': references
     };
   }
 

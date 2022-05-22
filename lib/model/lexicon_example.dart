@@ -67,18 +67,17 @@ class LexiconExample {
 
   @override
   String toString() {
-    return 'lexiconExample{' +
-        ' entryId: $entryId,' +
-        ' form: $form,' +
-        ' source: $source,' +
-        '}';
+    return 'lexiconExample{ '
+        'entryId: $entryId, '
+        'form: $form, '
+        'source: $source,}';
   }
 
   Map<String, dynamic> toMap() {
     return {
-      'entryId': this.entryId,
-      'form': this.form,
-      'source': this.source,
+      'entryId': entryId,
+      'form': form,
+      'source': source,
     };
   }
 

@@ -12,9 +12,7 @@ class CombinationListItem extends StatefulWidget {
     required this.idTo,
     required this.formTo,
     required this.langTo,
-
   }) : super(key: key);
-
 
   final int entryId;
   final String formFrom;
@@ -29,8 +27,7 @@ class CombinationListItem extends StatefulWidget {
 
 Route _combinationDetailRoute(int idTo) {
   return PageRouteBuilder(
-    pageBuilder: (context, animation, secondaryAnimation) =>
-        EntryScreen(idTo),
+    pageBuilder: (context, animation, secondaryAnimation) => EntryScreen(idTo),
     transitionDuration: const Duration(milliseconds: 350),
     transitionsBuilder: (context, animation, secondaryAnimation, child) {
       return FadeTransition(
@@ -50,29 +47,19 @@ class _CombinationListItemState extends State<CombinationListItem> {
   }
 
   formatHtml() async {
-
     if (widget.langFrom.isNotEmpty) {
-      htmlData += CSSBolder +
-          widget.langFrom.toUpperCase() +
-          CloseSpan +
-          "&nbsp;&nbsp;";
+      htmlData +=
+          "$CSSBolder${widget.langFrom.toUpperCase()}$CloseSpan&nbsp;&nbsp;";
     }
 
-    htmlData += CSSBoldVeryBlue +
-        widget.formFrom +
-        CloseSpan +
-        "&nbsp;&nbsp;";
+    htmlData += "$CSSBoldVeryBlue${widget.formFrom}$CloseSpan&nbsp;&nbsp;";
 
     if (widget.langTo.isNotEmpty) {
-      htmlData += CSSBolder +
-          widget.langTo.toUpperCase() +
-          CloseSpan +
-          "&nbsp;&nbsp;";
+      htmlData +=
+          "$CSSBolder${widget.langTo.toUpperCase()}$CloseSpan&nbsp;&nbsp;";
     }
 
-    htmlData += CSSBoldVeryBlue +
-        widget.formTo +
-        CloseSpan;
+    htmlData += CSSBoldVeryBlue + widget.formTo + CloseSpan;
   }
 
   @override
@@ -86,7 +73,6 @@ class _CombinationListItemState extends State<CombinationListItem> {
       },
       child: Container(
         padding: const EdgeInsets.fromLTRB(5.0, 0.0, 5.0, 0.0),
-
         color: NotepaperLinked,
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,

@@ -17,7 +17,6 @@ class ChangeListItem extends StatefulWidget {
     required this.idTo,
   }) : super(key: key);
 
-
   final int entryId;
   final String markFrom;
   final String formFrom;
@@ -32,8 +31,7 @@ class ChangeListItem extends StatefulWidget {
 
 Route _changeDetailRoute(int idTo) {
   return PageRouteBuilder(
-    pageBuilder: (context, animation, secondaryAnimation) =>
-        EntryScreen(idTo),
+    pageBuilder: (context, animation, secondaryAnimation) => EntryScreen(idTo),
     transitionDuration: const Duration(milliseconds: 350),
     transitionsBuilder: (context, animation, secondaryAnimation, child) {
       return FadeTransition(
@@ -53,19 +51,18 @@ class _ChangeListItemState extends State<ChangeListItem> {
   }
 
   formatHtml() async {
+    htmlData +=
+        "${widget.markFrom.contains('-')
+            ? CSSBoldDisabled
+            : CSSBoldVeryBlue}${widget.formFrom}$CloseSpan&nbsp;&nbsp;➔&nbsp;&nbsp;";
 
-    htmlData += (widget.markFrom.contains('-') ? CSSBoldDisabled : CSSBoldVeryBlue) +
-        widget.formFrom + CloseSpan + "&nbsp;&nbsp;";
-
-
-    htmlData += (widget.markTo.contains('-') ? CSSBoldDisabled : CSSBoldVeryBlue) +
-        widget.formTo + CloseSpan + "&nbsp;&nbsp;";
-
+    htmlData +=
+        "${widget.markTo.contains('-')
+            ? CSSBoldDisabled
+            : CSSBoldVeryBlue}${widget.formTo}$CloseSpan&nbsp;&nbsp;";
 
     if (widget.sources.isNotEmpty) {
-      htmlData += CSSText +
-          widget.sources +
-          CloseSpan;
+      htmlData += cssText + widget.sources + CloseSpan;
     }
   }
 
@@ -80,7 +77,6 @@ class _ChangeListItemState extends State<ChangeListItem> {
       },
       child: Container(
         padding: const EdgeInsets.fromLTRB(5.0, 0.0, 5.0, 0.0),
-
         color: NotepaperLinked,
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,

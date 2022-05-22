@@ -63,8 +63,8 @@ class _RelatedListItemState extends State<RelatedListItem> {
           "&nbsp;&nbsp;";
     }
 
-    htmlData += (widget.relatedId != null && widget.formFrom.startsWith("@") ? CSSBoldVeryBlue : CSSBoldBlueGrey) +
-        widget.formFrom.substring(1) +
+    htmlData += ((widget.relatedId != null && widget.formFrom.startsWith("@")) ? CSSBoldVeryBlue : cssBoldBlueGrey) +
+        (widget.formFrom.startsWith("@") ? widget.formFrom.substring(1) : widget.formFrom) +
         CloseSpan +
         "&nbsp;&nbsp;";
 
@@ -78,7 +78,7 @@ class _RelatedListItemState extends State<RelatedListItem> {
     }
 
     if (widget.relation.isNotEmpty) {
-      htmlData += CSSText +
+      htmlData += cssText +
           widget.relation +
           CloseSpan +
           "&nbsp;&nbsp;";
@@ -91,8 +91,8 @@ class _RelatedListItemState extends State<RelatedListItem> {
           "&nbsp;&nbsp;";
     }
 
-    htmlData += (widget.relatedId != null && widget.formTo.startsWith("@") ? CSSBoldVeryBlue : CSSBoldBlueGrey) +
-        widget.formTo +
+    htmlData += ((widget.relatedId != null && widget.formTo.startsWith("@")) ? CSSBoldVeryBlue : cssBoldBlueGrey) +
+        (widget.formTo.startsWith("@") ? widget.formTo.substring(1) : widget.formTo) +
         CloseSpan +
         "&nbsp;&nbsp;";
 

@@ -22,10 +22,10 @@ class NoteCard extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(5.0, 0.0, 5.0, 0.0),
           color: NotepaperWhite,
           child: Html(
-            data: entryDoc[0].doc ?? '',
+            data: entryDoc[0].doc,
             style: {
               "body": Style(
-                fontSize: FontSize(15.0),
+                fontSize: const FontSize(15.0),
                 color: ThemeTextColour,
               ),
             },

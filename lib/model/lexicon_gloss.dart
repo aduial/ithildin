@@ -67,18 +67,17 @@ class LexiconGloss {
 
   @override
   String toString() {
-    return 'LexiconGloss{' +
-        ' entryId: $entryId,' +
-        ' gloss: $gloss,' +
-        ' sources: $sources,' +
-        '}';
+    return 'LexiconGloss{ '
+        'entryId: $entryId, '
+        'gloss: $gloss, '
+        'sources: $sources}';
   }
 
   Map<String, dynamic> toMap() {
     return {
-      'entryId': this.entryId,
-      'gloss': this.gloss,
-      'sources': this.sources,
+      'entryId': entryId,
+      'gloss': gloss,
+      'sources': sources
     };
   }
 
@@ -86,7 +85,7 @@ class LexiconGloss {
     return LexiconGloss(
       entryId: map['entryId'] as int,
       gloss: map['gloss'] as String,
-      sources: map['sources'] as String,
+      sources: map['sources'] as String
     );
   }
 }

@@ -7,6 +7,7 @@ class UserPreferences {
   static const _keyActiveEldarinLangId = 'activeEldarinLangId';
   static const _keyActiveGlossLangId = 'activeGlossLangId';
   static const _keyMatchMethod = 'matchMethod';
+  static const _keyShowMinui = 'ShowMinui';
 
   static Future init() async =>
       _preferences = await SharedPreferences.getInstance();
@@ -23,6 +24,8 @@ class UserPreferences {
   static Future setMatchMethod(int matchMethod) async =>
       await _preferences?.setInt(_keyMatchMethod, matchMethod);
 
+  static Future setShowMinui(bool ShowMinui) async =>
+      await _preferences?.setBool(_keyShowMinui, ShowMinui);
 
   static int? getLanguageSet() => _preferences?.getInt(_keyLanguageSet);
 
@@ -31,5 +34,19 @@ class UserPreferences {
   static int? getActiveGlossLangId() => _preferences?.getInt(_keyActiveGlossLangId);
 
   static int? getMatchMethod() => _preferences?.getInt(_keyMatchMethod);
+
+  static bool? getShowMinui() => _preferences?.getBool(_keyShowMinui);
+
+  static bool getShowMinuiNotNull(){
+    if (getShowMinui() != null) {
+      return getShowMinui()!;
+    } else {
+      return true;
+    }
+  }
+
+  static Future reset() async {
+    await _preferences?.clear();
+  }
 
 }

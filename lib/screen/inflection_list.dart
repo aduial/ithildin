@@ -31,7 +31,7 @@ class _InflectionListItemState extends State<InflectionListItem> {
 
   void initState() {
 
-    htmlData += (widget.mark.contains('-') ? CSSBoldDisabled : CSSBoldBlueGrey) +
+    htmlData += (widget.mark.contains('-') ? CSSBoldDisabled : cssBoldBlueGrey) +
         widget.form + CloseSpan + "&nbsp;&nbsp;";
 
     htmlData += CSSBolder + widget.inflections + CloseSpan + "&nbsp;&nbsp;";
@@ -40,7 +40,7 @@ class _InflectionListItemState extends State<InflectionListItem> {
       htmlData += CSSGreenItalic + '"' + (widget.gloss?? "") + '"' + CloseSpan + "&nbsp;&nbsp;";
     }
     if (widget.references != null) {
-      htmlData += CSSText + (widget.references?? "") + CloseSpan;
+      htmlData += cssText + (widget.references?? "") + CloseSpan;
     }
 
     super.initState();

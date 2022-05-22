@@ -84,10 +84,10 @@ class LexiconVariation {
 
   Map<String, dynamic> toMap() {
     return {
-      'entryId': this.entryId,
-      'mark': this.mark,
-      'form': this.form,
-      'sources': this.sources,
+      'entryId': entryId,
+      'mark': mark,
+      'form': form,
+      'sources': sources,
     };
   }
 

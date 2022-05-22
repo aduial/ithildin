@@ -106,12 +106,12 @@ class LexiconCombine {
 
   Map<String, dynamic> toMap() {
     return {
-      'entryId': this.entryId,
-      'formFrom': this.formFrom,
-      'langFrom': this.langFrom,
-      'idTo': this.idTo,
-      'formTo': this.formTo,
-      'langTo': this.langTo,
+      'entryId': entryId,
+      'formFrom': formFrom,
+      'langFrom': langFrom,
+      'idTo': idTo,
+      'formTo': formTo,
+      'langTo': langTo,
     };
   }
 

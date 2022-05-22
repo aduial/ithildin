@@ -7,6 +7,7 @@ import 'package:ithildin/screen/see_card.dart';
 import 'package:ithildin/screen/variation_card.dart';
 
 import '../config/colours.dart';
+import '../config/config.dart';
 import '../db/eldamo_db.dart';
 import '../model/entry_doc.dart';
 import '../model/lexicon_change.dart';
@@ -212,6 +213,11 @@ class _EntryScreenState extends State<EntryScreen> {
 
   @override
   Widget build(BuildContext context) {
+
+    double toScale = (MediaQuery.of(context).size.width / refWidth) *
+        (MediaQuery.of(context).size.height / refHeight);
+    double widthScale = (MediaQuery.of(context).size.width / refWidth);
+
     return Scaffold(
       key: scaffoldKey,
       backgroundColor: OffWhite,
@@ -258,7 +264,7 @@ class _EntryScreenState extends State<EntryScreen> {
                 ? const LinearProgressIndicator(
                 minHeight: 1,
                 color: NotepaperWhite,
-                valueColor: AlwaysStoppedAnimation(Ithildin))
+                valueColor: AlwaysStoppedAnimation(ithildin))
                 : lexiconVariations.isNotEmpty
                     ? VariationCard(lexiconVariations)
                     : Container(),
@@ -274,7 +280,7 @@ class _EntryScreenState extends State<EntryScreen> {
                 ? const LinearProgressIndicator(
                 minHeight: 1,
                 color: NotepaperWhite,
-                valueColor: AlwaysStoppedAnimation(Ithildin))
+                valueColor: AlwaysStoppedAnimation(ithildin))
                 : lexiconCognates.isNotEmpty
                     ? CognateCard(lexiconCognates)
                     : Container(),
@@ -290,7 +296,7 @@ class _EntryScreenState extends State<EntryScreen> {
                 ? const LinearProgressIndicator(
                 minHeight: 1,
                 color: NotepaperWhite,
-                valueColor: AlwaysStoppedAnimation(Ithildin))
+                valueColor: AlwaysStoppedAnimation(ithildin))
                 : lexiconChanges.isNotEmpty
                     ? ChangeCard(lexiconChanges)
                     : Container(),
@@ -306,7 +312,7 @@ class _EntryScreenState extends State<EntryScreen> {
                 ? const LinearProgressIndicator(
                 minHeight: 1,
                 color: NotepaperWhite,
-                valueColor: AlwaysStoppedAnimation(Ithildin))
+                valueColor: AlwaysStoppedAnimation(ithildin))
                 : lexiconElements.isNotEmpty
                     ? ElementCard(lexiconElements)
                     : Container(),
@@ -322,7 +328,7 @@ class _EntryScreenState extends State<EntryScreen> {
                 ? const LinearProgressIndicator(
                 minHeight: 1,
                 color: NotepaperWhite,
-                valueColor: AlwaysStoppedAnimation(Ithildin))
+                valueColor: AlwaysStoppedAnimation(ithildin))
                 : lexiconSights.isNotEmpty
                     ? SeeCard(lexiconSights)
                     : Container(),

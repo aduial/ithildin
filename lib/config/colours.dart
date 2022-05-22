@@ -3,18 +3,18 @@ import 'package:ithildin/config/user_preferences.dart';
 
 import 'config.dart';
 
-const White = Colors.white;
+const white = Colors.white;
 
-const BlueTop = const Color(0xFF1D3B7B);
-const Ithildin = const Color(0xFFE2FFFE);
-const YellowGrey = const Color(0xFF878188);
+const blueTop = const Color(0xFF1D3B7B);
+const ithildin = const Color(0xFFE2FFFE);
+const yellowGrey = const Color(0xFF878188);
 
 const SortOfRed = const Color(0xFF876D97);
 const IceBlue = const Color(0xFF5B6CA0);
 const MountainBlue = const Color(0xFF27466F);
 const BlueBottom = const Color(0xFF1F3D58);
 
-const DarkerBlueGrey = const Color(0xFF2E3B41);
+const darkerBlueGrey = const Color(0xFF2E3B41);
 const DarkerGreen = const Color(0xFF365250);
 const DarkGreen = const Color(0xFF243D34);
 const DarkBrown = const Color(0xFF303122);
@@ -64,16 +64,18 @@ const InActiveLargeSetColour = const Color (0xFF606F7F);
 const InActiveCompleteSetColour = const Color (0xFF6F5F7F);
 
 const LightAnyMatchColour = const Color (0xFFFF3639); // rood
-const LightStartMatchColour = const Color (0xFFFF8F21); // oranje
-const LightEndMatchColour = const Color (0xFFFFEB19); // groen
-const LightVerbatimMatchColour = const Color (0xFF1AFF4F); // blâh
-const LightRegexMatchColour = const Color (0xFF1A92FF); // blâh
+const LightStrictAnyMatchColour = const Color (0xFFFF8F21); // oranje
+const LightStartMatchColour = const Color (0xFFFFEB19); // gêl
+const LightEndMatchColour = const Color (0xFF1AFF4F); // groen
+const LightVerbatimMatchColour = const Color (0xFF1A92FF); // blâh
+const LightRegexMatchColour = const Color (0xFF7D1AFF); // pèrs
 
 const DarkAnyMatchColour = const Color (0xFFCB282B); // rood
-const DarkStartMatchColour = const Color (0xFFCD7A2A); // oranje
-const DarkEndMatchColour = const Color (0xFFCDBE29); // groen
-const DarkVerbatimMatchColour = const Color (0xFF28CB4E); // blâh
-const DarkRegexMatchColour = const Color (0xFF2A7FCD); // blâh
+const DarkStrictAnyMatchColour = const Color (0xFFCD7A2A); // oranje
+const DarkStartMatchColour = const Color (0xFFCDBE29); // groen
+const DarkEndMatchColour = const Color (0xFF28CB4E); // blâh
+const DarkVerbatimMatchColour = const Color (0xFF2A7FCD); // blâh
+const DarkRegexMatchColour = const Color (0xFF7029CD); // pèrs
 
 const NeoFormColour = const Color (0xFFC084FF);
 const StruckOutFormColour = const Color (0xFFB0B0B0);
@@ -97,9 +99,9 @@ const ThemeTextColour = Color(0xDD000000);
 const ThemeTextColour2 = Color(0xFF444444);
 const BlueTextColour = Color(0xFF4444FF);
 
-const String CSSText = StartSpan + CSSColText + '; ' + FontLight + EndSpan;
-const String CSSBoldMountainBlue = StartSpan + CSSColMountainBlue + '; ' + FontBold + EndSpan;
-const String CSSBoldBlueGrey = StartSpan + CSSColBlueGrey + '; ' + FontBolder + EndSpan;
+const String cssText = StartSpan + CSSColText + '; ' + FontLight + EndSpan;
+const String cssBoldMountainBlue = StartSpan + CSSColMountainBlue + '; ' + FontBold + EndSpan;
+const String cssBoldBlueGrey = StartSpan + CSSColBlueGrey + '; ' + FontBolder + EndSpan;
 const String CSSBoldVeryBlue = StartSpan + CSSBlueText + '; ' + FontBolder + EndSpan;
 const String CSSBoldDisabled = StartSpan + CSSOchre + '; ' + FontBolder + EndSpan;
 const String CSSBolder = StartSpan + CSSColText + '; ' + FontBolder + EndSpan;
@@ -109,6 +111,10 @@ const String CSSBoldGreen = StartSpan + CSSColGreen + '; ' + FontBold + EndSpan;
 const String CSSBlueGreyItalic = StartSpan + CSSColBlueGrey + '; ' + FontItalic + '; ' + FontLight + EndSpan;
 const String CSSBoldItalic = StartSpan + CSSColText + '; ' + FontBold + ';' + FontItalic + EndSpan;
 
+const String CSSRedText = StartSpan + CSSRed + EndSpan;
+const String CSSYellowText = StartSpan + CSSYellow + EndSpan;
+const String CSSTealText = StartSpan + CSSTeal + EndSpan;
+const String CSSPurpleText = StartSpan + CSSPurple + EndSpan;
 
 const String StartSpan = '<span style="';
 const String FontLight = "font-weight:300";
@@ -118,12 +124,12 @@ const String FontBolder = "font-weight:800";
 const String FontItalic = "font-style:italic";
 const String CSSColText = "color:#444444";
 const String CSSBlueText = "color:#4444FF";
-const String CSSRedText = "color:#442324";
-const String CSSYellowText = "color:#443E23";
-const String CSSTealText = "color:#23443D";
-const String CSSPurpleText = "color:#442341";
 const String CSSColGreen = "color:#267F54";
 const String CSSColBlueGrey = "color:#264F7F";
+const String CSSRed = "color:#763436";
+const String CSSYellow = "color:#71673A";
+const String CSSTeal = "color:#3A7165";
+const String CSSPurple = "color:#713A6C";
 const String CSSColMountainBlue = "color:#27466F";
 const String CSSOchre = "color:#C0B090";
 const String EndSpan = '">';
@@ -132,44 +138,34 @@ const String CloseSpan = "</span>";
 Color getColourByNumber(int colnr){
   switch(colnr) {
     case 0: {  return isCurrentLangSet(colnr) ? ActiveMinimalSetColour : InActiveLargeSetColour; }
-    break;
 
     case 1: {  return isCurrentLangSet(colnr) ? ActiveBasicSetColour : InActiveLargeSetColour; }
-    break;
 
     case 2: {  return isCurrentLangSet(colnr) ? ActiveMediumSetColour : InActiveLargeSetColour; }
-    break;
 
     case 3: {  return isCurrentLangSet(colnr) ? ActiveLargeSetColour : InActiveLargeSetColour; }
-    break;
 
     default: { return isCurrentLangSet(colnr) ? ActiveCompleteSetColour : InActiveLargeSetColour; }
-    break;
   }
 }
 
 Color getLangSetColour(bool light){
   switch(UserPreferences.getLanguageSet() ?? defaultLanguageSetIndex) {
     case 0: {  return light ? ActiveMinimalSetColour : InActiveMinimalSetColour; }
-    break;
 
     case 1: {  return light ? ActiveBasicSetColour : InActiveBasicSetColour; }
-    break;
 
     case 2: {  return light ? ActiveMediumSetColour : InActiveMediumSetColour; }
-    break;
 
     case 3: {  return light ? ActiveLargeSetColour : InActiveLargeSetColour; }
-    break;
 
     default: { return light ? ActiveCompleteSetColour : InActiveCompleteSetColour; }
-    break;
   }
 }
 
 
 Color getTextColourByNumber(int colnr){
-  return isCurrentLangSet(colnr) ? DarkerBlueGrey : NotepaperWhite;
+  return isCurrentLangSet(colnr) ? darkerBlueGrey : NotepaperWhite;
 }
 
 bool isCurrentLangSet(int index){

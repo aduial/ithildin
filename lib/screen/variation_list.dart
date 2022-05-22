@@ -26,9 +26,9 @@ class _VariationListItemState extends State<VariationListItem> {
 
   void initState() {
 
-    htmlData += (widget.mark.contains('-') ? CSSBoldDisabled : CSSBoldBlueGrey) +
+    htmlData += (widget.mark.contains('-') ? CSSBoldDisabled : cssBoldBlueGrey) +
         widget.form + CloseSpan + "&nbsp;&nbsp;";
-    htmlData += CSSText + widget.sources + CloseSpan;
+    htmlData += cssText + widget.sources + CloseSpan;
 
     super.initState();
   }

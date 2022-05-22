@@ -94,24 +94,23 @@ class LexiconHeader {
 
   @override
   String toString() {
-    return 'LexiconHeader{' +
-        ' entryId: $entryId,' +
-        ' language: $language,' +
-        ' form: $form,' +
-        ' type: $type,' +
-        ' gloss: $gloss,' +
-        ' cat: $cat,' +
-        '}';
+    return 'LexiconHeader{ '
+        'entryId: $entryId, '
+        'language: $language, '
+        'form: $form, '
+        'type: $type, '
+        'gloss: $gloss, '
+        'cat: $cat}';
   }
 
   Map<String, dynamic> toMap() {
     return {
-      'entryId': this.entryId,
-      'language': this.language,
-      'form': this.form,
-      'type': this.type,
-      'gloss': this.gloss,
-      'cat': this.cat,
+      'entryId': entryId,
+      'language': language,
+      'form': form,
+      'type': type,
+      'gloss': gloss,
+      'cat': cat,
     };
   }
 

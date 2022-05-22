@@ -8,7 +8,6 @@ import 'package:ithildin/model/language.dart';
 import 'package:ithildin/model/simplexicon.dart';
 import 'package:ithildin/screen/search_match.dart';
 import 'package:ithildin/screen/slex_list.dart';
-import 'dart:math' as math;
 
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
@@ -30,7 +29,7 @@ class IthildinScreen extends StatefulWidget {
 }
 
 class _IthildinScreenState extends State<IthildinScreen> {
-  final drawerController = AdvancedDrawerController();
+  final _advancedDrawerController = AdvancedDrawerController();
   final searchController = TextEditingController();
   final ScrollController controller = ScrollController();
 
@@ -58,10 +57,7 @@ class _IthildinScreenState extends State<IthildinScreen> {
   bool usedRegex = false;
   int _formOrGloss = 0;
 
-  final double refWidth = 448;
   double toScale = 1;
-
-
 
   @override
   void initState() {
@@ -108,7 +104,7 @@ class _IthildinScreenState extends State<IthildinScreen> {
 
   Future simplexiconFormFilter(String formFilter) async {
     setState(() => isSimplexiconLoading = true);
-    if ((UserPreferences.getMatchMethod() ?? defaultMatchingMethodIndex) < 4){
+    if ((UserPreferences.getMatchMethod() ?? defaultMatchingMethodIndex) < 5) {
       simplexicons = await EldamoDb.instance.simplexiconFormFilter(
           formFilter, _activeEldarinLanguage!.id, _activeGlossLanguage!.id);
     } else {
@@ -121,7 +117,7 @@ class _IthildinScreenState extends State<IthildinScreen> {
 
   Future simplexiconGlossFilter(String glossFilter) async {
     setState(() => isSimplexiconLoading = true);
-    if ((UserPreferences.getMatchMethod() ?? defaultMatchingMethodIndex) < 4) {
+    if ((UserPreferences.getMatchMethod() ?? defaultMatchingMethodIndex) < 5) {
       simplexicons = await EldamoDb.instance.simplexiconGlossFilter(
           glossFilter, _activeEldarinLanguage!.id, _activeGlossLanguage!.id);
     } else {
@@ -143,7 +139,7 @@ class _IthildinScreenState extends State<IthildinScreen> {
   }
 
   void handleSettingsButtonPressed() {
-    drawerController.showDrawer();
+    _advancedDrawerController.showDrawer();
   }
 
   @override
@@ -160,23 +156,25 @@ class _IthildinScreenState extends State<IthildinScreen> {
     }
   }
 
-  void clearSearch(){
+  void clearSearch() {
     searchController.clear();
   }
 
   @override
   Widget build(BuildContext context) {
-
-    double toScale = MediaQuery.of(context).size.width / refWidth ;
+    double toScale = (MediaQuery.of(context).size.width / refWidth) *
+        (MediaQuery.of(context).size.height / refHeight);
+    double widthScale = (MediaQuery.of(context).size.width / refWidth);
 
     return AdvancedDrawer(
       backdropColor: TanteRiaSAvonds,
-      controller: drawerController,
+      controller: _advancedDrawerController,
       animationCurve: Curves.easeInOut,
       animationDuration: const Duration(milliseconds: 300),
       animateChildDecoration: true,
       rtlOpening: false,
-      openScale: 1.0,
+      openScale: 0.9,
+      openRatio: 0.6,
       disabledGestures: false,
       childDecoration: const BoxDecoration(
         // NOTICE: Uncomment if you want to add shadow behind the page.
@@ -184,10 +182,159 @@ class _IthildinScreenState extends State<IthildinScreen> {
         // boxShadow: <BoxShadow>[
         //   BoxShadow(
         //     color: VeryVeryDark,
-        //     blurRadius: 1.0,
+        //     blurRadius: 10.0,
         //   ),
         // ],
         borderRadius: BorderRadius.all(Radius.circular(16)),
+      ),
+      drawer: SafeArea(
+        child: Container(
+          child: ListTileTheme(
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Container(
+                  width: 128.0 * toScale,
+                  height: 128.0 * toScale,
+                  margin: EdgeInsets.only(
+                    top: 24.0 * toScale,
+                    bottom: 64.0 * toScale,
+                  ),
+                  clipBehavior: Clip.antiAlias,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: TanteRia,
+                      width: 4.0 * toScale,
+                    ),
+                  ),
+                  child: const CircleAvatar(
+                    // radius: 10,
+                    backgroundImage:
+                        ExactAssetImage('assets/images/appicon-ios-512.png'),
+                  ),
+                ),
+                OpenContainer<bool>(
+                  transitionType: ContainerTransitionType.fadeThrough,
+                  transitionDuration: const Duration(milliseconds: 500),
+                  openColor: RegularResultBGColour,
+                  closedColor: RegularResultBGColour,
+                  openBuilder: (BuildContext _, VoidCallback openContainer) {
+                    return const LanguageSets();
+                  },
+                  onClosed: langSetPreferenceClosed,
+                  tappable: false,
+                  closedShape: RoundedRectangleBorder(
+                    borderRadius:
+                        BorderRadius.all(Radius.circular(20 * toScale)),
+                  ),
+                  closedElevation: 0.0,
+                  closedBuilder: (BuildContext _, VoidCallback openContainer) {
+                    return ListTile(
+                      tileColor: TanteRiaSAvonds,
+                      visualDensity: VisualDensity.compact,
+                      leading: Icon(
+                          CupertinoIcons.square_stack_3d_down_right,
+                          size: 24.0 * toScale,
+                          color: BrightGreen),
+                      onTap: openContainer,
+                      horizontalTitleGap: 4.0,
+                      title: Text(
+                        'Language sets',
+                        textAlign: TextAlign.start,
+                        style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                            color: ithildin,
+                            fontWeight: FontWeight.w300,
+                            fontSize: 18 * toScale),
+                      ),
+                    );
+                  },
+                ),
+                OpenContainer<bool>(
+                  transitionType: ContainerTransitionType.fadeThrough,
+                  transitionDuration: const Duration(milliseconds: 500),
+                  openColor: RegularResultBGColour,
+                  closedColor: RegularResultBGColour,
+                  openBuilder: (BuildContext _, VoidCallback openContainer) {
+                    return const SearchMatch();
+                  },
+                  onClosed: searchMatchPreferenceClosed,
+                  tappable: false,
+                  closedShape: const RoundedRectangleBorder(),
+                  closedElevation: 0.0,
+                  closedBuilder: (BuildContext _, VoidCallback openContainer) {
+                    return ListTile(
+                      tileColor: TanteRiaSAvonds,
+                      visualDensity: VisualDensity.compact,
+                      leading:
+                          Icon(
+                              Icons.manage_search,
+                              size: 24.0 * toScale,
+                              color: LightPink),
+                      onTap: openContainer,
+                      horizontalTitleGap: 4.0,
+                      title: Text(
+                        'Search matching',
+                        textAlign: TextAlign.start,
+                        style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                            color: ithildin,
+                            fontWeight: FontWeight.w300,
+                            fontSize: 18 * toScale),
+                      ),
+                      //textColor: Ithildin,
+                    );
+                  },
+                ),
+                Expanded(
+                  flex: 1,
+                  child: Container(
+                    width: double.infinity,
+                    alignment: Alignment.center,
+                  ),
+                ),
+                Container(
+                  height: 40.0 * toScale,
+                  width: double.infinity,
+                  alignment: Alignment.center,
+                  child: Text(
+                    "clear all stored settings",
+                    style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                        color: Telperion,
+                        fontWeight: FontWeight.w300,
+                        fontSize: 16 * toScale),
+                  ),
+                ),
+                Container(
+                  height: 50.0 * toScale,
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        CupertinoButton(
+                          onPressed: () => {
+                            _handleClearPrefButton(),
+                          },
+                          color: TanteRia,
+                          child: Text(
+                            "CLEAR",
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyText1!
+                                .copyWith(
+                                    color: Telperion,
+                                    fontWeight: FontWeight.w900,
+                                    fontSize: 14 * toScale),
+                          ),
+                        ),
+                      ]),
+                ),
+                SizedBox(
+                  height: 40.0 * toScale,
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
       child: Scaffold(
         key: scaffoldKey,
@@ -198,7 +345,7 @@ class _IthildinScreenState extends State<IthildinScreen> {
             key: keySettingsButton,
             onPressed: handleSettingsButtonPressed,
             icon: ValueListenableBuilder<AdvancedDrawerValue>(
-              valueListenable: drawerController,
+              valueListenable: _advancedDrawerController,
               builder: (_, value, __) {
                 return AnimatedSwitcher(
                   duration: Duration(milliseconds: 250),
@@ -241,14 +388,16 @@ class _IthildinScreenState extends State<IthildinScreen> {
         backgroundColor: BlueGrey,
         body: SafeArea(
           child: Padding(
-            padding: EdgeInsetsDirectional.fromSTEB(10 * toScale, 10 * toScale, 10 * toScale, 10 * toScale),
+            padding: EdgeInsetsDirectional.fromSTEB(
+                10 * toScale, 10 * toScale, 10 * toScale, 10 * toScale),
             child: Column(
               mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 /// top row with two searchable dropdown lists for languages
                 Padding(
-                  padding: EdgeInsetsDirectional.fromSTEB(0, 0, 0, 10 * toScale),
+                  padding:
+                      EdgeInsetsDirectional.fromSTEB(0, 0, 0, 10 * toScale),
                   child: Row(
                     mainAxisSize: MainAxisSize.max,
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -259,14 +408,14 @@ class _IthildinScreenState extends State<IthildinScreen> {
                       Expanded(
                         child: Container(
                           width: MediaQuery.of(context).size.width * 0.6,
-                          height: 50,
+                          height: 50 * widthScale,
                           decoration: const BoxDecoration(
                             shape: BoxShape.rectangle,
                           ),
                           alignment: const AlignmentDirectional(0, 0),
                           child: Padding(
                             padding: EdgeInsetsDirectional.fromSTEB(
-                                0, 0, 4 * toScale, 0),
+                                0, 0, 4 * widthScale, 0),
                             child: DropdownSearch<Language>(
                               key: keyEldarinLangSelect,
                               mode: Mode.BOTTOM_SHEET,
@@ -285,19 +434,18 @@ class _IthildinScreenState extends State<IthildinScreen> {
                               dropdownSearchDecoration: InputDecoration(
                                 filled: true,
                                 fillColor: getLangSetColour(true),
-
                                 hintText: "tap to change",
                                 prefixIconColor: getLangSetColour(false),
-                                contentPadding:
-                                    EdgeInsets.fromLTRB(12 * toScale, 8 * toScale, 0, 0),
+                                contentPadding: EdgeInsets.fromLTRB(
+                                    12 * widthScale, 8 * widthScale, 0, 0),
                                 enabledBorder: OutlineInputBorder(
                                     borderSide:
                                         BorderSide(width: 1, color: TanteRia),
                                     borderRadius: BorderRadius.all(
-                                        Radius.circular(15.0 * toScale))),
+                                        Radius.circular(15.0 * widthScale))),
                                 border: OutlineInputBorder(
                                     borderRadius: BorderRadius.all(
-                                        Radius.circular(15.0 * toScale))),
+                                        Radius.circular(15.0 * widthScale))),
                               ),
                               showSearchBox: true,
                               searchFieldProps: TextFieldProps(
@@ -305,8 +453,11 @@ class _IthildinScreenState extends State<IthildinScreen> {
                                   labelText: "filter on",
                                   filled: true,
                                   fillColor: getLangSetColour(true),
-                                  contentPadding:
-                                          EdgeInsets.fromLTRB(12 * toScale, 12 * toScale, 8 * toScale, 0),
+                                  contentPadding: EdgeInsets.fromLTRB(
+                                      12 * toScale,
+                                      12 * toScale,
+                                      8 * toScale,
+                                      0),
                                   border: OutlineInputBorder(
                                       borderSide: const BorderSide(
                                           width: 1, color: LightBlueGrey),
@@ -327,7 +478,7 @@ class _IthildinScreenState extends State<IthildinScreen> {
                                   child: Text(
                                     'select Eldarin language',
                                     style: TextStyle(
-                                      fontSize: 18 * toScale,
+                                      fontSize: 18 * widthScale,
                                       fontWeight: FontWeight.bold,
                                       color: Colors.white,
                                     ),
@@ -336,8 +487,8 @@ class _IthildinScreenState extends State<IthildinScreen> {
                               ),
                               popupShape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.only(
-                                  topLeft: Radius.circular(24 * toScale),
-                                  topRight: Radius.circular(24 * toScale),
+                                  topLeft: Radius.circular(24 * widthScale),
+                                  topRight: Radius.circular(24 * widthScale),
                                 ),
                               ),
                               onChanged: (Language? eldarinLang) {
@@ -352,9 +503,10 @@ class _IthildinScreenState extends State<IthildinScreen> {
                       /// dropdown list for gloss languages
                       Container(
                         width: MediaQuery.of(context).size.width * 0.4,
-                        height: 50 * toScale,
+                        height: 50 * widthScale,
                         decoration: const BoxDecoration(),
                         child: DropdownSearch<Language>(
+                          enabled: false,
                           key: keyGlossLangSelect,
                           mode: Mode.BOTTOM_SHEET,
                           items: isLanguageDataLoading
@@ -375,15 +527,16 @@ class _IthildinScreenState extends State<IthildinScreen> {
                             fillColor: Telperion,
                             hintText: "tap to change",
                             prefixIconColor: DarkBrown,
-                            contentPadding: EdgeInsets.fromLTRB(12 * toScale, 8 * toScale, 0, 0),
+                            contentPadding: EdgeInsets.fromLTRB(
+                                12 * widthScale, 8 * widthScale, 0, 0),
                             enabledBorder: OutlineInputBorder(
                                 borderSide:
                                     BorderSide(width: 1, color: TanteRia),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(15.0  * toScale))),
+                                borderRadius: BorderRadius.all(
+                                    Radius.circular(15.0 * widthScale))),
                             border: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(15.0 * toScale))),
+                                borderRadius: BorderRadius.all(
+                                    Radius.circular(15.0 * widthScale))),
                           ),
 
                           showSearchBox: true,
@@ -392,10 +545,11 @@ class _IthildinScreenState extends State<IthildinScreen> {
                               filled: true,
                               fillColor: Telperion,
                               labelText: "filter on",
-                              contentPadding: EdgeInsets.fromLTRB(12 * toScale, 12 * toScale, 8 * toScale, 0),
+                              contentPadding: EdgeInsets.fromLTRB(
+                                  12 * widthScale, 12 * widthScale, 8 * widthScale, 0),
                               border: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(25.0 * toScale))),
+                                  borderRadius: BorderRadius.all(
+                                      Radius.circular(25.0 * widthScale))),
                             ),
                           ),
 
@@ -405,15 +559,15 @@ class _IthildinScreenState extends State<IthildinScreen> {
                               color: MiddleBrown,
                               //Theme.of(context).primaryColorDark,
                               borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(20 * toScale),
-                                topRight: Radius.circular(20 * toScale),
+                                topLeft: Radius.circular(20 * widthScale),
+                                topRight: Radius.circular(20 * widthScale),
                               ),
                             ),
                             child: Center(
                               child: Text(
                                 'select language',
                                 style: TextStyle(
-                                  fontSize: 18 * toScale,
+                                  fontSize: 18 * widthScale,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.white,
                                 ),
@@ -422,14 +576,14 @@ class _IthildinScreenState extends State<IthildinScreen> {
                           ),
                           popupShape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(24 * toScale),
-                              topRight: Radius.circular(24 * toScale),
+                              topLeft: Radius.circular(24 * widthScale),
+                              topRight: Radius.circular(24 * widthScale),
                             ),
                           ),
-                          onChanged: (Language? glossLang) {
-                            setActiveGlossLang(glossLang!);
-                            _doSearch();
-                          },
+                          // onChanged: (Language? glossLang) {
+                          //   setActiveGlossLang(glossLang!);
+                          //   _doSearch();
+                          // },
                         ),
                       ),
                     ],
@@ -439,18 +593,19 @@ class _IthildinScreenState extends State<IthildinScreen> {
                 //
                 // Form-Gloss toggle button
                 Padding(
-                  padding: EdgeInsetsDirectional.fromSTEB(0, 0, 0, 10 * toScale),
+                  padding:
+                      EdgeInsetsDirectional.fromSTEB(0, 0, 0, 10 * widthScale),
                   child: Row(
                     mainAxisSize: MainAxisSize.max,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       ToggleSwitch(
                         key: keyFormOrGloss,
-                        minHeight: 44.0 * toScale,
-                        minWidth: 70.0 * toScale,
-                        cornerRadius: 15.0 * toScale,
+                        minHeight: 44.0 * widthScale,
+                        minWidth: 70.0 * widthScale,
+                        cornerRadius: 15.0 * widthScale,
                         borderWidth: 1,
-                        borderColor: const [White],
+                        borderColor: const [white],
                         dividerColor: BlueGrey,
                         activeBgColors: [
                           [getLangSetColour(true)],
@@ -458,8 +613,8 @@ class _IthildinScreenState extends State<IthildinScreen> {
                         ],
                         activeFgColor: VeryVeryDark,
                         inactiveBgColor: BlueGrey,
-                        inactiveFgColor: DarkerBlueGrey,
-                        fontSize: 18 * toScale,
+                        inactiveFgColor: darkerBlueGrey,
+                        fontSize: 18 * widthScale,
 
                         totalSwitches: 2,
                         initialLabelIndex: _formOrGloss,
@@ -480,8 +635,8 @@ class _IthildinScreenState extends State<IthildinScreen> {
                       Expanded(
                         child: Container(
                           width: MediaQuery.of(context).size.width * 0.7,
-                          margin: EdgeInsets.fromLTRB(8 * toScale, 0, 0, 0),
-                          height: 50 * toScale,
+                          margin: EdgeInsets.fromLTRB(8 * widthScale, 0, 0, 0),
+                          height: 50 * widthScale,
                           // constraints: BoxConstraints(
                           //   maxWidth: MediaQuery.of(context).size.width * 0.7,
                           // ),
@@ -491,9 +646,12 @@ class _IthildinScreenState extends State<IthildinScreen> {
                             child: TextField(
                               key: keySearchField,
                               style: Theme.of(context)
-                                .textTheme
-                                .bodyText1!
-                                .copyWith(color: TanteRiaSAvonds, fontWeight: FontWeight.w300, fontSize: 18 * toScale),
+                                  .textTheme
+                                  .bodyText1!
+                                  .copyWith(
+                                      color: TanteRiaSAvonds,
+                                      fontWeight: FontWeight.w300,
+                                      fontSize: 18 * widthScale),
                               controller: searchController,
                               decoration: InputDecoration(
                                   contentPadding: EdgeInsets.zero,
@@ -506,7 +664,7 @@ class _IthildinScreenState extends State<IthildinScreen> {
                                   ),
                                   border: OutlineInputBorder(
                                       borderRadius: BorderRadius.all(
-                                          Radius.circular(15.0 * toScale)))),
+                                          Radius.circular(15.0 * widthScale)))),
                             ),
                           ),
                         ),
@@ -522,11 +680,12 @@ class _IthildinScreenState extends State<IthildinScreen> {
                             ? Text(
                                 'No entries found',
                                 style: TextStyle(
-                                    color: Colors.white, fontSize: 14 * toScale),
+                                    color: Colors.white,
+                                    fontSize: 14 * toScale),
                               )
                             : DraggableScrollbar.semicircle(
                                 alwaysVisibleScrollThumb: false,
-                                backgroundColor: DarkerBlueGrey,
+                                backgroundColor: darkerBlueGrey,
                                 padding: EdgeInsets.only(right: 4.0 * toScale),
                                 labelTextBuilder: (offset) {
                                   final int currentItem = controller.hasClients
@@ -541,7 +700,8 @@ class _IthildinScreenState extends State<IthildinScreen> {
                                         .form[0]
                                         .toUpperCase(),
                                     style: TextStyle(
-                                        color: BrightGreen, fontSize: 14 * toScale),
+                                        color: BrightGreen,
+                                        fontSize: 14 * toScale),
                                   );
                                 },
                                 controller: controller,
@@ -551,7 +711,7 @@ class _IthildinScreenState extends State<IthildinScreen> {
                                     itemCount: simplexicons.length,
                                     padding: EdgeInsets.all(4.0 * toScale),
                                     // shrinkWrap: true,
-                                    itemExtent: 40.0,
+                                    itemExtent: 40.0 * widthScale,
                                     itemBuilder: (context, index) {
                                       return SLexListItem(
                                         id: simplexicons[index].id,
@@ -571,87 +731,45 @@ class _IthildinScreenState extends State<IthildinScreen> {
           ),
         ),
       ),
-      drawer: SafeArea(
-        child: Container(
-          child: ListTileTheme(
-            child: Column(
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                Container(
-                  width: 128.0 * toScale,
-                  height: 128.0 * toScale,
-                  margin: EdgeInsets.only(
-                    top: 24.0 * toScale,
-                    bottom: 64.0 * toScale,
-                  ),
-                  child: const CircleAvatar(
-                    // radius: 10,
-                    backgroundImage:
-                        ExactAssetImage('assets/images/appicon-ios-512.png'),
-                  ),
-                  clipBehavior: Clip.antiAlias,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: TanteRia,
-                      width: 4.0 * toScale,
-                    ),
-                  ),
-                ),
-                OpenContainer<bool>(
-                  transitionType: ContainerTransitionType.fadeThrough,
-                  transitionDuration: const Duration(milliseconds: 500),
-                  openColor: RegularResultBGColour,
-                  closedColor: RegularResultBGColour,
-                  openBuilder: (BuildContext _, VoidCallback openContainer) {
-                    return const LanguageSets();
-                  },
-                  onClosed: langSetPreferenceClosed,
-                  tappable: false,
-                  closedShape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(20 * toScale)),
-                  ),
-                  closedElevation: 0.0,
-                  closedBuilder: (BuildContext _, VoidCallback openContainer) {
-                    return ListTile(
-                      tileColor: TanteRiaSAvonds,
-                      leading: const Icon(
-                          CupertinoIcons.square_stack_3d_down_right,
-                          color: BrightGreen),
-                      onTap: openContainer,
-                      title: Text('Language sets'),
-                      textColor: Ithildin,
-                    );
-                  },
-                ),
-                OpenContainer<bool>(
-                  transitionType: ContainerTransitionType.fadeThrough,
-                  transitionDuration: const Duration(milliseconds: 500),
-                  openColor: RegularResultBGColour,
-                  closedColor: RegularResultBGColour,
-                  openBuilder: (BuildContext _, VoidCallback openContainer) {
-                    return const SearchMatch();
-                  },
-                  onClosed: searchMatchPreferenceClosed,
-                  tappable: false,
-                  closedShape: const RoundedRectangleBorder(),
-                  closedElevation: 0.0,
-                  closedBuilder: (BuildContext _, VoidCallback openContainer) {
-                    return ListTile(
-                      tileColor: TanteRiaSAvonds,
-                      leading: const Icon(Icons.manage_search,
-                          color: LightPink),
-                      onTap: openContainer,
-                      title: Text('Search matching'),
-                      textColor: Ithildin,
-                    );
-                  },
-                ),
-              ],
+    );
+  }
+
+  Future<void> _handleClearPrefButton() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return CupertinoAlertDialog(
+          title: const Text("Delete user settings?"),
+          content: const Text("(this can't be undone)"),
+          actions: <Widget>[
+            CupertinoDialogAction(
+              isDestructiveAction: true,
+              child: Text("yes"),
+              onPressed: () {
+                UserPreferences.reset();
+                Navigator.of(context).pop();
+                Timer(const Duration(milliseconds: 700), () {
+                  setState(() {
+                    _advancedDrawerController.toggleDrawer();
+                  });
+                });
+              },
             ),
-          ),
-        ),
-      ),
+            CupertinoDialogAction(
+              child: const Text("no"),
+              onPressed: () {
+                Navigator.of(context).pop();
+                Timer(const Duration(milliseconds: 700), () {
+                  setState(() {
+                    _advancedDrawerController.toggleDrawer();
+                  });
+                });
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -664,32 +782,34 @@ class _IthildinScreenState extends State<IthildinScreen> {
         content: Text(
           '$setName set active',
           textAlign: TextAlign.center,
-          style: TextStyle(color: DarkerBlueGrey, fontSize: 16 * toScale),
+          style: TextStyle(color: darkerBlueGrey, fontSize: 16 * toScale),
         ),
         backgroundColor: getLangSetColour(true),
         behavior: SnackBarBehavior.floating,
         width: 250 * toScale,
         elevation: 30,
-        padding: EdgeInsets.fromLTRB(20 * toScale, 10 * toScale, 20 * toScale, 10 * toScale),
+        padding: EdgeInsets.fromLTRB(
+            20 * toScale, 10 * toScale, 20 * toScale, 10 * toScale),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(24),
         ),
       ));
-      Timer(const Duration(seconds: 1), () {
-        setState(() {
-          drawerController.toggleDrawer();
-        });
-      });
     }
+    Timer(const Duration(seconds: 1), () {
+      setState(() {
+        _advancedDrawerController.toggleDrawer();
+      });
+    });
   }
 
   void searchMatchPreferenceClosed(bool? searchMatchChanged) {
     if (searchMatchChanged ?? false) {
       String matchMethod = matchingMethods[
-      UserPreferences.getMatchMethod() ?? defaultMatchingMethodIndex];
-      if ((UserPreferences.getMatchMethod() ?? defaultMatchingMethodIndex) < 4){
+          UserPreferences.getMatchMethod() ?? defaultMatchingMethodIndex];
+      if ((UserPreferences.getMatchMethod() ?? defaultMatchingMethodIndex) <
+          5) {
         EldamoDb.instance.clearRegexBufferList();
-        if (usedRegex){
+        if (usedRegex) {
           clearSearch();
           usedRegex = false;
         }
@@ -699,33 +819,34 @@ class _IthildinScreenState extends State<IthildinScreen> {
         content: Text(
           '$matchMethod search matching',
           textAlign: TextAlign.center,
-          style: TextStyle(color: DarkerBlueGrey, fontSize: 16 * toScale),
+          style: TextStyle(color: darkerBlueGrey, fontSize: 16 * toScale),
         ),
-        backgroundColor: Ithildin,
+        backgroundColor: ithildin,
         behavior: SnackBarBehavior.floating,
         width: 250 * toScale,
         elevation: 30,
-        padding: EdgeInsets.fromLTRB(20 * toScale, 10 * toScale, 20 * toScale, 10 * toScale),
+        padding: EdgeInsets.fromLTRB(
+            20 * toScale, 10 * toScale, 20 * toScale, 10 * toScale),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(24 * toScale),
         ),
       ));
-      Timer(const Duration(seconds: 1), () {
-        setState(() {
-          drawerController.toggleDrawer();
-        });
-      });
     }
+    Timer(const Duration(seconds: 1), () {
+      setState(() {
+        _advancedDrawerController.toggleDrawer();
+      });
+    });
   }
 
   Widget _dropDownBuilder(BuildContext context, Language? activeLanguage) {
     return Container(
       child: Text(
         activeLanguage?.name ?? '',
-        style: Theme.of(context)
-            .textTheme
-            .bodyText1!
-            .copyWith(color: TanteRiaSAvonds, fontWeight: FontWeight.w300, fontSize: 18 * toScale),
+        style: Theme.of(context).textTheme.bodyText1!.copyWith(
+            color: TanteRiaSAvonds,
+            fontWeight: FontWeight.w300,
+            fontSize: 17 * toScale),
       ),
     );
   }
@@ -764,21 +885,21 @@ class _IthildinScreenState extends State<IthildinScreen> {
                     style: Theme.of(context)
                         .textTheme
                         .headline6!
-                        .copyWith(fontWeight: FontWeight.w200, color: Ithildin),
+                        .copyWith(fontWeight: FontWeight.w200, color: ithildin),
                     textAlign: TextAlign.center,
                   ),
                   Padding(
                     padding: EdgeInsets.only(top: 10.0 * toScale),
                     child: Text(
                       "Opens a settings menu for: \n\n"
-                          "- Language Sets (what languages to have available in the "
-                          "Search screen language selector)\n\n"
-                          "- Search matching (how search terms should match with "
-                          "words, e.g. verbatim, anywhere, or otherwise)\n\n",
+                      "- Language Sets (what languages to have available in the "
+                      "Search screen language selector)\n\n"
+                      "- Search matching (how search terms should match with "
+                      "words, e.g. verbatim, anywhere, or otherwise)\n\n",
                       style: Theme.of(context).textTheme.bodyText2!.copyWith(
                           fontWeight: FontWeight.w200,
                           fontSize: 15,
-                          color: Ithildin),
+                          color: ithildin),
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -789,7 +910,7 @@ class _IthildinScreenState extends State<IthildinScreen> {
                       style: Theme.of(context).textTheme.bodyText2!.copyWith(
                           fontWeight: FontWeight.w200,
                           fontSize: 15 * toScale,
-                          color: Ithildin),
+                          color: ithildin),
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -838,7 +959,7 @@ class _IthildinScreenState extends State<IthildinScreen> {
                     style: Theme.of(context)
                         .textTheme
                         .headline6!
-                        .copyWith(fontWeight: FontWeight.w200, color: Ithildin),
+                        .copyWith(fontWeight: FontWeight.w200, color: ithildin),
                     textAlign: TextAlign.center,
                   ),
                   Padding(
@@ -848,12 +969,13 @@ class _IthildinScreenState extends State<IthildinScreen> {
                       style: Theme.of(context).textTheme.bodyText2!.copyWith(
                           fontWeight: FontWeight.w200,
                           fontSize: 15 * toScale,
-                          color: Ithildin),
+                          color: ithildin),
                       textAlign: TextAlign.center,
                     ),
                   ),
                   Padding(
-                    padding: EdgeInsetsDirectional.fromSTEB(0, 20 * toScale, 0, 20 * toScale),
+                    padding: EdgeInsetsDirectional.fromSTEB(
+                        0, 20 * toScale, 0, 20 * toScale),
                     child: Text(
                       "Tap to select another language from the active Set in the "
                       "pop-up list below.\n\nScroll if the list is too long, or "
@@ -862,7 +984,7 @@ class _IthildinScreenState extends State<IthildinScreen> {
                       style: Theme.of(context).textTheme.bodyText2!.copyWith(
                           fontWeight: FontWeight.w200,
                           fontSize: 15 * toScale,
-                          color: Ithildin),
+                          color: ithildin),
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -914,11 +1036,12 @@ class _IthildinScreenState extends State<IthildinScreen> {
                     style: Theme.of(context)
                         .textTheme
                         .headline6!
-                        .copyWith(fontWeight: FontWeight.w200, color: Ithildin),
+                        .copyWith(fontWeight: FontWeight.w200, color: ithildin),
                     textAlign: TextAlign.center,
                   ),
                   Padding(
-                    padding: EdgeInsetsDirectional.fromSTEB(0, 20 * toScale, 0, 20 * toScale),
+                    padding: EdgeInsetsDirectional.fromSTEB(
+                        0, 20 * toScale, 0, 20 * toScale),
                     child: Text(
                       "(not currently active because only English is available at this time)",
                       style: Theme.of(context).textTheme.bodyText2!.copyWith(
@@ -975,18 +1098,19 @@ class _IthildinScreenState extends State<IthildinScreen> {
                     style: Theme.of(context)
                         .textTheme
                         .headline6!
-                        .copyWith(fontWeight: FontWeight.w200, color: Ithildin),
+                        .copyWith(fontWeight: FontWeight.w200, color: ithildin),
                     textAlign: TextAlign.center,
                   ),
                   Padding(
-                    padding: EdgeInsetsDirectional.fromSTEB(0, 20 * toScale, 0, 20 * toScale),
+                    padding: EdgeInsetsDirectional.fromSTEB(
+                        0, 20 * toScale, 0, 20 * toScale),
                     child: Text(
                       "Set to search on forms (Eldarin words) or glosses (their "
                       "translations)",
                       style: Theme.of(context).textTheme.bodyText2!.copyWith(
                           fontWeight: FontWeight.w200,
                           fontSize: 15 * toScale,
-                          color: Ithildin),
+                          color: ithildin),
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -1037,23 +1161,24 @@ class _IthildinScreenState extends State<IthildinScreen> {
                     style: Theme.of(context)
                         .textTheme
                         .headline6!
-                        .copyWith(fontWeight: FontWeight.w200, color: Ithildin),
+                        .copyWith(fontWeight: FontWeight.w200, color: ithildin),
                     textAlign: TextAlign.center,
                   ),
                   Padding(
-                    padding: EdgeInsetsDirectional.fromSTEB(0, 20 * toScale, 0, 20 * toScale),
+                    padding: EdgeInsetsDirectional.fromSTEB(
+                        0, 20 * toScale, 0, 20 * toScale),
                     child: Text(
                       "Tap and enter one or more characters to search.\n\n"
-                          "How this matches to the search results can be changed "
-                          "in the 'Search Matching' settings (available under the "
-                          "gear icon top left). See the explanation there about "
-                          "the different matching methods.\n\n"
-                          "Note that the active matching method is indicated with "
-                          "the icon in the search field (e.g. magnifying glass)",
+                      "How this matches to the search results can be changed "
+                      "in the 'Search Matching' settings (available under the "
+                      "gear icon top left). See the explanation there about "
+                      "the different matching methods.\n\n"
+                      "Note that the active matching method is indicated with "
+                      "the icon in the search field (e.g. magnifying glass)",
                       style: Theme.of(context).textTheme.bodyText2!.copyWith(
                           fontWeight: FontWeight.w200,
                           fontSize: 15 * toScale,
-                          color: Ithildin),
+                          color: ithildin),
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -1106,22 +1231,24 @@ class _IthildinScreenState extends State<IthildinScreen> {
                 mainAxisSize: MainAxisSize.max,
                 children: <Widget>[
                   Padding(
-                    padding: EdgeInsetsDirectional.fromSTEB(0, 0, 0, 5 * toScale),
+                    padding:
+                        EdgeInsetsDirectional.fromSTEB(0, 0, 0, 5 * toScale),
                     child: Text(
                       "result list",
                       style: Theme.of(context).textTheme.headline6!.copyWith(
-                          fontWeight: FontWeight.w200, color: Ithildin),
+                          fontWeight: FontWeight.w200, color: ithildin),
                       textAlign: TextAlign.center,
                     ),
                   ),
                   Padding(
-                    padding: EdgeInsetsDirectional.fromSTEB(0, 8 * toScale, 0, 4 * toScale),
+                    padding: EdgeInsetsDirectional.fromSTEB(
+                        0, 8 * toScale, 0, 4 * toScale),
                     child: Text(
                       "Shows matching entries. Meaning of marks & colours:",
                       style: Theme.of(context).textTheme.bodyText2!.copyWith(
                           fontWeight: FontWeight.w200,
                           fontSize: 14 * toScale,
-                          color: Ithildin),
+                          color: ithildin),
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -1246,7 +1373,7 @@ class _IthildinScreenState extends State<IthildinScreen> {
                       style: Theme.of(context).textTheme.bodyText2!.copyWith(
                           fontWeight: FontWeight.w200,
                           fontSize: 14 * toScale,
-                          color: Ithildin),
+                          color: ithildin),
                       textAlign: TextAlign.center,
                     ),
                   ),

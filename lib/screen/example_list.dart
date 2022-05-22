@@ -28,7 +28,7 @@ class _ExampleListItemState extends State<ExampleListItem> {
         CloseSpan +
         "&nbsp;&nbsp;";
 
-    htmlData += CSSText +  widget.source + CloseSpan;
+    htmlData += cssText +  widget.source + CloseSpan;
 
     super.initState();
   }

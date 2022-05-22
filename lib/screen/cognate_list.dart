@@ -48,22 +48,16 @@ class _CognateListItemState extends State<CognateListItem> {
   }
 
   formatHtml() {
-    htmlData += CSSBolder +
-        widget.language.toUpperCase() +
-        CloseSpan +
-        "&nbsp;&nbsp;";
-    htmlData += (widget.cognateId != null ? CSSBoldVeryBlue : CSSBoldBlueGrey) +
-        widget.form +
-        CloseSpan +
-        "&nbsp;&nbsp;";
+    htmlData +=
+        "$CSSBolder${widget.language.toUpperCase()}$CloseSpan&nbsp;&nbsp;";
+    htmlData +=
+        "${widget.cognateId != null
+            ? CSSBoldVeryBlue
+            : cssBoldBlueGrey}${widget.form}$CloseSpan&nbsp;&nbsp;";
     if (widget.gloss != null && widget.gloss!.isNotEmpty) {
-      htmlData += CSSGreenItalic +
-          '"' +
-          (widget.gloss ?? "") +
-          '"' +
-          CloseSpan;
+      htmlData += '$CSSGreenItalic"${widget.gloss ?? ""}"$CloseSpan';
     }
-    htmlData += CSSText + widget.sources.replaceAll('.', '') + CloseSpan;
+    htmlData += cssText + widget.sources.replaceAll('.', '') + CloseSpan;
   }
 
   @override

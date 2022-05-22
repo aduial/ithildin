@@ -103,26 +103,25 @@ class LexiconElement {
 
   @override
   String toString() {
-    return 'LexiconElement{' +
-        ' entryId: $entryId,' +
-        ' language: $language,' +
-        ' form: $form,' +
-        ' gloss: $gloss,' +
-        ' inflections: $inflections,' +
-        ' sources: $sources,' +
-        ' elementId: $elementId,' +
-        '}';
+    return 'LexiconElement{ '
+        'entryId: $entryId, '
+        'language: $language, '
+        'form: $form, '
+        'gloss: $gloss, '
+        'inflections: $inflections, '
+        'sources: $sources, '
+        'elementId: $elementId,}';
   }
 
   Map<String, dynamic> toMap() {
     return {
-      'entryId': this.entryId,
-      'language': this.language,
-      'form': this.form,
-      'gloss': this.gloss,
-      'inflections': this.inflections,
-      'sources': this.sources,
-      'elementId': this.elementId,
+      'entryId': entryId,
+      'language': language,
+      'form': form,
+      'gloss': gloss,
+      'inflections': inflections,
+      'sources': sources,
+      'elementId': elementId,
     };
   }
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:ithildin/screen/entry_screen.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import '../config/colours.dart';
+import '../config/config.dart';
 
 class SLexListItem extends StatefulWidget {
   const SLexListItem({
@@ -49,6 +50,8 @@ class _SLexListItemState extends State<SLexListItem> {
   @override
   Widget build(BuildContext context) {
 
+    double toScale = (MediaQuery.of(context).size.width / refWidth);
+
     Color getFormColour(String mark, bool isRoot){
       if (mark.contains("|")) {
         return StruckOutFormColour;
@@ -78,10 +81,10 @@ class _SLexListItemState extends State<SLexListItem> {
         });
       },
       child: Container(
-        padding: const EdgeInsets.fromLTRB(5.0, 2.0, 5.0, 2.0),
+        padding: EdgeInsets.fromLTRB(5.0 * toScale, 2.0 * toScale, 5.0 * toScale, 2.0 * toScale),
         decoration: BoxDecoration(
           border: Border(
-            bottom: BorderSide(width: 1.0, color: Colors.lightBlue.shade100),
+            bottom: BorderSide(width: toScale, color: Colors.lightBlue.shade100),
           ),
           color: widget.mark.contains("†") ? PoeticResultBGColour : RegularResultBGColour,
         ),
@@ -96,7 +99,7 @@ class _SLexListItemState extends State<SLexListItem> {
                   widget.formLangAbbr,
                   style: Theme.of(context).textTheme.bodyText1!.copyWith(
                       color: Telperion,
-                      fontSize: 16,
+                      fontSize: 16 * toScale,
                       fontWeight: FontWeight.w500),
                 ),
               ),
@@ -104,12 +107,12 @@ class _SLexListItemState extends State<SLexListItem> {
             Expanded(
               flex: 3,
               child: Padding(
-                padding: const EdgeInsetsDirectional.fromSTEB(0, 0, 4, 0),
+                padding: EdgeInsetsDirectional.fromSTEB(0, 0, 4 * toScale, 0),
                 child: Text(
                   widget.mark.replaceAll("|", "").replaceAll("-", ""),
                   style: Theme.of(context).textTheme.bodyText1!.copyWith(
                       color: getFormColour(widget.mark, widget.isRoot),
-                      fontSize: 14,
+                      fontSize: 14 * toScale,
                       fontWeight: FontWeight.w500),
                 ),
               ),
@@ -117,12 +120,12 @@ class _SLexListItemState extends State<SLexListItem> {
             Expanded(
               flex: 16,
               child: Padding(
-                padding: const EdgeInsetsDirectional.fromSTEB(0, 0, 6, 0),
+                padding: EdgeInsetsDirectional.fromSTEB(0, 0, 6 * toScale, 0),
                 child: AutoSizeText(
                   widget.form,
                   style: Theme.of(context).textTheme.bodyText1!.copyWith(
                       color: getFormColour(widget.mark, widget.isRoot),
-                      fontSize: 16,
+                      fontSize: 16 * toScale,
                       fontWeight: FontWeight.w500),
                   minFontSize: 12,
                   stepGranularity: 4,
@@ -137,7 +140,7 @@ class _SLexListItemState extends State<SLexListItem> {
                 widget.gloss,
                 style: Theme.of(context).textTheme.bodyText1!.copyWith(
                     color: Colors.white,
-                    fontSize: 16,
+                    fontSize: 16 * toScale,
                     fontWeight: FontWeight.w300),
                 minFontSize: 12,
                 stepGranularity: 4,

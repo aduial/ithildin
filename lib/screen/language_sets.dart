@@ -15,11 +15,10 @@ class LanguageSets extends StatefulWidget {
 
 class _LanguageSetsState extends State<LanguageSets> {
 
-  final double refWidth = 448;
-
   @override
   Widget build(BuildContext context) {
-    double toScale = MediaQuery.of(context).size.width / refWidth ;
+    double toScale = (MediaQuery.of(context).size.width / refWidth) *
+        (MediaQuery.of(context).size.height / refHeight);
 
     return Scaffold(
       appBar: AppBar(
@@ -69,7 +68,7 @@ class _LanguageSetsState extends State<LanguageSets> {
                                     .copyWith(
                                     color: getTextColourByNumber(index),
                                     fontWeight: FontWeight.w300,
-                                    fontSize: 16 * toScale),
+                                    fontSize: 18 * toScale),
                               ),
                             ),
                           ),
@@ -115,9 +114,9 @@ class _LanguageSetsState extends State<LanguageSets> {
                           .textTheme
                           .bodyText1!
                           .copyWith(
-                          color: Ithildin,
+                          color: ithildin,
                           fontWeight: FontWeight.w300,
-                          fontSize: 15 * toScale),
+                          fontSize: 16 * toScale),
                     ),
                   ),
                 ),

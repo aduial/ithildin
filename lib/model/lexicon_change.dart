@@ -114,13 +114,13 @@ class LexiconChange {
 
   Map<String, dynamic> toMap() {
     return {
-      'entryId': this.entryId,
-      'markFrom': this.markFrom,
-      'formFrom': this.formFrom,
-      'markTo': this.markTo,
-      'formTo': this.formTo,
-      'sources': this.sources,
-      'idTo': this.idTo,
+      'entryId': entryId,
+      'markFrom': markFrom,
+      'formFrom': formFrom,
+      'markTo': markTo,
+      'formTo': formTo,
+      'sources': sources,
+      'idTo': idTo,
     };
   }
 

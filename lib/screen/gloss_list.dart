@@ -22,7 +22,7 @@ class _GlossListItemState extends State<GlossListItem> {
   String htmlData = "";
   void initState() {
     htmlData += CSSGreenItalic + '"' + widget.gloss + '"' + CloseSpan +  "&nbsp;&nbsp;";
-    htmlData += CSSText +  widget.sources + CloseSpan;
+    htmlData += cssText +  widget.sources + CloseSpan;
     super.initState();
   }
 
